@@ -1,0 +1,8 @@
+<svg class="line-icon" viewBox="0 0 24 24">
+  <path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-14z" />
+  <line x1="4" y1="8" x2="20" y2="8" />
+  <line x1="10" y1="8" x2="10" y2="20" />
+  <path d="M6 11l.01 0"></path>
+  <path d="M6 14l.01 0"></path>
+  <path d="M6 17l.01 0"></path>
+</svg>
