@@ -5,7 +5,7 @@
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "src/assets/styles/global.css",
-    "baseColor": "slate",
+    "baseColor": "gray",
     "cssVariables": true
   },
   "framework": "vite",

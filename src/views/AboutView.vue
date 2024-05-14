@@ -1,7 +1,9 @@
-<template>
-  <div class="about">
-    <h1 class="text-3xl">This is an about page</h1>
-  </div>
-</template>
+<script setup lang="ts">
+import LayoutEditor from '@/components/layouts/LayoutEditor.vue';
+</script>
 
-<style></style>
+<template>
+  <LayoutEditor>
+    <p>Editor page here...</p>
+  </LayoutEditor>
+</template>

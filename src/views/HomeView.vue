@@ -1,5 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import LayoutMain from '@/components/layouts/LayoutMain.vue';
+</script>
 
 <template>
-  <main></main>
+  <LayoutMain>
+    <p>Coolio</p>
+  </LayoutMain>
 </template>
