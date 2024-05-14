@@ -30,29 +30,29 @@ export const useThemeStore = defineStore('theme', () => {
     }
   ]);
 
+  // Update the theme value in local storage and on the <html> element when the theme changes
+  watch(
+    () => currentTheme.value,
+    (newTheme) => {
+      switch (newTheme) {
+        case 'light':
+          localStorage.theme = 'light';
+          document.documentElement.classList.remove('dark');
+          break;
+        case 'dark':
+          localStorage.theme = 'dark';
+          document.documentElement.classList.add('dark');
+          break;
+        case 'system':
+          localStorage.removeItem('theme');
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+      }
+    }
+  );
+
   return { currentTheme, themes };
 });
-
-// Update the theme value in local storage and on the <html> element when the theme changes
-watch(
-  () => useThemeStore().currentTheme,
-  (newTheme) => {
-    switch (newTheme) {
-      case 'light':
-        localStorage.theme = 'light';
-        document.documentElement.classList.remove('dark');
-        break;
-      case 'dark':
-        localStorage.theme = 'dark';
-        document.documentElement.classList.add('dark');
-        break;
-      case 'system':
-        localStorage.removeItem('theme');
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-    }
-  }
-);

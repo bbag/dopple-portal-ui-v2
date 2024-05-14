@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 // import { ref } from 'vue'
 // import { useRouter } from 'vue-router'
 // const router = useRouter()
@@ -6,7 +6,7 @@
 // import { useTestRolesStore } from '@/stores/testRoles'
 // const testRoles = useTestRolesStore().testRoles
 
-// import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 // import {
 //   Select,
 //   SelectContent,
@@ -39,11 +39,15 @@
 //     router.forward()
 //   }
 // }
+
+import UserDropdown from './UserDropdown.vue';
 </script>
 
 <template>
   <div class="h-12 bg-background border-b flex items-center gap-4 px-8">
     <p>TopBar</p>
+    <Button>Button</Button>
+    <UserDropdown />
   </div>
   <!-- <div class="h-12 bg-white border-b flex items-center gap-4 px-8">
     <TooltipProvider>

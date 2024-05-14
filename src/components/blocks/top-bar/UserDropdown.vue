@@ -24,7 +24,8 @@ import IconWorkspaces from '@/assets/icons/workspaces.svg';
 
 // Themes
 import { useThemeStore } from '@/stores/theme';
-const themes = useThemeStore().themes;
+import { storeToRefs } from 'pinia';
+const { currentTheme, themes } = storeToRefs(useThemeStore());
 </script>
 
 <template>
@@ -65,11 +66,11 @@ const themes = useThemeStore().themes;
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <IconBrightness class="w-5 h-5 mr-2 text-muted-foreground" />
-            Theme ({{ useThemeStore().currentTheme }})
+            Theme
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup v-model="useThemeStore().currentTheme">
+              <DropdownMenuRadioGroup v-model="currentTheme">
                 <DropdownMenuRadioItem
                   v-for="theme in themes"
                   :key="theme.value"
