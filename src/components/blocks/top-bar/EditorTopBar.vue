@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // import { ref } from 'vue'
-// import { useRouter } from 'vue-router'
-// const router = useRouter()
+import { RouterLink, useRouter } from 'vue-router';
+const router = useRouter();
 
 // import { useTestRolesStore } from '@/stores/testRoles'
 // const testRoles = useTestRolesStore().testRoles
@@ -73,7 +73,6 @@ import IconMenu from '@/assets/icons/menu.svg';
 
 import { menuItems } from './editorMenuItems';
 
-import { RouterLink, useRoute } from 'vue-router';
 import { routes, type IRoute, type IRouteCategory } from '@/components/blocks/side-nav/navRoutes';
 </script>
 
@@ -83,7 +82,9 @@ import { routes, type IRoute, type IRouteCategory } from '@/components/blocks/si
       <div class="flex gap-4 items-center">
         <Tooltip>
           <TooltipTrigger as-child>
-            <DoppleLogoIcon class="w-6 h-6" />
+            <RouterLink to="/" class="w-8 h-8 p-1 -mx-2">
+              <DoppleLogoIcon class="w-6 h-6 text-brand-500 dark:text-foreground" />
+            </RouterLink>
           </TooltipTrigger>
           <TooltipContent> Home </TooltipContent>
         </Tooltip>
