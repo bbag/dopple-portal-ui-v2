@@ -4,7 +4,9 @@ import {
   IconBox,
   IconChartDots,
   IconExternalLink,
+  IconFile3d,
   IconFileCode,
+  IconFiles,
   IconSettings,
   IconSlideshow,
   IconUsers,
@@ -59,7 +61,7 @@ export const routes: IRouteCategory[] = [
     ]
   },
   {
-    title: 'Asset Library',
+    title: 'Library',
     categoryDisplayFn: (route) =>
       typeof route.params === 'object' && 'workspace' in route.params ? true : false,
     routes: [
@@ -69,20 +71,25 @@ export const routes: IRouteCategory[] = [
         path: 'products'
       },
       {
-        name: 'Models',
-        icon: IconBox,
-        path: 'models'
-      },
-      {
-        name: 'Materials',
-        icon: IconMaterialIcon,
-        path: 'materials'
-      },
-      {
-        name: 'Textures',
-        icon: IconTextureIcon,
-        path: 'textures'
+        name: 'Files & Assets',
+        icon: IconFile3d,
+        path: 'assets'
       }
+      // {
+      //   name: 'Models',
+      //   icon: IconBox,
+      //   path: 'models'
+      // },
+      // {
+      //   name: 'Materials',
+      //   icon: IconMaterialIcon,
+      //   path: 'materials'
+      // },
+      // {
+      //   name: 'Textures',
+      //   icon: IconTextureIcon,
+      //   path: 'textures'
+      // }
     ]
   },
   {
@@ -143,26 +150,26 @@ export const routes: IRouteCategory[] = [
       }
     ]
   },
-  {
-    title: 'Settings',
-    routes: [
-      {
-        name: 'Domains',
-        icon: IconWorld,
-        path: '/domains'
-      },
-      {
-        name: 'Team',
-        icon: IconUsers,
-        path: '/team'
-      },
-      {
-        name: 'Account Settings',
-        icon: IconSettings,
-        path: '/settings'
-      }
-    ]
-  },
+  // {
+  //   title: 'Settings',
+  //   routes: [
+  //     {
+  //       name: 'Domains',
+  //       icon: IconWorld,
+  //       path: '/domains'
+  //     },
+  //     {
+  //       name: 'Team',
+  //       icon: IconUsers,
+  //       path: '/team'
+  //     },
+  //     {
+  //       name: 'Account Settings',
+  //       icon: IconSettings,
+  //       path: '/settings'
+  //     }
+  //   ]
+  // },
   {
     title: 'Resources',
     routes: [
