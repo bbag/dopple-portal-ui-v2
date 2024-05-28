@@ -179,6 +179,7 @@ const router = createRouter({
         {
           path: 'editor',
           name: 'glTF Editor',
+          meta: { hideSideNav: true },
           component: () => import('@/views/tools/GltfEditorView.vue'),
           children: [
             {
