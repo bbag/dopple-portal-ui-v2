@@ -40,15 +40,15 @@ export const routes: IRouteCategory[] = [
   {
     title: '',
     routes: [
-      {
-        name: 'Home',
-        icon: IconHomeIcon,
-        path: '/'
-      },
+      // {
+      //   name: 'Home',
+      //   icon: IconHomeIcon,
+      //   path: '/'
+      // },
       {
         name: 'Workspaces',
         icon: IconWorkspaces,
-        path: '/workspaces',
+        path: '/',
         subroutesDisplayFn: (route) =>
           typeof route.params === 'object' && 'workspace' in route.params ? true : false,
         subroutes: [

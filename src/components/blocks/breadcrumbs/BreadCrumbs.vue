@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import IconHome from '@/assets/icons/home.svg'
+import IconWorkspaces from '@/assets/icons/workspaces.svg'
 
 const route = useRoute()
 
@@ -66,10 +66,10 @@ const breadcrumbs = computed<BreadcrumbOutputItem[]>(() => {
               model.shortId === route.params.shortId && model.workspace === route.params.workspace
           )?.name || 'N/A'
       } else if (itemName === 'Workspace') {
-        arr.push({
-          name: 'Workspaces',
-          path: '/workspaces'
-        })
+        // arr.push({
+        //   name: 'Workspaces',
+        //   path: '/workspaces'
+        // })
         itemName = route.params.workspace.toString()
       } else if (
         typeof match.meta?.breadcrumbName === 'string' &&
@@ -112,9 +112,9 @@ const dropdownBreadcrumbs = computed(() => {
         <BreadcrumbItem>
           <Tooltip>
             <TooltipTrigger as-child>
-              <BreadcrumbLink href="/"><IconHome class="w-5 h-5" /></BreadcrumbLink>
+              <BreadcrumbLink href="/"><IconWorkspaces class="w-5 h-5" /></BreadcrumbLink>
             </TooltipTrigger>
-            <TooltipContent>Home</TooltipContent>
+            <TooltipContent>Workspaces</TooltipContent>
           </Tooltip>
         </BreadcrumbItem>
       </TooltipProvider>

@@ -3,7 +3,6 @@ import { useNavHistoryStore } from '@/stores/navHistory'
 
 import RootView from '../views/RootView.vue'
 import NotFound from '../views/NotFound.vue'
-import WorkspacesRootView from '../views/workspaces/WorkspacesRootView.vue'
 import WorkspaceView from '../views/workspaces/WorkspaceView.vue'
 
 import { useWorkspacesStore } from '@/stores/workspaces'
@@ -13,7 +12,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Home',
+      name: 'Workspaces',
       component: RootView
     },
     {
@@ -244,12 +243,6 @@ const router = createRouter({
       path: '/team',
       name: 'Team',
       component: () => import('@/views/settings/TeamView.vue')
-    },
-    {
-      path: '/workspaces',
-      name: 'Workspaces',
-      component: WorkspacesRootView,
-      alias: '/w'
     },
     {
       path: '/:pathMatch(.*)*',
