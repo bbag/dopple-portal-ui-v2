@@ -7,6 +7,7 @@ import {
   IconFile3d,
   IconFileCode,
   IconFiles,
+  IconFolders,
   IconSettings,
   IconSlideshow,
   IconUsers,
@@ -14,10 +15,7 @@ import {
 } from '@tabler/icons-vue'
 
 import IconGltfEditor from '@/assets/icons/gltf-editor.svg'
-import IconHomeIcon from '@/assets/icons/home.svg'
 import IconShoppingBagIcon from '@/assets/icons/shopping-bag.svg'
-import IconMaterialIcon from '@/assets/icons/material.svg'
-import IconTextureIcon from '@/assets/icons/texture.svg'
 import IconUiBuilder from '@/assets/icons/ui-builder.svg'
 import IconWorkspaces from '@/assets/icons/workspaces.svg'
 
@@ -66,14 +64,14 @@ export const routes: IRouteCategory[] = [
       typeof route.params === 'object' && 'workspace' in route.params ? true : false,
     routes: [
       {
+        name: 'Projects',
+        icon: IconFolders,
+        path: 'projects'
+      },
+      {
         name: 'Products',
         icon: IconShoppingBagIcon,
         path: 'products'
-      },
-      {
-        name: 'Files & Assets',
-        icon: IconFile3d,
-        path: 'assets'
       }
       // {
       //   name: 'Models',

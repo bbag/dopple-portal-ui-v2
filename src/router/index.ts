@@ -75,50 +75,31 @@ const router = createRouter({
           ]
         },
         {
-          path: 'models',
-          name: 'Models',
-          component: () => import('@/views/models/ModelsRootView.vue'),
+          path: 'projects',
+          name: 'Projects',
+          component: () => import('@/views/projects/ProjectsRootView.vue'),
           children: [
             {
               path: '',
-              name: 'ModelsList',
-              component: () => import('@/views/models/ModelsListView.vue')
+              name: 'Projects Home',
+              component: () => import('@/views/projects/ProjectsListView.vue')
             },
             {
-              path: ':shortId',
-              name: 'Model',
-              component: () => import('@/views/models/ModelView.vue'),
+              path: ':project',
+              name: 'Project',
+              component: () => import('@/views/projects/ProjectView.vue'),
               children: [
                 {
                   path: '',
-                  name: 'Model Overview',
-                  component: () => import('@/views/models/ModelOverviewView.vue')
+                  name: 'Project Overview',
+                  component: () => import('@/views/projects/ProjectOverviewView.vue')
+                },
+                {
+                  path: 'assets',
+                  name: 'Assets',
+                  component: () => import('@/views/projects/ProjectAssetsView.vue')
                 }
               ]
-            }
-          ]
-        },
-        {
-          path: 'materials',
-          name: 'Materials',
-          component: () => import('@/views/materials/MaterialsRootView.vue'),
-          children: [
-            {
-              path: '',
-              name: 'MaterialsList',
-              component: () => import('@/views/materials/MaterialsListView.vue')
-            }
-          ]
-        },
-        {
-          path: 'textures',
-          name: 'Textures',
-          component: () => import('@/views/textures/TexturesRootView.vue'),
-          children: [
-            {
-              path: '',
-              name: 'TexturesList',
-              component: () => import('@/views/textures/TexturesListView.vue')
             }
           ]
         },

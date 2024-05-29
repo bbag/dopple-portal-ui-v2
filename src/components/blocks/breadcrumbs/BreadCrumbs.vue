@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute, type RouteParams, type RouteRecordName } from 'vue-router'
 
 import { useProductsStore } from '@/stores/products'
-import { useModelsStore } from '@/stores/models'
+import { useProjectsStore } from '@/stores/projects'
 
 import {
   Breadcrumb,
@@ -56,15 +56,12 @@ const breadcrumbs = computed<BreadcrumbOutputItem[]>(() => {
             (product) =>
               product.name === route.params.name && product.workspace === route.params.workspace
           )?.title || 'N/A'
-      } else if (
-        typeof itemName === 'string' &&
-        ['Model', 'Model (glTF Editor)'].includes(itemName)
-      ) {
+      } else if (typeof itemName === 'string' && ['Project'].includes(itemName)) {
         itemName =
-          useModelsStore().models.find(
-            (model) =>
-              model.shortId === route.params.shortId && model.workspace === route.params.workspace
-          )?.name || 'N/A'
+          useProjectsStore().projects.find(
+            (project) =>
+              project.slug === route.params.project && project.workspace === route.params.workspace
+          )?.title || 'N/A'
       } else if (itemName === 'Workspace') {
         // arr.push({
         //   name: 'Workspaces',
