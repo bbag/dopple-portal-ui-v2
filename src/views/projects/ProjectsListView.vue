@@ -11,8 +11,8 @@ const { projects } = useProjectsStore()
 const projectsForCurrentWorkspace = projects.filter((p) => p.workspace === workspace)
 
 import Button from '@/components/ui/button/Button.vue'
-import ProjectTable from '@/components/blocks/project-table/ProjectTable.vue'
-import { columns } from '@/components/blocks/project-table/columns'
+// import ProjectTable from '@/components/blocks/project-table/ProjectTable.vue'
+// import { columns } from '@/components/blocks/project-table/columns'
 
 import IconPlusSmall from '@/assets/icons/plus-small.svg'
 </script>
