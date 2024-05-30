@@ -2,7 +2,7 @@
 import type { Column } from '@tanstack/vue-table'
 import type { Component } from 'vue'
 import { computed } from 'vue'
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
 import { IconCheck, IconCirclePlus } from '@tabler/icons-vue'
 
@@ -22,8 +22,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
-interface ProductTableFacetedFilter {
-  column?: Column<IProduct, any>
+interface ProjectTableFacetedFilter {
+  column?: Column<IProject, any>
   title?: string
   options: {
     label: string
@@ -32,7 +32,7 @@ interface ProductTableFacetedFilter {
   }[]
 }
 
-const props = defineProps<ProductTableFacetedFilter>()
+const props = defineProps<ProjectTableFacetedFilter>()
 
 const facets = computed(() => props.column?.getFacetedUniqueValues())
 const selectedValues = computed(
@@ -76,7 +76,7 @@ const selectedValues = computed(
     <PopoverContent class="w-[200px] p-0" align="start">
       <Command
         :filter-function="
-          (list: ProductTableFacetedFilter['options'], term) =>
+          (list: ProjectTableFacetedFilter['options'], term) =>
             list.filter((i) => i.label.toLowerCase()?.includes(term))
         "
       >

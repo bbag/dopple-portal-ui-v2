@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import type { Table } from '@tanstack/vue-table'
 import { computed } from 'vue'
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
 import { favorites, workspaces, statuses } from './data'
-import ProductTableFacetedFilter from './ProductTableFacetedFilter.vue'
-import ProductTableViewOptions from './ProductTableViewOptions.vue'
+import ProjectTableFacetedFilter from './ProjectTableFacetedFilter.vue'
+import ProjectTableViewOptions from './ProjectTableViewOptions.vue'
 import { IconSearch, IconX } from '@tabler/icons-vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-interface ProductTableToolbarProps {
-  table: Table<IProduct>
+interface ProjectTableToolbarProps {
+  table: Table<IProject>
 }
 
-const props = defineProps<ProductTableToolbarProps>()
+const props = defineProps<ProjectTableToolbarProps>()
 
 const isFiltered = computed(() => props.table.getState().columnFilters.length > 0)
 </script>
@@ -24,7 +24,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
     <div class="flex flex-1 items-center space-x-2">
       <div class="relative">
         <Input
-          placeholder="Search by title..."
+          placeholder="Search by name..."
           :model-value="(table.getColumn('title')?.getFilterValue() as string) ?? ''"
           class="h-8 w-[150px] lg:w-[250px] pl-10"
           @input="table.getColumn('title')?.setFilterValue($event.target.value)"
@@ -33,25 +33,25 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
           class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
         />
       </div>
-      <ProductTableFacetedFilter
+      <ProjectTableFacetedFilter
         v-if="table.getColumn('isFavorite')"
         :column="table.getColumn('isFavorite')"
         title="Favorites"
         :options="favorites"
       />
-      <!-- <ProductTableFacetedFilter
+      <!-- <ProjectTableFacetedFilter
         v-if="table.getColumn('workspace')"
         :column="table.getColumn('workspace')"
         title="Workspace"
         :options="workspaces"
       /> -->
-      <!-- <ProductTableFacetedFilter
+      <!-- <ProjectTableFacetedFilter
         v-if="table.getColumn('isFavorite')"
         :column="table.getColumn('isFavorite')"
         title="Favorite"
         :options="favorites"
       /> -->
-      <!-- <ProductTableFacetedFilter
+      <!-- <ProjectTableFacetedFilter
         v-if="table.getColumn('status')"
         :column="table.getColumn('status')"
         title="Status"
@@ -67,6 +67,6 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
         <IconX class="ml-2 h-4 w-4" />
       </Button>
     </div>
-    <ProductTableViewOptions :table="table" />
+    <ProjectTableViewOptions :table="table" />
   </div>
 </template>

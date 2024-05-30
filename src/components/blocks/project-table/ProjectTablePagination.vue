@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Table } from '@tanstack/vue-table'
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
 import {
   IconChevronLeft,
@@ -18,10 +18,10 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-interface ProductTablePaginationProps {
-  table: Table<IProduct>
+interface ProjectTablePaginationProps {
+  table: Table<IProject>
 }
-defineProps<ProductTablePaginationProps>()
+defineProps<ProjectTablePaginationProps>()
 </script>
 
 <template>

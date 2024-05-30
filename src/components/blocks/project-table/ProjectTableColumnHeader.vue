@@ -2,7 +2,7 @@
 import type { Column } from '@tanstack/vue-table'
 import { IconArrowDown, IconArrowUp, IconSelector, IconEyeOff } from '@tabler/icons-vue'
 
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -14,12 +14,12 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
-interface ProductTableColumnHeaderProps {
-  column: Column<IProduct, any>
+interface ProjectTableColumnHeaderProps {
+  column: Column<IProject, any>
   title: string
 }
 
-defineProps<ProductTableColumnHeaderProps>()
+defineProps<ProjectTableColumnHeaderProps>()
 </script>
 
 <script lang="ts">

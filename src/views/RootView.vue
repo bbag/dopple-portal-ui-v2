@@ -62,7 +62,13 @@ import { toast } from '@/components/ui/toast'
 import { IconArrowsSort, IconDots, IconSearch } from '@tabler/icons-vue'
 import IconPlusSmall from '@/assets/icons/plus-small.svg'
 
-const sortOptions = ['Alphabetical', 'Date Created', 'Date Modified', 'Product Count']
+const sortOptions = [
+  'Alphabetical',
+  'Date Created',
+  'Date Modified',
+  'Product Count',
+  'Project Count'
+]
 const workspaceSortBy = ref('Alphabetical')
 const workspaceSearchQuery = ref('')
 
@@ -91,6 +97,9 @@ const workspaces = computed(() => {
       break
     case 'Product Count':
       workspacesList = workspacesList.sort((a, b) => b.productCount - a.productCount)
+      break
+    case 'Project Count':
+      workspacesList = workspacesList.sort((a, b) => b.projectCount - a.projectCount)
       break
   }
 
@@ -128,7 +137,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   hour12: true
 })
 
-const workspacesTableHeaders = ['Name', 'Products', 'Last Modified', 'Actions', '']
+const workspacesTableHeaders = ['Name', 'Projects', 'Products', 'Last Modified', 'Actions', '']
 </script>
 
 <template>
@@ -181,6 +190,9 @@ const workspacesTableHeaders = ['Name', 'Products', 'Last Modified', 'Actions', 
                 <RouterLink :to="`/w/${workspace.name}`">
                   {{ workspace.name }}
                 </RouterLink>
+              </TableCell>
+              <TableCell class="py-2 whitespace-nowrap text-muted-foreground text-xs text-center">
+                {{ workspace.projectCount }}
               </TableCell>
               <TableCell class="py-2 whitespace-nowrap text-muted-foreground text-xs text-center">
                 {{ workspace.productCount }}

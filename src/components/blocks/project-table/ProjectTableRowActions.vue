@@ -5,7 +5,7 @@ const router = useRouter()
 
 import type { Row } from '@tanstack/vue-table'
 import { labels } from './data'
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
 import { IconDots } from '@tabler/icons-vue'
 
@@ -38,25 +38,22 @@ import { Label } from '@/components/ui/label'
 
 import { IconInfoCircle, IconCopy, IconStar, IconTags, IconTrash } from '@tabler/icons-vue'
 
-interface ProductTableRowActionsProps {
-  row: Row<IProduct>
+interface ProjectTableRowActionsProps {
+  row: Row<IProject>
 }
-const props = defineProps<ProductTableRowActionsProps>()
+const props = defineProps<ProjectTableRowActionsProps>()
 
-const product = computed(() => props.row.original)
+const project = computed(() => props.row.original)
 const activeLabel = ref('')
 onMounted(() => {
-  activeLabel.value = product.value.label
+  activeLabel.value = project.value.title
 })
 
 const inputDeleteName = ref('')
 const inputDeleteWorkspace = ref('')
 
 function handleActionManage() {
-  router.push({ name: 'Product Overview', params: { name: product.value.name } })
-}
-function handleActionToggleFavorite() {
-  product.value.isFavorite = !product.value.isFavorite
+  router.push({ name: 'Project Overview', params: { name: project.value.slug } })
 }
 </script>
 
@@ -78,10 +75,6 @@ function handleActionToggleFavorite() {
           <IconCopy class="w-5 h-5 mr-2" />
           Duplicate
         </DropdownMenuItem>
-        <DropdownMenuItem @click="handleActionToggleFavorite">
-          <IconStar class="w-5 h-5 mr-2" />
-          Favorite
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
@@ -89,7 +82,7 @@ function handleActionToggleFavorite() {
             Labels
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup :value="product.label" v-model="activeLabel">
+            <DropdownMenuRadioGroup :value="project.title" v-model="activeLabel">
               <DropdownMenuRadioItem
                 v-for="label in labels"
                 :key="label.value"
@@ -113,37 +106,37 @@ function handleActionToggleFavorite() {
         <AlertDialogDescription>
           <p>
             You are about to delete the
-            <strong class="text-slate-900">{{ product.title }}</strong> product. This action cannot
+            <strong class="text-slate-900">{{ project.title }}</strong> project. This action cannot
             be undone.
           </p>
-          <p class="mt-4">To continue, type the name and the workspace for this product below:</p>
+          <p class="mt-4">To continue, type the name and the workspace for this project below:</p>
           <div class="text-slate-900 grid w-full items-center gap-1.5 mt-4">
-            <Label for="delete-product-name"
+            <Label for="delete-project-title"
               >Name:
               <span
                 class="text-slate-600 text-xs bg-muted font-mono px-[0.25em] py-[0.125em] rounded"
-                >{{ product.name }}</span
+                >{{ project.title }}</span
               ></Label
             >
             <Input
-              id="delete-product-name"
+              id="delete-project-title"
               type="text"
-              :placeholder="product.name"
+              :placeholder="project.title"
               v-model="inputDeleteName"
             />
           </div>
           <div class="text-slate-900 grid w-full items-center gap-1.5 mt-4">
-            <Label for="delete-product-workspace"
+            <Label for="delete-project-workspace"
               >Workspace:
               <span
                 class="text-slate-600 text-xs bg-muted font-mono px-[0.25em] py-[0.1875em] rounded"
-                >{{ product.workspace }}</span
+                >{{ project.workspace }}</span
               ></Label
             >
             <Input
-              id="delete-product-workspace"
+              id="delete-project-workspace"
               type="text"
-              :placeholder="product.workspace"
+              :placeholder="project.workspace"
               v-model="inputDeleteWorkspace"
             />
           </div>
@@ -153,7 +146,9 @@ function handleActionToggleFavorite() {
         <AlertDialogCancel>Cancel</AlertDialogCancel>
         <AlertDialogAction
           class="bg-rose-600 hover:bg-rose-700"
-          :disabled="inputDeleteName !== product.name || inputDeleteWorkspace !== product.workspace"
+          :disabled="
+            inputDeleteName !== project.title || inputDeleteWorkspace !== project.workspace
+          "
           >Delete</AlertDialogAction
         >
       </AlertDialogFooter>

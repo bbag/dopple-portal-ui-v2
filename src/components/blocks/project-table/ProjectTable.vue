@@ -18,8 +18,8 @@ import {
 
 import { ref } from 'vue'
 
-import ProductTablePagination from './ProductTablePagination.vue'
-import ProductTableToolbar from './ProductTableToolbar.vue'
+import ProjectTablePagination from './ProjectTablePagination.vue'
+import ProjectTableToolbar from './ProjectTableToolbar.vue'
 import { valueUpdater } from '@/lib/utils'
 import { HoverCard } from '@/components/ui/hover-card'
 import {
@@ -31,14 +31,14 @@ import {
   TableRow
 } from '@/components/ui/table'
 
-import { type IProduct } from '@/stores/products'
+import { type IProject } from '@/stores/projects'
 
-interface ProductTableProps {
-  columns: ColumnDef<IProduct, any>[]
-  data: IProduct[]
+interface ProjectTableProps {
+  columns: ColumnDef<IProject, any>[]
+  data: IProject[]
 }
 
-const props = defineProps<ProductTableProps>()
+const props = defineProps<ProjectTableProps>()
 
 const sorting = ref<SortingState>([
   {
@@ -91,7 +91,7 @@ const table = useVueTable({
 
 <template>
   <div class="space-y-4">
-    <ProductTableToolbar :table="table" />
+    <ProjectTableToolbar :table="table" />
     <div class="rounded-md border bg-background">
       <Table>
         <TableHeader>
@@ -115,7 +115,7 @@ const table = useVueTable({
               <TableCell
                 v-for="cell in row.getVisibleCells()"
                 :key="cell.id"
-                class="[&:first-child]:w-8 [&:first-child]:pr-0 [&:nth-child(2)]:w-12 [&:nth-child(2)]:pr-0"
+                class="[&:first-child]:w-full py-2"
               >
                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
@@ -127,6 +127,6 @@ const table = useVueTable({
         </TableBody>
       </Table>
     </div>
-    <ProductTablePagination :table="table" />
+    <ProjectTablePagination :table="table" />
   </div>
 </template>
