@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Sheet,
   SheetClose,
@@ -119,7 +119,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
               <IconDots class="w-4 h-4 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end">
             <template v-if="node.type === 'folder'">
               <DropdownMenuItem>
                 <IconFolderPlus class="w-4 h-4 mr-2" />
@@ -148,45 +148,52 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
             </template>
           </DropdownMenuContent>
         </DropdownMenu>
-        <SheetContent class="max-w-sm md:max-w-[32rem]">
+        <SheetContent class="flex flex-col max-w-sm md:max-w-[32rem]">
           <SheetHeader>
             <SheetTitle>File Info</SheetTitle>
           </SheetHeader>
-          <div class="grid gap-4 py-4">
-            <table class="text-sm">
-              <tbody>
-                <tr class="border-b border-t">
-                  <td class="pr-4 py-2 font-medium">Filename:</td>
-                  <td class="py-2 w-full">{{ node.title }}</td>
-                </tr>
-                <tr class="border-b">
-                  <td class="pr-4 py-2 font-medium">Type:</td>
-                  <td class="py-2 w-full">{{ fileType(node.type) }}</td>
-                </tr>
-                <tr class="border-b">
-                  <td class="pr-4 py-2 font-medium whitespace-nowrap">Date Created:</td>
-                  <td class="py-2 w-full">{{ dateFormatter.format(node.dateCreated) }}</td>
-                </tr>
-                <template v-if="node.type === '.png'">
-                  <tr class="border-b">
-                    <td class="pr-4 py-2 font-medium">Width:</td>
-                    <td class="py-2 w-full">2048 px</td>
+          <ScrollArea class="flex-1">
+            <div class="grid gap-4 pb-4">
+              <table class="text-sm">
+                <tbody>
+                  <tr class="border-b border-t">
+                    <td class="pr-4 py-2 font-medium">Filename:</td>
+                    <td class="py-2 w-full">{{ node.title }}</td>
                   </tr>
                   <tr class="border-b">
-                    <td class="pr-4 py-2 font-medium">Height:</td>
-                    <td class="py-2 w-full">2048 px</td>
+                    <td class="pr-4 py-2 font-medium">Type:</td>
+                    <td class="py-2 w-full">{{ fileType(node.type) }}</td>
                   </tr>
-                </template>
-              </tbody>
-            </table>
-            <div v-if="node.type === '.png'">
-              Preview:
-              <div class="border rounded aspect-square mt-2 placeholder-image"></div>
+                  <template v-if="node.type === '.png'">
+                    <tr class="border-b">
+                      <td class="pr-4 py-2 font-medium">Width:</td>
+                      <td class="py-2 w-full">2048 px</td>
+                    </tr>
+                    <tr class="border-b">
+                      <td class="pr-4 py-2 font-medium">Height:</td>
+                      <td class="py-2 w-full">2048 px</td>
+                    </tr>
+                  </template>
+                  <tr class="border-b">
+                    <td class="pr-4 py-2 font-medium whitespace-nowrap">Date Created:</td>
+                    <td class="py-2 w-full">{{ dateFormatter.format(node.dateCreated) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-if="node.type === '.png'">
+                Preview:
+                <div
+                  class="border rounded aspect-square mt-2 placeholder-image flex items-center justify-center"
+                >
+                  (Preview image will be here...)
+                </div>
+              </div>
             </div>
-          </div>
-          <SheetFooter>
+          </ScrollArea>
+          <SheetFooter class="gap-4 sm:justify-between">
+            <Button variant="destructive" size="sm"> Delete File </Button>
             <SheetClose as-child>
-              <Button @click="isSheetOpen = false" variant="outline"> Close </Button>
+              <Button @click="isSheetOpen = false" variant="outline" size="sm"> Close </Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>
