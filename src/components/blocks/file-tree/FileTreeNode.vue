@@ -183,7 +183,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
               <div v-if="node.type === '.png'">
                 Preview:
                 <div
-                  class="border rounded aspect-square mt-2 placeholder-image flex items-center justify-center"
+                  class="border rounded aspect-square mt-2 placeholder-image flex items-center justify-center text-slate-900"
                 >
                   (Preview image will be here...)
                 </div>
