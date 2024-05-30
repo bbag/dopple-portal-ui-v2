@@ -21,6 +21,10 @@ const tabs = [
       <TabsContent value="hotspots"> Hotspots menu will go here. </TabsContent>
       <TabsContent value="assets"> Assets explorer will go here. </TabsContent>
       <TabsContent value="history"> History menu will gohere. </TabsContent>
+      <div class="mt-4 p-4 rounded-lg border border-yellow-500 bg-yellow-50 text-yellow-800">
+        This whole UI is a placeholder, and the <em>entire thing</em> can be customized to match the
+        current prototype according to however the PS and Engineering teams need. :)
+      </div>
     </Tabs>
   </div>
 </template>
