@@ -31,6 +31,7 @@ import {
   IconArrowsVertical,
   IconCamera,
   IconCameraPlus,
+  IconCapture,
   IconCopy,
   IconDeviceFloppy,
   IconEye,
@@ -247,6 +248,20 @@ function handleAddCustomCamera() {
                 <TooltipTrigger as-child>
                   <Button
                     class="ml-auto text-muted-foreground hover:text-base"
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    <IconCapture class="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Set to current view</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    class="ml-2 text-muted-foreground hover:text-base"
                     size="icon-xs"
                     variant="ghost"
                   >
