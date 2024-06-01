@@ -29,9 +29,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import {
   IconArrowsHorizontal,
   IconArrowsVertical,
-  IconDeviceFloppy,
   IconCamera,
-  IconCopy
+  IconCameraPlus,
+  IconCopy,
+  IconDeviceFloppy,
+  IconEye,
+  IconPencil,
+  IconTrash
 } from '@tabler/icons-vue'
 
 const product = useProductsStore().products.find(
@@ -85,6 +89,15 @@ const scale = ref('1080p')
 const scalesList = ['4K (2160p)', '2K (1440p)', '1080p', '720p', '480p', '360p', 'Custom']
 const customScaleWidth = ref('1920')
 const customScaleHeight = ref('1080')
+
+const customCameras = ref<{ name: string; id: string; isEditing: boolean }[]>([
+  { name: 'Top-down angle', id: '66b94c3adc', isEditing: false },
+  { name: 'Front view (zoomed in)', id: 'bbe24f3918', isEditing: false }
+])
+
+function handleAddCustomCamera() {
+  customCameras.value.push({ name: 'New camera', id: crypto.randomUUID(), isEditing: true })
+}
 </script>
 
 <template>
@@ -103,13 +116,8 @@ const customScaleHeight = ref('1080')
       <TooltipProvider>
         <div>
           <h1 class="text-2xl font-bold mb-2">Virtual Studio</h1>
-          <p class="text-slate-500 text-sm mb-4">
+          <p class="text-muted-foreground text-sm mb-4">
             This UI will change <em>drastically</em> soon... this is just a placeholder for now.
-          </p>
-          <p>
-            <span class="font-mono bg-slate-500/10 px-2 py-1 rounded ml-1 text-foreground/80">
-              Product: {{ product?.name }}
-            </span>
           </p>
         </div>
         <Separator />
@@ -164,26 +172,126 @@ const customScaleHeight = ref('1080')
         </div>
         <div>
           <h2 class="text-lg font-bold">Camera Views</h2>
-          <ul class="grid gap-4 pt-4">
-            <li class="flex items-center border-b pb-4">
+          <p class="text-muted-foreground text-sm"></p>
+          <ul class="grid pt-4">
+            <li class="flex items-center border-b pb-4 h-8">
               <Checkbox id="select-all-cameras" />
               <label
                 for="select-all-cameras"
-                class="text-sm font-medium leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Select all cameras
               </label>
             </li>
-            <li v-for="camera in product?.cameras" :key="camera.id" class="flex items-center">
+            <Label class="mt-4 mb-2">Existing cameras in product:</Label>
+            <li
+              v-for="camera in product?.cameras"
+              :key="camera.id"
+              class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
+            >
               <Checkbox :id="`camera-${camera.id}`" />
               <label
                 :for="`camera-${camera.id}`"
-                class="text-sm font-medium leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 {{ camera.name }}
               </label>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    class="ml-auto text-muted-foreground hover:text-base"
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    <IconEye class="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View</p>
+                </TooltipContent>
+              </Tooltip>
+            </li>
+            <Label class="mt-4 mb-2">Custom cameras for Virtual Studio:</Label>
+            <li
+              v-for="camera in customCameras"
+              :key="camera.id"
+              class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
+            >
+              <Checkbox :id="`camera-${camera.id}`" />
+              <label
+                v-if="!camera.isEditing"
+                :for="`camera-${camera.id}`"
+                class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {{ camera.name }}
+              </label>
+              <div v-else class="relative">
+                <Input class="h-7 px-1 mx-1" v-model="camera.name" />
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      class="absolute top-1/2 right-0 -translate-y-1/2 text-muted-foreground hover:text-base"
+                      @click="camera.isEditing = false"
+                    >
+                      <IconDeviceFloppy class="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    class="ml-auto text-muted-foreground hover:text-base"
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    <IconEye class="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    class="ml-2 text-muted-foreground hover:text-base"
+                    size="icon-xs"
+                    variant="ghost"
+                    @click="camera.isEditing = true"
+                  >
+                    <IconPencil class="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    class="ml-2 text-muted-foreground hover:text-base"
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    <IconTrash class="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete</p>
+                </TooltipContent>
+              </Tooltip>
             </li>
           </ul>
+          <Button class="mt-4" size="sm" variant="outline" @click="handleAddCustomCamera">
+            <IconCameraPlus class="w-5 h-5 mr-2" />
+            New custom camera
+          </Button>
         </div>
         <div>
           <h2 class="text-lg font-bold">Environments</h2>
@@ -261,11 +369,11 @@ const customScaleHeight = ref('1080')
           <table class="my-2">
             <tbody>
               <tr>
-                <td class="pr-4 py-1">Format:</td>
+                <td class="pr-4 py-1">File format:</td>
                 <td class="py-1 w-full h-12">PNG</td>
               </tr>
               <tr>
-                <td class="pr-4 py-1">Filename:</td>
+                <td class="pr-4 py-1 whitespace-nowrap">Filename prefix:</td>
                 <td class="py-1 w-full">
                   <Input v-model="filenamePrefix" />
                 </td>

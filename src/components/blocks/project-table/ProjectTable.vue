@@ -122,7 +122,9 @@ const table = useVueTable({
             </TableRow>
           </template>
           <TableRow v-else>
-            <TableCell :colspan="columns.length" class="h-24 text-center"> No results. </TableCell>
+            <TableCell :colspan="columns.length" class="h-24 text-center">
+              No projects yet! Click “New Project” at the top to create one.
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
