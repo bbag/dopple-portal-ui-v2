@@ -6,7 +6,7 @@ import { useProjectsStore } from '@/stores/projects'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
-import { IconFileUpload } from '@tabler/icons-vue'
+import { IconFileUpload, IconFolderPlus } from '@tabler/icons-vue'
 import FileTree from '@/components/blocks/file-tree/FileTree.vue'
 
 const project = useProjectsStore().projects.find((p) => p.slug === useRoute().params.project)
@@ -24,6 +24,10 @@ const project = useProjectsStore().projects.find((p) => p.slug === useRoute().pa
       </h1>
       <Card class="p-4">
         <FileTree :nodes="project?.assets" />
+        <Button variant="outline" size="sm" class="mt-4">
+          <IconFolderPlus class="w-5 h-5 mr-2 text-muted-foreground" />
+          New folder
+        </Button>
       </Card>
     </div>
   </div>

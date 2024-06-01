@@ -31,6 +31,7 @@ import {
   IconFolderOpen,
   IconFolderPlus,
   IconHdr,
+  IconPencil,
   IconPhoto,
   IconTrash,
   IconUpload
@@ -122,14 +123,18 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
           <DropdownMenuContent align="end">
             <template v-if="node.type === 'folder'">
               <DropdownMenuItem>
-                <IconFolderPlus class="w-4 h-4 mr-2" />
-                New Folder
-              </DropdownMenuItem>
-              <DropdownMenuItem>
                 <IconUpload class="w-4 h-4 mr-2" />
                 Upload Files
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <IconPencil class="w-4 h-4 mr-2" />
+                Rename
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <IconFolderPlus class="w-4 h-4 mr-2" />
+                New Folder
+              </DropdownMenuItem>
               <DropdownMenuItem class="text-red-600">
                 <IconTrash class="w-4 h-4 mr-2" />
                 Delete Folder

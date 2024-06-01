@@ -1,50 +1,87 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+
+import { IconSearch } from '@tabler/icons-vue'
+
+const search = ref('')
 
 const workspace = useRoute().params.workspace
-// const product = useRoute().params.name
-const products = useProductsStore().products.filter((p) => p.workspace === workspace)
+const products = computed(() =>
+  useProductsStore()
+    .products.filter(
+      (p) =>
+        p.workspace === workspace &&
+        p.title.toLocaleLowerCase().includes(search.value.toLowerCase())
+    )
+    .sort((a, b) => a.title.localeCompare(b.title))
+)
 </script>
 
 <template>
-  <div class="p-8 max-w-[104rem] mx-auto">
+  <div class="p-8 max-w-3xl mx-auto">
     <header class="flex justify-between gap-4 mb-8">
       <h1 class="text-3xl font-bold">Virtual Studio</h1>
     </header>
     <Card>
       <CardHeader>
-        <CardTitle>Products</CardTitle>
         <CardDescription>
-          <div class="w-max text-xs text-rose-600 bg-rose-600/10 px-3 py-2 mt-1 rounded">
-            <em>THIS IS JUST A PLACEHOLDER SCREEN — IT'S STILL A WORK-IN-PROGRESS!</em>
-          </div>
+          <p>
+            Virtual Studio lets you put together a digital photoshoot of your products, with any
+            combination of configurations, camera angles, and environments you like.
+          </p>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul class="space-y-0">
-          <li v-for="product in products" :key="product.id">
-            <RouterLink
-              :to="`/w/${workspace}/studio/${product.name}`"
-              :class="buttonVariants({ variant: 'link', size: 'sm' })"
-            >
-              {{ product.title }}
-            </RouterLink>
-          </li>
-        </ul>
+        <p class="mb-2 font-semibold">Choose a product to get started:</p>
+        <div class="relative mb-2">
+          <Input v-model="search" placeholder="Search by title..." class="w-full pl-10" />
+          <IconSearch
+            class="w-5 h-5 pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+          />
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead class="w-full"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="product in products" :key="product.id">
+              <TableCell class="font-medium py-2 whitespace-nowrap">
+                <RouterLink :to="`/w/${workspace}/studio/${product.name}`">
+                  {{ product.title }}
+                </RouterLink>
+              </TableCell>
+              <TableCell class="py-2">{{ product.name }}</TableCell>
+              <TableCell class="text-right py-2">
+                <RouterLink
+                  :to="`/w/${workspace}/studio/${product.name}`"
+                  :class="buttonVariants({ variant: 'outline', size: 'xs' })"
+                >
+                  Open
+                </RouterLink>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   </div>
