@@ -3,14 +3,12 @@ import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -55,6 +53,7 @@ const products = computed(() =>
             class="w-5 h-5 pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
           />
         </div>
+
         <Table>
           <TableHeader>
             <TableRow>
