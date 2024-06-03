@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 // Workspace
@@ -25,7 +25,7 @@ const recentProducts = products.value
   .sort((a, b) => b.dateModified.getTime() - a.dateModified.getTime())
   .slice(0, productsDisplayCount)
 
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -34,6 +34,17 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
@@ -50,11 +61,13 @@ import {
   IconFolders,
   IconChartDots,
   IconCircleCheck,
+  IconSettings,
   IconSlideshow
 } from '@tabler/icons-vue'
 import IconGltfEditor from '@/assets/icons/gltf-editor.svg'
 import IconShoppingBag from '@/assets/icons/shopping-bag.svg'
 import IconUiBuilder from '@/assets/icons/ui-builder.svg'
+import { useWorkspacesStore } from '@/stores/workspaces'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -86,16 +99,48 @@ const toolsTable = [
     description: 'Design configurator UIs for your products.'
   }
 ]
+
+const workspaceNameField = ref('')
+
+onMounted(() => {
+  workspaceNameField.value = useWorkspacesStore().currentWorkspace || ''
+})
 </script>
 
 <template>
   <div class="p-8 max-w-[104rem] mx-auto">
-    <h1 class="text-3xl font-bold mb-8">
-      Workspace:
-      <span class="font-mono bg-slate-500/10 px-3 py-1 rounded-lg ml-1 text-foreground/80">
-        {{ workspace }}
-      </span>
-    </h1>
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">
+        Workspace:
+        <span class="font-mono bg-slate-500/10 px-3 py-1 rounded-lg ml-1 text-foreground/80">
+          {{ workspace }}
+        </span>
+      </h1>
+      <Dialog>
+        <DialogTrigger as-child>
+          <Button variant="ghost" size="icon-sm">
+            <IconSettings class="w-6 h-6 text-muted-foreground" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent class="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit workspace</DialogTitle>
+            <DialogDescription>
+              Make changes to your workspace here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div class="grid gap-4 py-4">
+            <Label for="name"> Name </Label>
+            <Input id="name" v-model="workspaceNameField" />
+          </div>
+          <DialogFooter>
+            <Button variant="destructive" class="mr-auto"> Delete workspace </Button>
+            <Button variant="ghost"> Cancel </Button>
+            <Button type="submit"> Save changes </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
     <div
       class="grid gap-4 auto-rows-auto grid-cols-1 xl:grid-cols-2 2xl:grid-cols-[minmax(0,3fr),minmax(0,2fr)] grid-flow-row-dense"
     >
@@ -112,7 +157,7 @@ const toolsTable = [
             <TableHeader>
               <TableRow>
                 <TableHead class="w-full">Name</TableHead>
-                <TableHead>Last Modified</TableHead>
+                <TableHead class="whitespace-nowrap">Last Modified</TableHead>
                 <TableHead>Published</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -153,7 +198,7 @@ const toolsTable = [
           </Table>
           <p
             v-if="projects.length > projectsDisplayCount"
-            class="text-sm text-slate-500 italic pt-2 px-4 border-t border-slate-200"
+            class="text-sm text-slate-500 italic pt-2 px-4 border-t"
           >
             + {{ projects.length - projectsDisplayCount }} more
           </p>
@@ -181,7 +226,7 @@ const toolsTable = [
               <TableRow>
                 <TableHead class="whitespace-nowrap h-10">Product Title</TableHead>
                 <TableHead class="w-full h-10">Name</TableHead>
-                <TableHead class="h-10"></TableHead>
+                <TableHead class="h-10">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -190,7 +235,7 @@ const toolsTable = [
                   {{ product.title }}
                 </TableCell>
                 <TableCell class="font-mono w-full py-2">{{ product.name }}</TableCell>
-                <TableCell class="py-2">
+                <TableCell class="py-2 text-center">
                   <RouterLink
                     :to="`/w/${product.workspace}/products/${product.name}`"
                     :class="buttonVariants({ variant: 'outline', size: 'xs' })"
@@ -203,7 +248,7 @@ const toolsTable = [
           </Table>
           <p
             v-if="products.length > productsDisplayCount"
-            class="text-sm text-slate-500 italic pt-2 px-4 border-t border-slate-200"
+            class="text-sm text-slate-500 italic pt-2 px-4 border-t"
           >
             + {{ products.length - productsDisplayCount }} more
           </p>
