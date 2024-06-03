@@ -5,6 +5,16 @@ import { RouterLink, useRoute } from 'vue-router'
 // Workspace
 const workspace = useRoute().params.workspace
 
+// Projects
+import { useProjectsStore } from '@/stores/projects'
+const projects = computed(() =>
+  useProjectsStore().projects.filter((project) => project.workspace === workspace)
+)
+const projectsDisplayCount = 7
+const recentProjects = projects.value
+  .sort((a, b) => b.dateModified.getTime() - a.dateModified.getTime())
+  .slice(0, projectsDisplayCount)
+
 // Products
 import { useProductsStore } from '@/stores/products'
 const products = computed(() =>
@@ -15,28 +25,7 @@ const recentProducts = products.value
   .sort((a, b) => b.dateModified.getTime() - a.dateModified.getTime())
   .slice(0, productsDisplayCount)
 
-// Models
-import { useModelsStore } from '@/stores/models'
-const models = computed(() =>
-  useModelsStore().models.filter((model) => model.workspace === workspace)
-)
-const modelsDisplayCount = 3
-const recentModels = models.value
-  .sort((a, b) => b.dateModified.getTime() - a.dateModified.getTime())
-  .slice(0, modelsDisplayCount)
-
-// Materials
-import { useMaterialsStore } from '@/stores/materials'
-const materials = computed(() =>
-  useMaterialsStore().materials.filter((material) => material.workspace === workspace)
-)
-
-// Textures
-import { useTexturesStore } from '@/stores/textures'
-const textures = computed(() =>
-  useTexturesStore().textures.filter((texture) => texture.workspace === workspace)
-)
-
+import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -57,35 +46,30 @@ import {
 
 import DummyAnalytics from '@/components/blocks/dummy-analytics/DummyAnalytics.vue'
 
-import { IconArrowNarrowRight, IconBox, IconChartDots, IconSlideshow } from '@tabler/icons-vue'
+import {
+  IconArrowNarrowRight,
+  IconBox,
+  IconChartDots,
+  IconCircleCheck,
+  IconSlideshow
+} from '@tabler/icons-vue'
 import IconGltfEditor from '@/assets/icons/gltf-editor.svg'
 import IconMaterial from '@/assets/icons/material.svg'
 import IconShoppingBag from '@/assets/icons/shopping-bag.svg'
 import IconTexture from '@/assets/icons/texture.svg'
 import IconUiBuilder from '@/assets/icons/ui-builder.svg'
 
-const assetsTable = computed(() => [
-  {
-    icon: IconBox,
-    title: 'Models',
-    count: models.value.length,
-    href: `/w/${workspace}/models`
-  },
-  {
-    icon: IconMaterial,
-    title: 'Materials',
-    count: materials.value.length,
-    href: `/w/${workspace}/materials`
-  },
-  {
-    icon: IconTexture,
-    title: 'Textures',
-    count: textures.value.length,
-    href: `/w/${workspace}/textures`
-  }
-])
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  hour12: true
+})
 
-const toolsTable = computed(() => [
+const toolsTable = [
   {
     icon: IconGltfEditor,
     title: 'glTF Editor',
@@ -104,7 +88,7 @@ const toolsTable = computed(() => [
     href: `/w/${workspace}/ui-builder`,
     description: 'Design configurator UIs for your products.'
   }
-])
+]
 </script>
 
 <template>
@@ -121,25 +105,95 @@ const toolsTable = computed(() => [
       <Card class="flex flex-col col-span-1 xl:row-span-2 xl:col-span-2 2xl:col-span-1">
         <CardHeader>
           <CardTitle class="relative pr-8">
-            Products
-            <IconShoppingBag class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
+            Projects
+            <IconBox class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
           </CardTitle>
-          <CardDescription>{{ products.length }} total</CardDescription>
+          <CardDescription>{{ projects.length }} total</CardDescription>
         </CardHeader>
         <CardContent class="flex-grow">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead class="whitespace-nowrap">Product Title</TableHead>
                 <TableHead class="w-full">Name</TableHead>
-                <TableHead></TableHead>
+                <TableHead>Last Modified</TableHead>
+                <TableHead>Published</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="row in recentProjects" :key="row.title">
+                <TableCell class="py-2 whitespace-nowrap font-medium">
+                  <RouterLink :to="`/w/${workspace}/projects/${row.slug}`">
+                    {{ row.title }}
+                  </RouterLink>
+                </TableCell>
+                <TableCell class="py-2 whitespace-nowrap">
+                  {{ dateFormatter.format(row.dateModified) }}
+                </TableCell>
+                <TableCell class="py-2">
+                  <IconCircleCheck
+                    v-if="row.publishedProjectId"
+                    class="w-5 h-5 mx-auto text-green-500 dark:text-green-400"
+                  />
+                </TableCell>
+                <TableCell class="py-2 flex items-center justify-end gap-2">
+                  <RouterLink
+                    :to="`/w/${workspace}/projects/${row.slug}`"
+                    :class="buttonVariants({ variant: 'outline', size: 'sm' })"
+                  >
+                    View
+                  </RouterLink>
+                  <RouterLink
+                    :to="`/w/${workspace}/editor`"
+                    :class="buttonVariants({ variant: 'outline', size: 'sm' })"
+                  >
+                    <IconGltfEditor class="w-5 h-5 mr-2" />
+                    Open in Editor
+                  </RouterLink>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <p
+            v-if="projects.length > projectsDisplayCount"
+            class="text-sm text-slate-500 italic pt-2 px-4 border-t border-slate-200"
+          >
+            + {{ projects.length - projectsDisplayCount }} more
+          </p>
+        </CardContent>
+        <CardFooter class="justify-end">
+          <RouterLink
+            :to="`/w/${$route.params.workspace}/projects`"
+            :class="buttonVariants({ variant: 'default' })"
+          >
+            View All Projects
+            <IconArrowNarrowRight class="w-6 h-6 ml-2" />
+          </RouterLink>
+        </CardFooter>
+      </Card>
+      <Card class="flex flex-col col-span-1 row-span-1">
+        <CardHeader>
+          <CardTitle class="relative pr-8">
+            Products
+            <IconShoppingBag class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="flex-grow">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead class="whitespace-nowrap h-10">Product Title</TableHead>
+                <TableHead class="w-full h-10">Name</TableHead>
+                <TableHead class="h-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow v-for="product in recentProducts" :key="product.name">
-                <TableCell class="whitespace-nowrap font-medium">{{ product.title }}</TableCell>
-                <TableCell class="font-mono w-full">{{ product.name }}</TableCell>
-                <TableCell>
+                <TableCell class="whitespace-nowrap font-medium py-2">
+                  {{ product.title }}
+                </TableCell>
+                <TableCell class="font-mono w-full py-2">{{ product.name }}</TableCell>
+                <TableCell class="py-2">
                   <RouterLink
                     :to="`/w/${product.workspace}/products/${product.name}`"
                     :class="buttonVariants({ variant: 'outline', size: 'xs' })"
@@ -166,39 +220,6 @@ const toolsTable = computed(() => [
             <IconArrowNarrowRight class="w-6 h-6 ml-2" />
           </RouterLink>
         </CardFooter>
-      </Card>
-      <Card class="flex flex-col col-span-1 row-span-1">
-        <CardHeader>
-          <CardTitle class="relative pr-8">
-            Assets
-            <IconBox class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent class="flex-grow">
-          <Table>
-            <TableBody>
-              <TableRow v-for="row in assetsTable" :key="row.title">
-                <TableCell class="py-2 pr-0">
-                  <component :is="row.icon" class="inline w-5 h-5 text-muted-foreground" />
-                </TableCell>
-                <TableCell class="py-2 p-2 whitespace-nowrap font-medium">
-                  {{ row.title }}
-                </TableCell>
-                <TableCell class="py-2 w-full text-muted-foreground"
-                  >({{ row.count }} total)</TableCell
-                >
-                <TableCell class="py-2">
-                  <RouterLink
-                    :to="row.href"
-                    :class="buttonVariants({ variant: 'default', size: 'sm' })"
-                  >
-                    View All
-                  </RouterLink>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
       </Card>
       <Card class="flex flex-col col-span-1 row-span-1">
         <CardHeader>
