@@ -167,12 +167,12 @@ const router = createRouter({
               path: '',
               name: 'glTF Editor Home',
               component: () => import('@/views/tools/GltfEditorRootView.vue')
-            },
-            {
-              path: ':shortId',
-              name: 'Model (glTF Editor)',
-              component: () => import('@/views/tools/GltfEditorModelView.vue')
             }
+            // {
+            //   path: ':shortId',
+            //   name: 'Model (glTF Editor)',
+            //   component: () => import('@/views/tools/GltfEditorModelView.vue')
+            // }
           ]
         },
         {

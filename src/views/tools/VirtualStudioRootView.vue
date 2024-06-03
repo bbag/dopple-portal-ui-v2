@@ -70,7 +70,7 @@ const products = computed(() =>
                   {{ product.title }}
                 </RouterLink>
               </TableCell>
-              <TableCell class="py-2">{{ product.name }}</TableCell>
+              <TableCell class="py-2 font-mono">{{ product.name }}</TableCell>
               <TableCell class="text-right py-2">
                 <RouterLink
                   :to="`/w/${workspace}/studio/${product.name}`"

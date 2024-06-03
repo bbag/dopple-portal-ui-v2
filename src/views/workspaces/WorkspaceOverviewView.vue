@@ -25,7 +25,6 @@ const recentProducts = products.value
   .sort((a, b) => b.dateModified.getTime() - a.dateModified.getTime())
   .slice(0, productsDisplayCount)
 
-import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -48,15 +47,13 @@ import DummyAnalytics from '@/components/blocks/dummy-analytics/DummyAnalytics.v
 
 import {
   IconArrowNarrowRight,
-  IconBox,
+  IconFolders,
   IconChartDots,
   IconCircleCheck,
   IconSlideshow
 } from '@tabler/icons-vue'
 import IconGltfEditor from '@/assets/icons/gltf-editor.svg'
-import IconMaterial from '@/assets/icons/material.svg'
 import IconShoppingBag from '@/assets/icons/shopping-bag.svg'
-import IconTexture from '@/assets/icons/texture.svg'
 import IconUiBuilder from '@/assets/icons/ui-builder.svg'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -106,7 +103,7 @@ const toolsTable = [
         <CardHeader>
           <CardTitle class="relative pr-8">
             Projects
-            <IconBox class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
+            <IconFolders class="w-5 h-5 absolute right-0 top-0 text-muted-foreground" />
           </CardTitle>
           <CardDescription>{{ projects.length }} total</CardDescription>
         </CardHeader>
@@ -147,7 +144,7 @@ const toolsTable = [
                     :to="`/w/${workspace}/editor`"
                     :class="buttonVariants({ variant: 'outline', size: 'sm' })"
                   >
-                    <IconGltfEditor class="w-5 h-5 mr-2" />
+                    <IconGltfEditor class="w-5 h-5 mr-2 text-muted-foreground" />
                     Open in Editor
                   </RouterLink>
                 </TableCell>
