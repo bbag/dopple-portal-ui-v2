@@ -29,9 +29,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import {
+  IconAlertTriangle,
   IconArrowsHorizontal,
   IconArrowsVertical,
   IconCamera,
@@ -48,38 +59,12 @@ import {
   IconTrash,
   IconVideo
 } from '@tabler/icons-vue'
+import { custom } from 'zod'
 
 const product = useProductsStore().products.find(
   (product) => product.name === useRoute().params.name
 )
 const thumbnail = product?.thumbnail
-
-const aspectRatio = ref('16:9')
-const aspectRatiosList = [
-  { label: '1:1', w: '1', h: '1' },
-  { label: '3:4', w: '3', h: '4' },
-  { label: '4:3', w: '4', h: '3' },
-  { label: '16:9', w: '16', h: '9' },
-  { label: '16:10', w: '16', h: '10' },
-  { label: 'Custom', w: '1', h: '1' }
-]
-
-const customAspectRatio = ref({
-  w: '1',
-  h: '1'
-})
-
-const aspectRatioValues = computed(() => {
-  if (aspectRatio.value === 'Custom') {
-    return {
-      w: customAspectRatio.value.w || '1',
-      h: customAspectRatio.value.h || '1'
-    }
-  } else {
-    const option = aspectRatiosList.find((a) => a.label === aspectRatio.value)
-    return option ? { w: option.w, h: option.h } : { w: '1', h: '1' }
-  }
-})
 
 const environment = ref('default')
 const environmentsList = [
@@ -99,10 +84,67 @@ const fileFormat = ref('PNG')
 
 const filenamePrefix = ref('snapshot-')
 
-const scale = ref('1080p')
-const scalesList = ['4K (2160p)', '2K (1440p)', '1080p', '720p', '480p', '360p', 'Custom']
-const customScaleWidth = ref('1920')
-const customScaleHeight = ref('1080')
+const aspectRatio = ref('16:9')
+const aspectRatiosList = [
+  { label: '1:1', w: 1, h: 1 },
+  { label: '3:4', w: 3, h: 4 },
+  { label: '4:3', w: 4, h: 3 },
+  { label: '16:9', w: 16, h: 9 },
+  { label: '16:10', w: 16, h: 10 },
+  { label: 'Custom', w: 1, h: 1 }
+]
+
+const customAspectRatio = ref({
+  w: 1,
+  h: 1
+})
+
+const aspectRatioValues = computed(() => {
+  if (aspectRatio.value === 'Custom') {
+    return {
+      w: customAspectRatio.value.w || '1',
+      h: customAspectRatio.value.h || '1'
+    }
+  } else {
+    const option = aspectRatiosList.find((a) => a.label === aspectRatio.value)
+    return option ? { w: option.w, h: option.h } : { w: '1', h: '1' }
+  }
+})
+
+const resolution = ref('1080p')
+const resolutionsList = [
+  { label: '4K (2160p)', h: 2160 },
+  { label: '2K (1440p)', h: 1440 },
+  { label: '1080p', h: 1080 },
+  { label: '720p', h: 720 },
+  { label: '480p', h: 480 },
+  { label: '360p', h: 360 },
+  { label: 'Custom', h: 0 }
+]
+const customResolution = ref({
+  w: 1920,
+  h: 1080
+})
+
+/** Returns a resolution string (e.g. '1920x1080') based on the selected aspect ratio and resolution */
+const resolutionOutput = computed(() => {
+  let w = 0
+  let h = 0
+  if (resolution.value !== 'Custom') {
+    const res = resolutionsList.find((item) => item.label === resolution.value)
+    if (aspectRatio.value === 'Custom') {
+      w = res ? Math.round(res.h * (customAspectRatio.value.w / customAspectRatio.value.h)) : 0
+      h = res ? res.h : 0
+    } else {
+      const ar = aspectRatiosList.find((item) => item.label === aspectRatio.value)
+      if (ar?.w && res?.h) {
+        w = Math.round((ar.w * res.h) / ar.h) || 0
+        h = res?.h || 0
+      }
+    }
+  }
+  return `${w}x${h}`
+})
 
 const customCameras = ref<{ name: string; id: string; isEditing: boolean }[]>([
   { name: 'Top-down angle', id: '66b94c3adc', isEditing: false },
@@ -134,31 +176,34 @@ const configOptions = [
 
 const configurations = ref([
   {
-    name: 'Black/Red Trifork',
-    properties: [
-      { name: 'bodyColor', value: 'Black' },
-      { name: 'frameColor', value: 'Red' },
-      { name: 'wheelType', value: 'Trifork' },
-      { name: 'decal', value: 'Stripes' }
-    ]
+    id: '40fd76f3501e',
+    name: 'Black/Blue Trifork',
+    properties: {
+      bodyColor: 'Black',
+      frameColor: 'Electric Blue',
+      wheelType: 'Trifork',
+      decal: 'Stripes'
+    }
   },
   {
+    id: '690b87767a24',
     name: 'Black/Red Sport',
-    properties: [
-      { name: 'bodyColor', value: 'Black' },
-      { name: 'frameColor', value: 'Red' },
-      { name: 'wheelType', value: 'Trifork' },
-      { name: 'decal', value: 'Stripes' }
-    ]
+    properties: {
+      bodyColor: 'Black',
+      frameColor: 'Red',
+      wheelType: 'Sport',
+      decal: 'Oval'
+    }
   },
   {
-    name: 'Red Devil (Trifork + Red)',
-    properties: [
-      { name: 'bodyColor', value: 'Red' },
-      { name: 'frameColor', value: 'Red' },
-      { name: 'wheelType', value: 'Trifork' },
-      { name: 'decal', value: 'None' }
-    ]
+    id: 'dc618e781ec0',
+    name: '“Red Devil” (Trifork + Red)',
+    properties: {
+      bodyColor: 'Red',
+      frameColor: 'Red',
+      wheelType: 'Trifork',
+      decal: 'None'
+    }
   }
 ])
 </script>
@@ -183,60 +228,20 @@ const configurations = ref([
         </p>
         <div>
           <Accordion class="w-full -mx-1" type="multiple" collapsible>
-            <AccordionItem value="section-settings">
+            <AccordionItem value="section-photoshoots">
               <AccordionTrigger class="px-1 py-3">
                 <span class="inline-flex items-center gap-3 text-lg font-bold">
                   <IconSettings class="w-5 h-5" />
-                  <span class="text-left flex-grow">Settings</span>
+                  <span class="text-left flex-grow">Saved Photoshoots</span>
                 </span>
               </AccordionTrigger>
-              <AccordionContent class="px-1">
-                <div class="flex gap-4 items-center">
-                  <Label class="whitespace-nowrap">Aspect ratio:</Label>
-                  <Select v-model="aspectRatio">
-                    <SelectTrigger class="w-32 tracking-wide">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem
-                          v-for="option in aspectRatiosList"
-                          :key="option.label"
-                          :value="option.label"
-                          class="tracking-wide"
-                        >
-                          {{ option.label }}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <div v-if="aspectRatio === 'Custom'" class="custom-aspect-ratio-input">
-                    <Tooltip>
-                      <TooltipTrigger as-child>
-                        <IconArrowsHorizontal
-                          class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Width</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Input v-model="customAspectRatio.w" type="number" max="4096" min="1" />
-                  </div>
-                  <div v-if="aspectRatio === 'Custom'" class="custom-aspect-ratio-input">
-                    <Tooltip>
-                      <TooltipTrigger as-child>
-                        <IconArrowsVertical
-                          class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Height</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Input v-model="customAspectRatio.h" type="number" max="4096" min="1" />
-                  </div>
-                </div>
+              <AccordionContent class="px-1 space-y-4">
+                <p>
+                  This section will soon let you save photoshoot “presets” for future re-use, such
+                  as having a preset for capturing thumbnails for your ecommerce store, another for
+                  capturing certain angles/configs for social media posts, etc.
+                </p>
+                <p>Stay tuned!</p>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="section-configurations">
@@ -253,12 +258,12 @@ const configurations = ref([
                 <ul class="grid pt-4">
                   <li
                     v-for="configuration in configurations"
-                    :key="configuration.name"
+                    :key="configuration.id"
                     class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
                   >
-                    <Checkbox :id="configuration.name" />
+                    <Checkbox :id="configuration.id" />
                     <label
-                      :for="configuration.name"
+                      :for="configuration.id"
                       class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {{ configuration.name }}
@@ -271,12 +276,71 @@ const configurations = ref([
                             size="icon-xs"
                             variant="ghost"
                           >
-                            <IconPencil class="w-5 h-5" />
+                            <IconEye class="w-5 h-5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Edit</p>
+                          <p>View</p>
                         </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <Sheet>
+                          <SheetTrigger as-child>
+                            <TooltipTrigger as-child>
+                              <Button
+                                class="ml-2 text-muted-foreground hover:text-base"
+                                size="icon-xs"
+                                variant="ghost"
+                              >
+                                <IconPencil class="w-5 h-5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit</p>
+                            </TooltipContent>
+                          </SheetTrigger>
+                          <SheetContent class="sm:max-w-md" hide-overlay>
+                            <SheetHeader>
+                              <SheetTitle>Edit configuration</SheetTitle>
+                              <SheetDescription>
+                                Make changes to your configuration here.
+                              </SheetDescription>
+                            </SheetHeader>
+                            <div class="grid gap-4 py-4">
+                              <div>
+                                <Label>
+                                  Name <span class="text-muted-foreground">(optional)</span>
+                                </Label>
+                                <Input v-model="configuration.name" />
+                              </div>
+                              <div v-for="configOption in configOptions" :key="configOption.name">
+                                <Label class="font-mono mb-1">{{ configOption.name }}</Label>
+                                <Select v-model="configuration.properties[configOption.name]">
+                                  <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Select..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectItem
+                                        v-for="opt in configOption.options"
+                                        :key="opt"
+                                        :value="opt"
+                                        class="tracking-wide"
+                                      >
+                                        {{ opt }}
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <SheetFooter>
+                              <SheetClose as-child>
+                                <Button type="submit"> Save changes </Button>
+                              </SheetClose>
+                            </SheetFooter>
+                          </SheetContent>
+                        </Sheet>
                       </Tooltip>
                     </div>
                   </li>
@@ -563,21 +627,76 @@ const configurations = ref([
                       </td>
                     </tr>
                     <tr>
-                      <td class="pr-4 py-1">Scale:</td>
+                      <td class="pr-4 py-1">Aspect ratio:</td>
                       <td class="py-1 w-full">
-                        <Select v-model="scale">
+                        <div class="flex items-center gap-2">
+                          <Select v-model="aspectRatio">
+                            <SelectTrigger class="w-32 tracking-wide">
+                              <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectItem
+                                  v-for="option in aspectRatiosList"
+                                  :key="option.label"
+                                  :value="option.label"
+                                  class="tracking-wide"
+                                >
+                                  {{ option.label }}
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          <div v-if="aspectRatio === 'Custom'" class="custom-aspect-ratio-input">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <IconArrowsHorizontal
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Width</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Input v-model="customAspectRatio.w" type="number" max="4096" min="1" />
+                          </div>
+                          <div v-if="aspectRatio === 'Custom'" class="custom-aspect-ratio-input">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <IconArrowsVertical
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Height</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Input
+                              v-model.number="customAspectRatio.h"
+                              type="number"
+                              max="4096"
+                              min="1"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="pr-4 py-1">Resolution:</td>
+                      <td class="py-1 w-full">
+                        <Select v-model="resolution">
                           <SelectTrigger class="w-40">
                             <SelectValue placeholder="Select..." />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
                               <SelectItem
-                                v-for="option in scalesList"
-                                :key="option"
-                                :value="option"
+                                v-for="option in resolutionsList"
+                                :key="option.label"
+                                :value="option.label"
                                 class="tracking-wide"
                               >
-                                {{ option }}
+                                {{ option.label }}
                               </SelectItem>
                             </SelectGroup>
                           </SelectContent>
@@ -586,45 +705,59 @@ const configurations = ref([
                     </tr>
                     <tr>
                       <td></td>
-                      <td class="flex gap-2">
-                        <div v-if="scale === 'Custom'" class="relative">
-                          <Tooltip>
-                            <TooltipTrigger as-child>
-                              <IconArrowsHorizontal
-                                class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Width</p>
-                            </TooltipContent>
-                          </Tooltip>
-                          <Input
-                            v-model="customScaleHeight"
-                            type="number"
-                            max="4096"
-                            min="1"
-                            class="w-32 pl-9"
-                          />
+                      <td class="pt-1">
+                        <div class="flex gap-2">
+                          <div v-if="resolution === 'Custom'" class="relative">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <IconArrowsHorizontal
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Width</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Input
+                              v-model.number="customResolution.h"
+                              type="number"
+                              max="4096"
+                              min="1"
+                              class="w-32 pl-9"
+                            />
+                          </div>
+                          <div v-if="resolution === 'Custom'" class="relative">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <IconArrowsVertical
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Height</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Input
+                              v-model.number="customResolution.w"
+                              type="number"
+                              max="4096"
+                              min="1"
+                              class="w-32 pl-9"
+                            />
+                          </div>
                         </div>
-                        <div v-if="scale === 'Custom'" class="relative">
-                          <Tooltip>
-                            <TooltipTrigger as-child>
-                              <IconArrowsVertical
-                                class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Height</p>
-                            </TooltipContent>
-                          </Tooltip>
-                          <Input
-                            v-model="customScaleWidth"
-                            type="number"
-                            max="4096"
-                            min="1"
-                            class="w-32 pl-9"
+                        <div v-if="resolution === 'Custom'" class="mt-2 relative pl-6">
+                          <IconAlertTriangle
+                            class="w-4 h-4 absolute top-0 left-0 text-amber-700 dark:text-amber-300"
                           />
+                          <p class="text-xs text-amber-700 dark:text-amber-300">
+                            Custom resolution values will override the aspect ratio in the output
+                            images.
+                          </p>
                         </div>
+                        <p v-else class="text-xs text-muted-foreground">
+                          Output resolution: {{ resolutionOutput }}
+                        </p>
                       </td>
                     </tr>
                   </tbody>
@@ -635,10 +768,10 @@ const configurations = ref([
         </div>
       </TooltipProvider>
       <div class="flex justify-end gap-4 mt-8">
-        <Button variant="outline">
+        <!-- <Button variant="outline">
           <IconDeviceFloppy class="w-5 h-5 mr-2" />
           Save
-        </Button>
+        </Button> -->
         <Button>
           <IconCamera class="w-5 h-5 mr-2" />
           Capture
