@@ -37,7 +37,8 @@ const actions = [
 </script>
 
 <template>
-  <div class="h-full grid grid-rows-[auto_minmax(0,_1fr)]">
+  <RouterView />
+  <!-- <div class="h-full grid grid-rows-[auto_minmax(0,_1fr)]">
     <div class="bg-background border-b flex items-center px-4 gap-4">
       <ul class="flex items-center">
         <li v-for="{ name, path } in tabs" :key="name">
@@ -59,11 +60,11 @@ const actions = [
       </ul>
     </div>
     <RouterView />
-  </div>
+  </div> -->
 </template>
 
 <style scoped>
-.tab-link {
+/* .tab-link {
   @apply py-3 px-4 block cursor-pointer relative overflow-hidden;
 }
 
@@ -77,5 +78,5 @@ const actions = [
 
 .tab-link.router-link-exact-active::after {
   @apply translate-y-0;
-}
+} */
 </style>

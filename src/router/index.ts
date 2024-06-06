@@ -26,13 +26,18 @@ const router = createRouter({
           component: () => import('@/views/workspaces/WorkspaceOverviewView.vue')
         },
         {
+          path: 'assets',
+          name: 'Assets',
+          component: () => import('@/views/assets/AssetsView.vue')
+        },
+        {
           path: 'products',
           name: 'Products',
           component: () => import('@/views/products/ProductsRootView.vue'),
           children: [
             {
               path: '',
-              name: 'ProductsList',
+              name: 'Products List',
               component: () => import('@/views/products/ProductsListView.vue')
             },
             {
@@ -93,12 +98,12 @@ const router = createRouter({
                   path: '',
                   name: 'Project Overview',
                   component: () => import('@/views/projects/ProjectOverviewView.vue')
-                },
-                {
-                  path: 'assets',
-                  name: 'Assets',
-                  component: () => import('@/views/projects/ProjectAssetsView.vue')
                 }
+                // {
+                //   path: 'assets',
+                //   name: 'Assets',
+                //   component: () => import('@/views/projects/ProjectAssetsView.vue')
+                // }
               ]
             }
           ]

@@ -1,21 +1,17 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 import {
-  IconBox,
   IconChartDots,
   IconExternalLink,
   IconFile3d,
   IconFileCode,
-  IconFiles,
   IconFolders,
-  IconSettings,
-  IconSlideshow,
-  IconUsers,
-  IconWorld
+  IconPackage,
+  IconSlideshow
 } from '@tabler/icons-vue'
 
 import IconGltfEditor from '@/assets/icons/gltf-editor.svg'
-import IconShoppingBagIcon from '@/assets/icons/shopping-bag.svg'
+import IconShoppingBag from '@/assets/icons/shopping-bag.svg'
 import IconUiBuilder from '@/assets/icons/ui-builder.svg'
 import IconWorkspaces from '@/assets/icons/workspaces.svg'
 
@@ -64,13 +60,18 @@ export const routes: IRouteCategory[] = [
       typeof route.params === 'object' && 'workspace' in route.params ? true : false,
     routes: [
       {
+        name: 'Assets',
+        icon: IconPackage,
+        path: 'assets'
+      },
+      {
         name: 'Projects',
         icon: IconFolders,
         path: 'projects'
       },
       {
         name: 'Products',
-        icon: IconShoppingBagIcon,
+        icon: IconShoppingBag,
         path: 'products'
       }
       // {
@@ -91,7 +92,49 @@ export const routes: IRouteCategory[] = [
     ]
   },
   {
-    title: 'Tools & Insights',
+    title: 'Tools',
+    categoryDisplayFn: (route) =>
+      typeof route.params === 'object' && 'workspace' in route.params ? true : false,
+    routes: [
+      {
+        name: 'glTF Editor',
+        icon: IconGltfEditor,
+        path: 'editor'
+      },
+      {
+        name: 'Virtual Studio',
+        icon: IconSlideshow,
+        path: 'studio'
+      },
+      {
+        name: 'UI Builder',
+        icon: IconUiBuilder,
+        path: 'ui-builder'
+      }
+    ]
+  },
+  // {
+  //   title: 'Settings',
+  //   routes: [
+  //     {
+  //       name: 'Domains',
+  //       icon: IconWorld,
+  //       path: '/domains'
+  //     },
+  //     {
+  //       name: 'Team',
+  //       icon: IconUsers,
+  //       path: '/team'
+  //     },
+  //     {
+  //       name: 'Account Settings',
+  //       icon: IconSettings,
+  //       path: '/settings'
+  //     }
+  //   ]
+  // },
+  {
+    title: 'Insights',
     categoryDisplayFn: (route) =>
       typeof route.params === 'object' && 'workspace' in route.params ? true : false,
     routes: [
@@ -130,44 +173,9 @@ export const routes: IRouteCategory[] = [
             path: 'analytics/all-events'
           }
         ]
-      },
-      {
-        name: 'glTF Editor',
-        icon: IconGltfEditor,
-        path: 'editor'
-      },
-      {
-        name: 'Virtual Studio',
-        icon: IconSlideshow,
-        path: 'studio'
-      },
-      {
-        name: 'UI Builder',
-        icon: IconUiBuilder,
-        path: 'ui-builder'
       }
     ]
   },
-  // {
-  //   title: 'Settings',
-  //   routes: [
-  //     {
-  //       name: 'Domains',
-  //       icon: IconWorld,
-  //       path: '/domains'
-  //     },
-  //     {
-  //       name: 'Team',
-  //       icon: IconUsers,
-  //       path: '/team'
-  //     },
-  //     {
-  //       name: 'Account Settings',
-  //       icon: IconSettings,
-  //       path: '/settings'
-  //     }
-  //   ]
-  // },
   {
     title: 'Resources',
     routes: [

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRoute } from 'vue-router'
-
-import { Card } from '@/components/ui/card'
+import { useRoute } from 'vue-router'
 
 const { workspace } = useRoute().params
 
@@ -28,7 +26,6 @@ import IconPlusSmall from '@/assets/icons/plus-small.svg'
     </header>
     <ProjectTable :data="projectsForCurrentWorkspace" :columns="columns" />
   </div>
-  <RouterView />
 </template>
 
 <style scoped></style>
