@@ -26,6 +26,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
@@ -111,15 +112,49 @@ const aspectRatioValues = computed(() => {
   }
 })
 
-const resolution = ref('1080p')
+const resolution = ref('Custom')
 const resolutionsList = [
-  { label: '4K (2160p)', h: 2160 },
-  { label: '2K (1440p)', h: 1440 },
-  { label: '1080p', h: 1080 },
-  { label: '720p', h: 720 },
-  { label: '480p', h: 480 },
-  { label: '360p', h: 360 },
-  { label: 'Custom', h: 0 }
+  {
+    group: 'Custom',
+    options: [
+      { label: 'Custom', w: 0, h: 0 },
+      { label: '1080p (16:9)', w: 1920, h: 1080 },
+      { label: '720p (16:9)', w: 1280, h: 720 },
+    ]
+  },
+  {
+    group: 'Instagram',
+    options: [
+      { label: 'Feed: Portrait (1080 x 1350)', w: 1080, h: 1350 },
+      { label: 'Feed: Landscape (1080 x 566)', w: 1080, h: 566 },
+      { label: 'Feed: Square (1080 x 1080)', w: 1080, h: 1080 },
+      { label: 'Reel Video/Story (1080 x 1920)', w: 1080, h: 1920 },
+    ]
+  },
+  {
+    group: 'LinkedIn',
+    options: [
+      { label: 'Page Cover Image (1128 x 191)', w: 1128, h: 191 },
+      { label: 'Blog Post Image (1200 x 627)', w: 1200, h: 627 },
+      { label: 'Carousel Image (1080 x 1080)', w: 1080, h: 1080 },
+    ]
+  },
+  {
+    group: 'X/Twitter',
+    options: [
+      { label: 'Profile Picture (400 x 400)', w: 400, h: 400 },
+      { label: 'In-stream Image (1600 x 900)', w: 1600, h: 900 },
+      { label: 'Header Image (1500 x 500)', w: 1500, h: 500 },
+      { label: 'Single/Multi Image Post (600 x 335)', w: 600, h: 335 },
+    ]
+  }
+
+
+  // { label: '4K (2160p)', h: 2160 },
+  // { label: '2K (1440p)', h: 1440 },
+  // { label: '720p', h: 720 },
+  // { label: '480p', h: 480 },
+  // { label: '360p', h: 360 },
 ]
 const customResolution = ref({
   w: 1920,
@@ -217,8 +252,7 @@ const configurations = ref([
           aspectRatio: `${aspectRatioValues.w}/${aspectRatioValues.h}`,
           backgroundImage: `url(${thumbnail})`,
           backgroundColor: bgColor || 'rgba(0, 0, 0, 0)'
-        }"
-      ></Card>
+        }"></Card>
     </div>
     <div class="bg-background border-l p-8 overflow-y-auto">
       <TooltipProvider>
@@ -259,13 +293,11 @@ const configurations = ref([
                   <li
                     v-for="configuration in configurations"
                     :key="configuration.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
-                  >
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
                     <Checkbox :id="configuration.id" />
                     <label
                       :for="configuration.id"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       {{ configuration.name }}
                     </label>
                     <div class="ml-auto">
@@ -274,8 +306,7 @@ const configurations = ref([
                           <Button
                             class="ml-2 text-muted-foreground hover:text-base"
                             size="icon-xs"
-                            variant="ghost"
-                          >
+                            variant="ghost">
                             <IconEye class="w-5 h-5" />
                           </Button>
                         </TooltipTrigger>
@@ -290,8 +321,7 @@ const configurations = ref([
                               <Button
                                 class="ml-2 text-muted-foreground hover:text-base"
                                 size="icon-xs"
-                                variant="ghost"
-                              >
+                                variant="ghost">
                                 <IconPencil class="w-5 h-5" />
                               </Button>
                             </TooltipTrigger>
@@ -325,8 +355,7 @@ const configurations = ref([
                                         v-for="opt in configOption.options"
                                         :key="opt"
                                         :value="opt"
-                                        class="tracking-wide"
-                                      >
+                                        class="tracking-wide">
                                         {{ opt }}
                                       </SelectItem>
                                     </SelectGroup>
@@ -368,8 +397,7 @@ const configurations = ref([
                     <Checkbox id="select-all-cameras" />
                     <label
                       for="select-all-cameras"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       Select all cameras
                     </label>
                   </li>
@@ -377,13 +405,11 @@ const configurations = ref([
                   <li
                     v-for="camera in product?.cameras"
                     :key="camera.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
-                  >
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
                     <Checkbox :id="`camera-${camera.id}`" />
                     <label
                       :for="`camera-${camera.id}`"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       {{ camera.name }}
                     </label>
                     <Tooltip>
@@ -391,8 +417,7 @@ const configurations = ref([
                         <Button
                           class="ml-auto text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost"
-                        >
+                          variant="ghost">
                           <IconEye class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -405,14 +430,12 @@ const configurations = ref([
                   <li
                     v-for="camera in customCameras"
                     :key="camera.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
-                  >
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
                     <Checkbox :id="`camera-${camera.id}`" />
                     <label
                       v-if="!camera.isEditing"
                       :for="`camera-${camera.id}`"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       {{ camera.name }}
                     </label>
                     <div v-else class="relative">
@@ -423,8 +446,7 @@ const configurations = ref([
                             variant="ghost"
                             size="icon-xs"
                             class="absolute top-1/2 right-0 -translate-y-1/2 text-muted-foreground hover:text-base"
-                            @click="camera.isEditing = false"
-                          >
+                            @click="camera.isEditing = false">
                             <IconDeviceFloppy class="w-5 h-5" />
                           </Button>
                         </TooltipTrigger>
@@ -438,8 +460,7 @@ const configurations = ref([
                         <Button
                           class="ml-auto text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost"
-                        >
+                          variant="ghost">
                           <IconCapture class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -452,8 +473,7 @@ const configurations = ref([
                         <Button
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost"
-                        >
+                          variant="ghost">
                           <IconEye class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -467,8 +487,7 @@ const configurations = ref([
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
                           variant="ghost"
-                          @click="camera.isEditing = true"
-                        >
+                          @click="camera.isEditing = true">
                           <IconPencil class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -481,8 +500,7 @@ const configurations = ref([
                         <Button
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost"
-                        >
+                          variant="ghost">
                           <IconTrash class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -526,8 +544,7 @@ const configurations = ref([
                                 v-for="option in environmentsList"
                                 :key="option.label"
                                 :value="option.value"
-                                class="tracking-wide"
-                              >
+                                class="tracking-wide">
                                 {{ option.label }}
                               </SelectItem>
                             </SelectGroup>
@@ -549,19 +566,16 @@ const configurations = ref([
                             :value="isBgTransparent ? 'transparent' : bgColor"
                             @sl-input="
                               ($event: InputEvent) => handleSetBgColor($event?.target?.value)
-                            "
-                          ></sl-color-picker>
+                            "></sl-color-picker>
                           <div
                             class="w-56 h-10 pl-3 pr-1 inline-flex items-center justify-between gap-2 font-mono border border-input rounded-md bg-background text-sm overflow-ellipsis"
-                            :class="isBgTransparent ? 'opacity-80' : `bg-${bgColor}`"
-                          >
+                            :class="isBgTransparent ? 'opacity-80' : `bg-${bgColor}`">
                             <span>{{ isBgTransparent ? '' : bgColor }}</span>
                             <Button
                               variant="ghost"
                               size="icon-sm"
                               class="text-slate-500 hover:text-slate-700"
-                              :disabled="isBgTransparent"
-                            >
+                              :disabled="isBgTransparent">
                               <IconCopy class="w-5 h-5" />
                             </Button>
                           </div>
@@ -574,12 +588,10 @@ const configurations = ref([
                   <Checkbox
                     id="terms1"
                     :checked="isBgTransparent"
-                    @update:checked="() => (isBgTransparent = !isBgTransparent)"
-                  />
+                    @update:checked="() => (isBgTransparent = !isBgTransparent)" />
                   <label
                     for="terms1"
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Transparent background
                   </label>
                 </div>
@@ -611,8 +623,7 @@ const configurations = ref([
                                 v-for="option in fileFormats"
                                 :key="option"
                                 :value="option"
-                                class="tracking-wide"
-                              >
+                                class="tracking-wide">
                                 {{ option }}
                               </SelectItem>
                             </SelectGroup>
@@ -626,7 +637,7 @@ const configurations = ref([
                         <Input v-model="filenamePrefix" />
                       </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                       <td class="pr-4 py-1">Aspect ratio:</td>
                       <td class="py-1 w-full">
                         <div class="flex items-center gap-2">
@@ -680,22 +691,24 @@ const configurations = ref([
                           </div>
                         </div>
                       </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                       <td class="pr-4 py-1">Resolution:</td>
                       <td class="py-1 w-full">
                         <Select v-model="resolution">
-                          <SelectTrigger class="w-40">
+                          <SelectTrigger class="w-full">
                             <SelectValue placeholder="Select..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectGroup>
+                            <SelectGroup
+                              v-for="group in resolutionsList"
+                              :key="group.group">
+                              <SelectLabel>{{ group.group }}</SelectLabel>
                               <SelectItem
-                                v-for="option in resolutionsList"
+                                v-for="option in group.options"
                                 :key="option.label"
                                 :value="option.label"
-                                class="tracking-wide"
-                              >
+                                class="tracking-wide">
                                 {{ option.label }}
                               </SelectItem>
                             </SelectGroup>
@@ -711,8 +724,7 @@ const configurations = ref([
                             <Tooltip>
                               <TooltipTrigger as-child>
                                 <IconArrowsHorizontal
-                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                                />
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help" />
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Width</p>
@@ -723,15 +735,13 @@ const configurations = ref([
                               type="number"
                               max="4096"
                               min="1"
-                              class="w-32 pl-9"
-                            />
+                              class="w-32 pl-9" />
                           </div>
                           <div v-if="resolution === 'Custom'" class="relative">
                             <Tooltip>
                               <TooltipTrigger as-child>
                                 <IconArrowsVertical
-                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
-                                />
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help" />
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Height</p>
@@ -742,11 +752,10 @@ const configurations = ref([
                               type="number"
                               max="4096"
                               min="1"
-                              class="w-32 pl-9"
-                            />
+                              class="w-32 pl-9" />
                           </div>
                         </div>
-                        <div v-if="resolution === 'Custom'" class="mt-2 relative pl-6">
+                        <!-- <div v-if="resolution === 'Custom'" class="mt-2 relative pl-6">
                           <IconAlertTriangle
                             class="w-4 h-4 absolute top-0 left-0 text-amber-700 dark:text-amber-300"
                           />
@@ -754,9 +763,9 @@ const configurations = ref([
                             Custom resolution values will override the aspect ratio in the output
                             images.
                           </p>
-                        </div>
-                        <p v-else class="text-xs text-muted-foreground">
-                          Output resolution: {{ resolutionOutput }}
+                        </div> -->
+                        <p class="text-xs text-muted-foreground">
+                          Aspect ratio: {{ resolutionOutput }}
                         </p>
                       </td>
                     </tr>
