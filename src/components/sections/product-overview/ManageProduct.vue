@@ -15,7 +15,7 @@ import {
 
 <template>
   <div class="flex gap-4">
-    <Button variant="outline">Duplicate Product</Button>
+    <!-- <Button variant="outline">Duplicate Product</Button> -->
     <AlertDialog>
       <AlertDialogTrigger>
         <Button variant="destructive">Delete Product</Button>

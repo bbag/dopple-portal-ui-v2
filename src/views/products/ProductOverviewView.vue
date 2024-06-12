@@ -64,22 +64,22 @@ const productOverviewSections: SectionData[] = [
     component: SectionDetails,
     description: `ID: ${productData?.id}`
   },
-  {
-    title: 'Analytics',
-    linkId: 'analytics',
-    component: SectionAnalytics
-  },
+  // {
+  //   title: 'Analytics',
+  //   linkId: 'analytics',
+  //   component: SectionAnalytics
+  // },
   {
     title: 'Version History',
     linkId: 'version-history',
     component: SectionVersionHistory
   },
-  {
-    title: 'Assets',
-    linkId: 'assets',
-    component: SectionAssets,
-    description: 'Any assets (models, materias, textures) that are associated with this product.'
-  },
+  // {
+  //   title: 'Assets',
+  //   linkId: 'assets',
+  //   component: SectionAssets,
+  //   description: 'Any assets (models, materias, textures) that are associated with this product.'
+  // },
   {
     title: 'Embed Code',
     linkId: 'embed-code',

@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
   SheetClose,
@@ -46,6 +47,9 @@ import {
   IconAlertTriangle,
   IconArrowsHorizontal,
   IconArrowsVertical,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconBrandX,
   IconCamera,
   IconCapture,
   IconColorSwatch,
@@ -53,6 +57,7 @@ import {
   IconDeviceFloppy,
   IconEye,
   IconFileExport,
+  IconHash,
   IconPencil,
   IconPlus,
   IconSettings,
@@ -115,46 +120,45 @@ const aspectRatioValues = computed(() => {
 const resolution = ref('Custom')
 const resolutionsList = [
   {
-    group: 'Custom',
+    group: 'Common Sizes',
+    icon: IconHash,
     options: [
       { label: 'Custom', w: 0, h: 0 },
-      { label: '1080p (16:9)', w: 1920, h: 1080 },
-      { label: '720p (16:9)', w: 1280, h: 720 },
+      { label: '4K (4096 x 2160)', w: 4096, h: 2160 },
+      { label: '1440p (2560 x 1440)', w: 2560, h: 1440 },
+      { label: '1080p Full HD (1920 x 1080)', w: 1920, h: 1080 },
+      { label: '720p HD (1280 x 720)', w: 1280, h: 720 }
     ]
   },
   {
     group: 'Instagram',
+    icon: IconBrandInstagram,
     options: [
       { label: 'Feed: Portrait (1080 x 1350)', w: 1080, h: 1350 },
       { label: 'Feed: Landscape (1080 x 566)', w: 1080, h: 566 },
       { label: 'Feed: Square (1080 x 1080)', w: 1080, h: 1080 },
-      { label: 'Reel Video/Story (1080 x 1920)', w: 1080, h: 1920 },
+      { label: 'Reel Video/Story (1080 x 1920)', w: 1080, h: 1920 }
     ]
   },
   {
     group: 'LinkedIn',
+    icon: IconBrandLinkedin,
     options: [
       { label: 'Page Cover Image (1128 x 191)', w: 1128, h: 191 },
       { label: 'Blog Post Image (1200 x 627)', w: 1200, h: 627 },
-      { label: 'Carousel Image (1080 x 1080)', w: 1080, h: 1080 },
+      { label: 'Carousel Image (1080 x 1080)', w: 1080, h: 1080 }
     ]
   },
   {
     group: 'X/Twitter',
+    icon: IconBrandX,
     options: [
       { label: 'Profile Picture (400 x 400)', w: 400, h: 400 },
       { label: 'In-stream Image (1600 x 900)', w: 1600, h: 900 },
       { label: 'Header Image (1500 x 500)', w: 1500, h: 500 },
-      { label: 'Single/Multi Image Post (600 x 335)', w: 600, h: 335 },
+      { label: 'Single/Multi Image Post (600 x 335)', w: 600, h: 335 }
     ]
   }
-
-
-  // { label: '4K (2160p)', h: 2160 },
-  // { label: '2K (1440p)', h: 1440 },
-  // { label: '720p', h: 720 },
-  // { label: '480p', h: 480 },
-  // { label: '360p', h: 360 },
 ]
 const customResolution = ref({
   w: 1920,
@@ -162,23 +166,50 @@ const customResolution = ref({
 })
 
 /** Returns a resolution string (e.g. '1920x1080') based on the selected aspect ratio and resolution */
-const resolutionOutput = computed(() => {
+const aspectRatioOutput = computed(() => {
   let w = 0
   let h = 0
+
   if (resolution.value !== 'Custom') {
-    const res = resolutionsList.find((item) => item.label === resolution.value)
-    if (aspectRatio.value === 'Custom') {
-      w = res ? Math.round(res.h * (customAspectRatio.value.w / customAspectRatio.value.h)) : 0
-      h = res ? res.h : 0
-    } else {
-      const ar = aspectRatiosList.find((item) => item.label === aspectRatio.value)
-      if (ar?.w && res?.h) {
-        w = Math.round((ar.w * res.h) / ar.h) || 0
-        h = res?.h || 0
+    resolutionListLoop: for (const item of resolutionsList) {
+      for (const option of item.options) {
+        console.log(option.label)
+        if (option.label === resolution.value) {
+          w = option.w
+          h = option.h
+          break resolutionListLoop
+        }
       }
     }
+  } else {
+    w = customResolution.value.w
+    h = customResolution.value.h
   }
-  return `${w}x${h}`
+
+  if (w === 0 || h === 0) {
+    return { w, h }
+  }
+
+  const greatestCommonDivisor = (a: number, b: number): number =>
+    b == 0 ? a : greatestCommonDivisor(b, a % b)
+  let divisor = greatestCommonDivisor(w, h)
+
+  w = w / divisor
+  h = h / divisor
+
+  if (w < 21 && h < 21) {
+    return { w, h }
+  }
+
+  if (w > h) {
+    w = Math.round((w / h) * 100) / 100
+    h = 1
+  } else {
+    w = 1
+    h = Math.round((h / w) * 100) / 100
+  }
+
+  return { w, h }
 })
 
 const customCameras = ref<{ name: string; id: string; isEditing: boolean }[]>([
@@ -249,10 +280,11 @@ const configurations = ref([
       <Card
         class="max-w-full max-h-[calc(100vh-7rem)] mx-auto bg-no-repeat bg-contain bg-center relative"
         :style="{
-          aspectRatio: `${aspectRatioValues.w}/${aspectRatioValues.h}`,
+          aspectRatio: `${aspectRatioOutput.w}/${aspectRatioOutput.h}`,
           backgroundImage: `url(${thumbnail})`,
           backgroundColor: bgColor || 'rgba(0, 0, 0, 0)'
-        }"></Card>
+        }"
+      ></Card>
     </div>
     <div class="bg-background border-l p-8 overflow-y-auto">
       <TooltipProvider>
@@ -260,6 +292,10 @@ const configurations = ref([
         <p class="text-sm text-muted-foreground mb-4">
           Capture batches of images of your product with ease.
         </p>
+        <div class="my-4 p-4 rounded-lg border border-yellow-500 bg-yellow-50 text-yellow-800">
+          This UI is just a concept for features. The <em>entire thing</em> can evolve to match
+          final requirements.
+        </div>
         <div>
           <Accordion class="w-full -mx-1" type="multiple" collapsible>
             <AccordionItem value="section-photoshoots">
@@ -293,11 +329,13 @@ const configurations = ref([
                   <li
                     v-for="configuration in configurations"
                     :key="configuration.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
+                  >
                     <Checkbox :id="configuration.id" />
                     <label
                       :for="configuration.id"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
                       {{ configuration.name }}
                     </label>
                     <div class="ml-auto">
@@ -306,7 +344,8 @@ const configurations = ref([
                           <Button
                             class="ml-2 text-muted-foreground hover:text-base"
                             size="icon-xs"
-                            variant="ghost">
+                            variant="ghost"
+                          >
                             <IconEye class="w-5 h-5" />
                           </Button>
                         </TooltipTrigger>
@@ -321,7 +360,8 @@ const configurations = ref([
                               <Button
                                 class="ml-2 text-muted-foreground hover:text-base"
                                 size="icon-xs"
-                                variant="ghost">
+                                variant="ghost"
+                              >
                                 <IconPencil class="w-5 h-5" />
                               </Button>
                             </TooltipTrigger>
@@ -355,7 +395,8 @@ const configurations = ref([
                                         v-for="opt in configOption.options"
                                         :key="opt"
                                         :value="opt"
-                                        class="tracking-wide">
+                                        class="tracking-wide"
+                                      >
                                         {{ opt }}
                                       </SelectItem>
                                     </SelectGroup>
@@ -397,7 +438,8 @@ const configurations = ref([
                     <Checkbox id="select-all-cameras" />
                     <label
                       for="select-all-cameras"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
                       Select all cameras
                     </label>
                   </li>
@@ -405,11 +447,13 @@ const configurations = ref([
                   <li
                     v-for="camera in product?.cameras"
                     :key="camera.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
+                  >
                     <Checkbox :id="`camera-${camera.id}`" />
                     <label
                       :for="`camera-${camera.id}`"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
                       {{ camera.name }}
                     </label>
                     <Tooltip>
@@ -417,7 +461,8 @@ const configurations = ref([
                         <Button
                           class="ml-auto text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost">
+                          variant="ghost"
+                        >
                           <IconEye class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -430,12 +475,14 @@ const configurations = ref([
                   <li
                     v-for="camera in customCameras"
                     :key="camera.id"
-                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md">
+                    class="flex items-center h-8 hover:bg-muted -mx-2 px-2 rounded-md"
+                  >
                     <Checkbox :id="`camera-${camera.id}`" />
                     <label
                       v-if="!camera.isEditing"
                       :for="`camera-${camera.id}`"
-                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      class="text-sm leading-none ml-2 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
                       {{ camera.name }}
                     </label>
                     <div v-else class="relative">
@@ -446,7 +493,8 @@ const configurations = ref([
                             variant="ghost"
                             size="icon-xs"
                             class="absolute top-1/2 right-0 -translate-y-1/2 text-muted-foreground hover:text-base"
-                            @click="camera.isEditing = false">
+                            @click="camera.isEditing = false"
+                          >
                             <IconDeviceFloppy class="w-5 h-5" />
                           </Button>
                         </TooltipTrigger>
@@ -460,7 +508,8 @@ const configurations = ref([
                         <Button
                           class="ml-auto text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost">
+                          variant="ghost"
+                        >
                           <IconCapture class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -473,7 +522,8 @@ const configurations = ref([
                         <Button
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost">
+                          variant="ghost"
+                        >
                           <IconEye class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -487,7 +537,8 @@ const configurations = ref([
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
                           variant="ghost"
-                          @click="camera.isEditing = true">
+                          @click="camera.isEditing = true"
+                        >
                           <IconPencil class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -500,7 +551,8 @@ const configurations = ref([
                         <Button
                           class="ml-2 text-muted-foreground hover:text-base"
                           size="icon-xs"
-                          variant="ghost">
+                          variant="ghost"
+                        >
                           <IconTrash class="w-5 h-5" />
                         </Button>
                       </TooltipTrigger>
@@ -544,7 +596,8 @@ const configurations = ref([
                                 v-for="option in environmentsList"
                                 :key="option.label"
                                 :value="option.value"
-                                class="tracking-wide">
+                                class="tracking-wide"
+                              >
                                 {{ option.label }}
                               </SelectItem>
                             </SelectGroup>
@@ -566,16 +619,19 @@ const configurations = ref([
                             :value="isBgTransparent ? 'transparent' : bgColor"
                             @sl-input="
                               ($event: InputEvent) => handleSetBgColor($event?.target?.value)
-                            "></sl-color-picker>
+                            "
+                          ></sl-color-picker>
                           <div
                             class="w-56 h-10 pl-3 pr-1 inline-flex items-center justify-between gap-2 font-mono border border-input rounded-md bg-background text-sm overflow-ellipsis"
-                            :class="isBgTransparent ? 'opacity-80' : `bg-${bgColor}`">
+                            :class="isBgTransparent ? 'opacity-80' : `bg-${bgColor}`"
+                          >
                             <span>{{ isBgTransparent ? '' : bgColor }}</span>
                             <Button
                               variant="ghost"
                               size="icon-sm"
                               class="text-slate-500 hover:text-slate-700"
-                              :disabled="isBgTransparent">
+                              :disabled="isBgTransparent"
+                            >
                               <IconCopy class="w-5 h-5" />
                             </Button>
                           </div>
@@ -588,10 +644,12 @@ const configurations = ref([
                   <Checkbox
                     id="terms1"
                     :checked="isBgTransparent"
-                    @update:checked="() => (isBgTransparent = !isBgTransparent)" />
+                    @update:checked="() => (isBgTransparent = !isBgTransparent)"
+                  />
                   <label
                     for="terms1"
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
                     Transparent background
                   </label>
                 </div>
@@ -623,7 +681,8 @@ const configurations = ref([
                                 v-for="option in fileFormats"
                                 :key="option"
                                 :value="option"
-                                class="tracking-wide">
+                                class="tracking-wide"
+                              >
                                 {{ option }}
                               </SelectItem>
                             </SelectGroup>
@@ -700,15 +759,22 @@ const configurations = ref([
                             <SelectValue placeholder="Select..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectGroup
-                              v-for="group in resolutionsList"
-                              :key="group.group">
-                              <SelectLabel>{{ group.group }}</SelectLabel>
+                            <SelectGroup v-for="(group, i) in resolutionsList" :key="group.group">
+                              <div v-if="i !== 0" class="px-2 pt-1 pb-2">
+                                <Separator />
+                              </div>
+                              <SelectLabel
+                                class="flex items-center gap-2 text-muted-foreground mx-2 -px-2"
+                              >
+                                <component :is="group.icon" class="w-4 h-4" />
+                                {{ group.group }}
+                              </SelectLabel>
                               <SelectItem
                                 v-for="option in group.options"
                                 :key="option.label"
                                 :value="option.label"
-                                class="tracking-wide">
+                                class="tracking-wide"
+                              >
                                 {{ option.label }}
                               </SelectItem>
                             </SelectGroup>
@@ -724,27 +790,11 @@ const configurations = ref([
                             <Tooltip>
                               <TooltipTrigger as-child>
                                 <IconArrowsHorizontal
-                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help" />
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Width</p>
-                              </TooltipContent>
-                            </Tooltip>
-                            <Input
-                              v-model.number="customResolution.h"
-                              type="number"
-                              max="4096"
-                              min="1"
-                              class="w-32 pl-9" />
-                          </div>
-                          <div v-if="resolution === 'Custom'" class="relative">
-                            <Tooltip>
-                              <TooltipTrigger as-child>
-                                <IconArrowsVertical
-                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Height</p>
                               </TooltipContent>
                             </Tooltip>
                             <Input
@@ -752,7 +802,27 @@ const configurations = ref([
                               type="number"
                               max="4096"
                               min="1"
-                              class="w-32 pl-9" />
+                              class="w-32 pl-9"
+                            />
+                          </div>
+                          <div v-if="resolution === 'Custom'" class="relative">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <IconArrowsVertical
+                                  class="w-4 h-4 absolute top-1/2 left-3 -translate-y-1/2 text-slate-600 cursor-help"
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Height</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Input
+                              v-model.number="customResolution.h"
+                              type="number"
+                              max="4096"
+                              min="1"
+                              class="w-32 pl-9"
+                            />
                           </div>
                         </div>
                         <!-- <div v-if="resolution === 'Custom'" class="mt-2 relative pl-6">
@@ -764,8 +834,11 @@ const configurations = ref([
                             images.
                           </p>
                         </div> -->
-                        <p class="text-xs text-muted-foreground">
-                          Aspect ratio: {{ resolutionOutput }}
+                        <p class="text-sm text-muted-foreground">
+                          Aspect ratio:
+                          <span class="tracking-wider">
+                            {{ aspectRatioOutput.w }}:{{ aspectRatioOutput.h }}
+                          </span>
                         </p>
                       </td>
                     </tr>

@@ -71,7 +71,8 @@ function handleIsDefaultClick(item: IProductVersion) {
 </script>
 
 <template>
-  <Table>
+  <p>[ content may go here... ]</p>
+  <!-- <Table>
     <TableHeader>
       <TableRow>
         <TableHead>Default</TableHead>
@@ -135,5 +136,5 @@ function handleIsDefaultClick(item: IProductVersion) {
         </TableCell>
       </TableRow>
     </TableBody>
-  </Table>
+  </Table> -->
 </template>
