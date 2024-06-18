@@ -153,7 +153,7 @@ onMounted(() => {
           <CardDescription>{{ projects.length }} total</CardDescription>
         </CardHeader>
         <CardContent class="flex-grow">
-          <Table>
+          <Table v-if="recentProjects.length">
             <TableHeader>
               <TableRow>
                 <TableHead class="w-full">Name</TableHead>
@@ -196,6 +196,13 @@ onMounted(() => {
               </TableRow>
             </TableBody>
           </Table>
+          <div
+            v-else
+            class="text-sm text-slate-500 flex items-center justify-center h-full flex-col gap-4 border border-dashed p-8 rounded-lg"
+          >
+            <p class="text-center text-pretty">No projects yet. It’s time to get started!</p>
+            <Button variant="outline" size="sm">Create New Project</Button>
+          </div>
           <p
             v-if="projects.length > projectsDisplayCount"
             class="text-sm text-slate-500 italic pt-2 px-4 border-t"
@@ -203,7 +210,7 @@ onMounted(() => {
             + {{ projects.length - projectsDisplayCount }} more
           </p>
         </CardContent>
-        <CardFooter class="justify-end">
+        <CardFooter v-if="projects.length" class="justify-end">
           <RouterLink
             :to="`/w/${$route.params.workspace}/projects`"
             :class="buttonVariants({ variant: 'default' })"
@@ -221,7 +228,7 @@ onMounted(() => {
           </CardTitle>
         </CardHeader>
         <CardContent class="flex-grow">
-          <Table>
+          <Table v-if="recentProducts.length">
             <TableHeader>
               <TableRow>
                 <TableHead class="whitespace-nowrap h-10">Product Title</TableHead>
@@ -246,6 +253,15 @@ onMounted(() => {
               </TableRow>
             </TableBody>
           </Table>
+          <div
+            v-else
+            class="text-sm text-slate-500 flex items-center justify-center h-full flex-col gap-4 border border-dashed p-8 rounded-lg"
+          >
+            <p class="text-center text-pretty">
+              No products yet! Products will appear here once a project is published.
+            </p>
+            <Button variant="outline" size="sm">View Projects</Button>
+          </div>
           <p
             v-if="products.length > productsDisplayCount"
             class="text-sm text-slate-500 italic pt-2 px-4 border-t"
@@ -253,7 +269,7 @@ onMounted(() => {
             + {{ products.length - productsDisplayCount }} more
           </p>
         </CardContent>
-        <CardFooter class="justify-end">
+        <CardFooter v-if="products.length" class="justify-end">
           <RouterLink
             :to="`/w/${$route.params.workspace}/products`"
             :class="buttonVariants({ variant: 'default' })"
