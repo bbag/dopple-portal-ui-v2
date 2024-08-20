@@ -34,8 +34,8 @@ const tabs = [
     path: `/w/${workspace}/analytics/hotspots`
   },
   {
-    name: 'All Events',
-    path: `/w/${workspace}/analytics/all`
+    name: 'Custom Events',
+    path: `/w/${workspace}/analytics/custom-events`
   }
 ]
 </script>

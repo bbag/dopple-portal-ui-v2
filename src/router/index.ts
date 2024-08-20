@@ -155,10 +155,10 @@ const router = createRouter({
               component: () => import('@/views/analytics/AnalyticsHotspotsView.vue')
             },
             {
-              path: 'all-events',
-              name: 'All Analytics Events',
-              meta: { breadcrumbName: 'All Events' },
-              component: () => import('@/views/analytics/AnalyticsAllEventsView.vue')
+              path: 'custom-events',
+              name: 'Custom Events',
+              meta: { breadcrumbName: 'Custom Events' },
+              component: () => import('@/views/analytics/AnalyticsCustomEventsView.vue')
             }
           ]
         },
