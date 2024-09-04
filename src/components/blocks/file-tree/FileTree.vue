@@ -6,12 +6,16 @@ const props = defineProps({
   nodes: {
     type: Array,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'md'
   }
 })
 </script>
 
 <template>
-  <ul>
+  <ul :class="`text-${size}`">
     <FileTreeNode v-for="(node, index) in nodes" :key="index" :node="node" />
   </ul>
 </template>

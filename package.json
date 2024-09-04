@@ -16,6 +16,7 @@
     "@shoelace-style/shoelace": "^2.15.0",
     "@tabler/icons-vue": "^3.1.0",
     "@tanstack/vue-table": "^8.15.3",
+    "@unhead/vue": "^1.10.0",
     "@vee-validate/zod": "^4.12.6",
     "@vueuse/core": "^10.9.0",
     "class-variance-authority": "^0.7.0",

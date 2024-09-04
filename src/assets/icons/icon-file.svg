@@ -1,0 +1,7 @@
+<svg version="1.1" class="file-icon" xmlns="http://www.w3.org/2000/svg" x="0" y="0" width="20" height="20" viewBox="0 0 20 20">
+  <style>
+    .file-icon { fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10 }
+  </style>
+  <path d="M14.5 18.5h-9c-1.1 0-2-.9-2-2v-13c0-1.1.9-2 2-2h6.6c.3 0 .5.1.7.3l3.4 3.4c.2.2.3.4.3.7v10.6c0 1.1-.9 2-2 2z" style="fill:#eaedef;stroke:#adb0b2;stroke-miterlimit:10"/>
+  <path d="M12.5 2v2.5c0 .6.4 1 1 1H16" style="fill:#d5d8db;stroke:#adb0b2;stroke-miterlimit:10"/>
+</svg>

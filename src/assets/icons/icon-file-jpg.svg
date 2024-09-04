@@ -1,0 +1,12 @@
+<svg version="1.1" class="file-icon" xmlns="http://www.w3.org/2000/svg" x="0" y="0" width="20" height="20" viewBox="0 0 20 20">
+  <style>
+    .file-icon { fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10 }
+    .file-icon-text { stroke: #FFF; }
+  </style>
+  <path d="M14.5 18.5h-9c-1.1 0-2-.9-2-2v-13c0-1.1.9-2 2-2h6.6c.3 0 .5.1.7.3l3.4 3.4c.2.2.3.4.3.7v10.6c0 1.1-.9 2-2 2z" style="fill:#eaedef;stroke:#adb0b2;stroke-miterlimit:10"/>
+  <path d="M12.5 2v2.5c0 .6.4 1 1 1H16" style="fill:#d5d8db;stroke:#adb0b2;stroke-miterlimit:10"/>
+  <path d="M18.5 15.5h-17c-.6 0-1-.4-1-1v-6c0-.6.4-1 1-1h17c.6 0 1 .4 1 1v6c0 .6-.4 1-1 1z" style="fill:#2f8589;stroke:#2f8589;stroke-miterlimit:10"/>
+  <path class="file-icon-text" d="M8.5 13.5v-4H10c.3 0 .5.2.5.5v1c0 .3-.2.5-.5.5H9"/>
+  <path class="file-icon-text" d="M14.5 9.5H13c-.3 0-.5.2-.5.5v3c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1.5"/>
+  <path class="file-icon-text" d="M4.5 12.5c0 .6.4 1 1 1h0c.6 0 1-.4 1-1v-3"/>
+</svg>
