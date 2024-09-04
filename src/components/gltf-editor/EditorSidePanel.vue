@@ -546,7 +546,7 @@ const hierarchyItems = ref([
           <!-- <div style="box-shadow: inset 0 0 0 4px red" class="h-full">Test</div> -->
           <ScrollArea class="h-[calc(100%-2.5rem)]">
             <!-- <FileTree :nodes="hierarchyItems" size="sm" class="p-2 pb-4" /> -->
-            <div class="p-2 pl-5">
+            <div class="p-2">
               <SceneHierarchyItem
                 v-for="(item, i) in hierarchyItems"
                 :key="item.title"
@@ -644,8 +644,8 @@ const hierarchyItems = ref([
     <ResizablePanel>
       <ScrollArea class="h-full">
         <div class="p-4">
-          <h3>Settings Panel</h3>
-          <p>Settings panel will go here</p>
+          <h3 class="font-semibold">Settings Panel</h3>
+          <p class="text-sm">Settings panel coming soon...</p>
         </div>
       </ScrollArea>
     </ResizablePanel>

@@ -23,6 +23,7 @@ import {
   IconEyeOff,
   IconHaze,
   IconPencil,
+  IconPlus,
   IconStack2,
   IconTrashX,
   IconVideo,
@@ -69,12 +70,16 @@ function itemIcon(type: string) {
 </script>
 <template>
   <Collapsible v-model:open="isOpen" class="relative pl-6">
-    <div class="absolute top-0 left-2 border-l border-muted-foreground/30 h-full">
-      <!-- {{ props.isLastChild ? '└' : '├' }} -->
+    <div
+      v-if="props.isLastChild"
+      class="absolute top-0 left-4 w-2 border-l border-b rounded-bl border-muted-foreground/50 h-3.5"
+    ></div>
+    <div v-else class="absolute top-0 left-4 w-2 border-l border-muted-foreground/50 h-full">
+      <div class="absolute top-0 -left-px w-2 border-b border-muted-foreground/50 h-3.5"></div>
     </div>
-    <div class="flex items-center justify-between gap-4 transition-colors hover:bg-muted">
+    <div class="flex items-center justify-between gap-4 rounded transition-colors hover:bg-muted">
       <component :is="props.item.children?.length ? CollapsibleTrigger : 'button'">
-        <button class="flex items-center gap-1.5 text-sm py-1 whitespace-nowrap">
+        <button class="flex items-center gap-1.5 text-sm px-2 py-1 whitespace-nowrap">
           <!-- <IconCaretRightFilled
             class="w-3.5 h-3.5 text-muted-foreground transition-all"
             :class="{ 'rotate-90': isOpen, hidden: !props.item.children?.length }"
@@ -109,6 +114,10 @@ function itemIcon(type: string) {
               <IconDots class="w-4 h-4 text-muted-foreground" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem v-if="$props.item.type === 'group'">
+                <IconPlus class="w-4 h-4 mr-2" />
+                Add
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconPencil class="w-4 h-4 mr-2" />
                 Rename
