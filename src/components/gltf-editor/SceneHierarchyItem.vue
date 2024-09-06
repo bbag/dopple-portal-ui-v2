@@ -9,6 +9,21 @@ import SceneHierarchyItem from './SceneHierarchyItem.vue'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger
+} from '@/components/ui/context-menu'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -73,91 +88,118 @@ function itemIcon(type: string) {
 </script>
 <template>
   <Collapsible v-model:open="isOpen" class="relative pl-5">
-    <!-- Tree lines on the left -->
-    <div
-      v-if="props.isLastChild"
-      class="absolute top-0 left-3 border-l border-b rounded-bl border-muted-foreground/50 h-3.5"
-      :class="props.item.children?.length ? 'w-2' : 'w-6'"
-    ></div>
-    <div v-else class="absolute top-0 left-3 w-2 border-l border-muted-foreground/50 h-full">
+    <ContextMenu>
+      <!-- Tree lines on the left -->
       <div
-        class="absolute top-0 -left-px border-b border-muted-foreground/50 h-3.5"
+        v-if="props.isLastChild"
+        class="absolute top-0 left-3 border-l border-b rounded-bl border-muted-foreground/50 h-3.5"
         :class="props.item.children?.length ? 'w-2' : 'w-6'"
       ></div>
-    </div>
+      <div v-else class="absolute top-0 left-3 w-2 border-l border-muted-foreground/50 h-full">
+        <div
+          class="absolute top-0 -left-px border-b border-muted-foreground/50 h-3.5"
+          :class="props.item.children?.length ? 'w-2' : 'w-6'"
+        ></div>
+      </div>
 
-    <!-- Main item bar -->
-    <div
-      class="flex items-center justify-between gap-4 rounded transition-colors hover:bg-muted"
-      :class="props.item.children?.length ? '' : 'ml-6'"
-    >
-      <!-- 'Expand' caret button, item icon, and title button -->
-      <div class="flex items-center">
-        <CollapsibleTrigger v-if="props.item.children?.length" as-child>
-          <Button variant="ghost" class="p-0.5 h-6 w-6">
-            <IconCaretRightFilled
-              class="w-3.5 h-3.5 text-muted-foreground transition-all"
-              :class="{ 'rotate-90': isOpen, hidden: !props.item.children?.length }"
-            />
-          </Button>
-        </CollapsibleTrigger>
-        <button
-          class="flex items-center gap-1.5 text-sm px-1 py-1 whitespace-nowrap"
-          :class="
-            hierarchyItems.activeItem === props.item ? 'text-blue-500 dark:text-blue-300' : ''
-          "
-          @click="hierarchyItems.activeItem = props.item"
+      <!-- Main item bar -->
+      <ContextMenuTrigger as-child>
+        <div
+          class="flex items-center justify-between gap-4 rounded transition-colors hover:bg-muted"
+          :class="props.item.children?.length ? '' : 'ml-6'"
         >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <component :is="itemIcon(item.type)" class="w-4 h-4 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent class="text-xs capitalize">{{ item.type }}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          {{ props.item.title || 'Untitled' }}
-        </button>
-      </div>
-
-      <!-- Right action buttons -->
-      <div class="flex">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button class="p-0.5" @click="isVisible = !isVisible">
-                <component
-                  :is="isVisible ? IconEye : IconEyeOff"
-                  class="w-4 h-4"
-                  :class="isVisible ? 'text-muted-foreground' : 'text-muted-foreground/50'"
+          <!-- 'Expand' caret button, item icon, and title button -->
+          <div class="flex items-center">
+            <CollapsibleTrigger v-if="props.item.children?.length" as-child>
+              <Button variant="ghost" class="p-0.5 h-6 w-6">
+                <IconCaretRightFilled
+                  class="w-3.5 h-3.5 text-muted-foreground transition-all"
+                  :class="{ 'rotate-90': isOpen, hidden: !props.item.children?.length }"
                 />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent class="text-xs">Show/hide</TooltipContent>
-          </Tooltip>
-          <DropdownMenu>
-            <DropdownMenuTrigger class="p-0.5">
-              <IconDots class="w-4 h-4 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem v-if="$props.item.type === 'group'">
-                <IconPlus class="w-4 h-4 mr-2" />
-                Add
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconPencil class="w-4 h-4 mr-2" />
-                Rename
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <IconTrashX class="w-4 h-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipProvider>
-      </div>
-    </div>
+              </Button>
+            </CollapsibleTrigger>
+            <button
+              class="flex items-center gap-1.5 text-sm px-1 py-1 whitespace-nowrap"
+              :class="
+                hierarchyItems.activeItem === props.item ? 'text-blue-500 dark:text-blue-300' : ''
+              "
+              @click="hierarchyItems.activeItem = props.item"
+            >
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <component
+                      :is="itemIcon(item.type)"
+                      class="w-4 h-4"
+                      :class="
+                        hierarchyItems.activeItem === props.item
+                          ? 'text-blue-500 dark:text-blue-300'
+                          : 'text-muted-foreground'
+                      "
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent class="text-xs capitalize">{{ item.type }}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              {{ props.item.title || 'Untitled' }}
+            </button>
+          </div>
+
+          <!-- Right action buttons -->
+          <div class="flex">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button class="p-0.5" @click="isVisible = !isVisible">
+                    <component
+                      :is="isVisible ? IconEye : IconEyeOff"
+                      class="w-4 h-4"
+                      :class="isVisible ? 'text-muted-foreground' : 'text-muted-foreground/50'"
+                    />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent class="text-xs">Show/hide</TooltipContent>
+              </Tooltip>
+              <DropdownMenu>
+                <DropdownMenuTrigger class="p-0.5">
+                  <IconDots class="w-4 h-4 text-muted-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem v-if="$props.item.type === 'group'">
+                    <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
+                    Add
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
+                    Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem class="text-destructive dark:text-rose-400">
+                    <IconTrashX class="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TooltipProvider>
+          </div>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem v-if="$props.item.type === 'group'">
+          <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
+          Add
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
+          Rename
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem class="text-destructive dark:text-rose-400">
+          <IconTrashX class="w-4 h-4 mr-2" />
+          Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
     <CollapsibleContent v-if="props.item.children?.length">
       <SceneHierarchyItem
         v-for="(child, i) in props.item.children"
