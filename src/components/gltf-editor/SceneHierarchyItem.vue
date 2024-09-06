@@ -10,17 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
   ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import {
@@ -141,7 +133,9 @@ function itemIcon(type: string) {
                   <TooltipContent class="text-xs capitalize">{{ item.type }}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              {{ props.item.title || 'Untitled' }}
+              <span :class="isVisible ? '' : 'text-foreground/50'">
+                {{ props.item.title || 'Untitled' }}
+              </span>
             </button>
           </div>
 
@@ -167,7 +161,7 @@ function itemIcon(type: string) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem v-if="$props.item.type === 'group'">
                     <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
-                    Add
+                    Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -191,7 +185,14 @@ function itemIcon(type: string) {
         </ContextMenuItem>
         <ContextMenuItem>
           <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-          Rename
+          Edit
+        </ContextMenuItem>
+        <ContextMenuItem @click="isVisible = !isVisible">
+          <component
+            :is="isVisible ? IconEyeOff : IconEye"
+            class="w-4 h-4 mr-2 text-muted-foreground"
+          />
+          {{ isVisible ? 'Hide' : 'Unhide' }}
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem class="text-destructive dark:text-rose-400">
