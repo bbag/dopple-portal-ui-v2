@@ -133,7 +133,9 @@ function itemIcon(type: string) {
                   <TooltipContent class="text-xs capitalize">{{ item.type }}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <span :class="isVisible ? '' : 'text-foreground/50'">
+              <span
+                :class="!isVisible && hierarchyItems.activeItem !== props.item ? 'opacity-50' : ''"
+              >
                 {{ props.item.title || 'Untitled' }}
               </span>
             </button>
