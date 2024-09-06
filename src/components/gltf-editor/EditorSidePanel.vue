@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 
 import FileTree from '@/components/blocks/file-tree/FileTree.vue'
-import { useAssetsStore } from '@/stores/assets'
 
 import { Button } from '../ui/button'
 import {
@@ -14,14 +13,20 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
+import { Input } from '../ui/input'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../ui/resizable'
 import { ScrollArea } from '../ui/scroll-area'
+import { Slider } from '../ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import SceneHierarchyItem from './SceneHierarchyItem.vue'
+import { useHierarchyItemsStore } from '@/stores/hierarchyItems'
+const hierarchyItems = useHierarchyItemsStore()
 
-import { IconPackageImport, IconWorld } from '@tabler/icons-vue'
+import { useEditorStateStore } from '@/stores/editorStates'
+const currentEditorState = useEditorStateStore().currentEditorState
 
+import { useAssetsStore } from '@/stores/assets'
 const assets = useAssetsStore().assets
 
 const tabs = [
@@ -29,467 +34,42 @@ const tabs = [
   { label: 'History', value: 'history' }
 ]
 
-const hierarchyItems = ref([
-  {
-    type: 'group',
-    title: 'Global',
-    children: [
-      {
-        type: 'group',
-        title: 'Environments',
-        children: [
-          {
-            type: 'environment',
-            title: 'Chair-Environment'
-          },
-          {
-            type: 'environment',
-            title: 'Chair2-Environment'
-          },
-          {
-            type: 'environment',
-            title: 'Chair3-Environment'
-          }
-        ]
-      },
-      {
-        type: 'camera',
-        title: 'Editor Camera'
-      }
-    ]
-  },
-  {
-    type: 'group',
-    title: 'TheChair',
-    children: [
-      {
-        type: 'group',
-        title: 'Positioning',
-        children: [
-          {
-            type: 'node',
-            title: 'default'
-          }
-        ]
-      },
-      {
-        type: 'group',
-        title: 'Meshes',
-        children: [
-          {
-            type: 'group',
-            title: 'arms',
-            children: [
-              {
-                type: 'mesh',
-                title: 'Mesh.007'
-              }
-            ]
-          },
-          {
-            type: 'group',
-            title: 'back',
-            children: [
-              {
-                type: 'group',
-                title: 'Group.005',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'back_carbon_fiber'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_circuit_ivory'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_circuit_onyx'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_grey_oak'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_ivory_oak'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_natural_oak'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_sierra_oak'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_standard_black'
-                  },
-                  {
-                    type: 'mesh',
-                    title: 'back_walnut'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            type: 'group',
-            title: 'base',
-            children: [
-              {
-                type: 'group',
-                title: 'base_4_spoke',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Mesh.010'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'base_5_spoke',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Mesh.009'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            type: 'group',
-            title: 'chassis',
-            children: [
-              {
-                type: 'mesh',
-                title: 'Mesh.017'
-              }
-            ]
-          },
-          {
-            type: 'group',
-            title: 'cushions',
-            children: [
-              {
-                type: 'group',
-                title: 'cushions_boucle',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Mesh.006'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_leather',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'RetopoFlow.014'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            type: 'group',
-            title: 'mat_library',
-            children: [
-              {
-                type: 'group',
-                title: 'back_carbon_fiber',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_circuit_ivory',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.001'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_circuit_onyx',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.021'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_grey_oak',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.004'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_ivory_oak',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.008'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_natural_oak',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.009'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_sierra_oak',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.007'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_standard_black',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.010'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'back_walnut',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.020'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'chassis_quartz',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.018'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_boucle_dune',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.016'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_boucle_ivory',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.019'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_boucle_onyx',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.014'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_boucle_steel',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.015'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_leather_dune',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.002'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_leather_ivory',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.003'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_leather_onyx',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.005'
-                  }
-                ]
-              },
-              {
-                type: 'group',
-                title: 'cushions_leather_steel',
-                children: [
-                  {
-                    type: 'mesh',
-                    title: 'Plane.006'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        type: 'group',
-        title: 'Materials',
-        children: [
-          {
-            type: 'material',
-            title: 'back_circuit_ivory'
-          },
-          {
-            type: 'material',
-            title: 'back_circuit_onyx'
-          },
-          {
-            type: 'material',
-            title: 'back_grey_oak'
-          },
-          {
-            type: 'material',
-            title: 'back_natural_oak'
-          },
-          {
-            type: 'material',
-            title: 'cushions_boucle_onyx'
-          },
-          {
-            type: 'material',
-            title: 'cushions_leather_dune'
-          }
-        ]
-      },
-      {
-        type: 'group',
-        title: 'Textures',
-        children: [
-          {
-            type: 'texture',
-            title: 'Body_AO'
-          },
-          {
-            type: 'texture',
-            title: 'Body_Normal'
-          },
-          {
-            type: 'texture',
-            title: 'Body_Onyx_Albedo'
-          },
-          {
-            type: 'texture',
-            title: 'Body_Onyx_Metallic_Roughness'
-          },
-          {
-            type: 'texture',
-            title: 'Body_Quartz_Albedo'
-          },
-          {
-            type: 'texture',
-            title: 'Body_Quartz_Metallic_Roughness'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Dune_Albedo'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Ivory_Albedo'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Leather_AO'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Leather_Normal'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Pink_Albedo'
-          },
-          {
-            type: 'texture',
-            title: 'Cushions_Steel_Albedo'
-          }
-        ]
-      },
-      {
-        type: 'group',
-        title: 'Cameras',
-        children: [
-          {
-            type: 'camera',
-            title: 'Camera.1723839127-Front'
-          },
-          {
-            type: 'camera',
-            title: 'Camera.1755031337-Back'
-          }
-        ]
-      },
-      {
-        type: 'group',
-        title: 'Animations',
-        children: []
-      }
-    ]
+import {
+  IconCircleDot,
+  IconCube,
+  IconHaze,
+  IconPackageImport,
+  IconStack2,
+  IconVideo,
+  IconWorld
+} from '@tabler/icons-vue'
+
+import IconMaterial from '@/assets/icons/material.svg'
+import IconTexture from '@/assets/icons/texture.svg'
+
+function itemIcon(type: string) {
+  switch (type) {
+    case 'group':
+      return IconStack2
+    case 'mesh':
+      return IconCube
+    case 'environment':
+      return IconHaze
+    case 'texture':
+      return IconTexture
+    case 'material':
+      return IconMaterial
+    case 'camera':
+      return IconVideo
+    case 'global':
+      return IconWorld
+    default:
+      return IconCircleDot
   }
-])
+}
+
+const dummyAspectRatio = ref([0.5])
+const dummyFov = ref([90])
 </script>
 
 <template>
@@ -516,7 +96,7 @@ const hierarchyItems = ref([
             </h3>
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="xs" variant="default">
+                <Button size="xs" variant="blue">
                   <IconPackageImport class="w-4 h-4 mr-2" />
                   Import to Scene
                 </Button>
@@ -548,10 +128,10 @@ const hierarchyItems = ref([
             <!-- <FileTree :nodes="hierarchyItems" size="sm" class="p-2 pb-4" /> -->
             <div class="p-2">
               <SceneHierarchyItem
-                v-for="(item, i) in hierarchyItems"
+                v-for="(item, i) in hierarchyItems.items"
                 :key="item.title"
                 :item="item"
-                :is-last-child="i === hierarchyItems.length - 1"
+                :is-last-child="i === hierarchyItems.items.length - 1"
                 class="relative pr-2 pl-6"
               />
             </div>
@@ -643,9 +223,106 @@ const hierarchyItems = ref([
     <ResizableHandle />
     <ResizablePanel>
       <ScrollArea class="h-full">
-        <div class="p-4">
-          <h3 class="font-semibold">Settings Panel</h3>
-          <p class="text-sm">Settings panel coming soon...</p>
+        <div v-if="!hierarchyItems.activeItem" class="p-4">
+          <h3 class="font-semibold mb-2">Settings</h3>
+          <p class="text-sm text-muted-foreground italic">
+            Select a node or group from the hierarchy above to view and edit its settings.
+          </p>
+        </div>
+        <div v-else class="p-4">
+          <h3 class="font-semibold mb-2">Settings</h3>
+          <table class="w-full text-sm">
+            <tbody>
+              <tr>
+                <td class="pr-4 h-8 whitespace-nowrap">Type</td>
+                <td class="w-full h-8">
+                  <div class="flex items-center gap-2 font-mono">
+                    <component :is="itemIcon(hierarchyItems.activeItem.type)" class="w-4 h-4" />
+                    {{ hierarchyItems.activeItem.type }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-4 h-8">Name</td>
+                <td class="w-full h-8">
+                  <Input size="sm" class="font-mono" v-model="hierarchyItems.activeItem.title" />
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-4 h-8">Translation</td>
+                <td class="w-full h-8">
+                  <div class="grid grid-cols-3 gap-0.5">
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-if="hierarchyItems.activeItem.type === 'camera'">
+              <tr>
+                <td class="pr-4 h-8 whitespace-nowrap">Aspect Ratio</td>
+                <td class="w-full h-8">
+                  <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
+                    <Input size="sm" class="font-mono w-14" v-model.number="dummyAspectRatio[0]" />
+                    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
+                      <span>0</span>
+                      <Slider
+                        :default-value="[0.5]"
+                        :max="1"
+                        :step="0.01"
+                        v-model="dummyAspectRatio"
+                      />
+                      <span>1</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-4 h-8 whitespace-nowrap">FOV</td>
+                <td class="w-full h-8">
+                  <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
+                    <Input size="sm" class="font-mono w-14" v-model.number="dummyFov[0]" />
+                    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
+                      <span>10</span>
+                      <Slider
+                        :default-value="[90]"
+                        :max="120"
+                        :min="10"
+                        :step="1"
+                        v-model="dummyFov"
+                      />
+                      <span>120</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else-if="hierarchyItems.activeItem.type === 'group'">
+              <tr>
+                <td class="pr-4 h-8">Translation</td>
+                <td class="w-full h-8">
+                  <div class="grid grid-cols-3 gap-1">
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else-if="hierarchyItems.activeItem.type === 'mesh'">
+              <tr>
+                <td class="pr-4 h-8">Translation</td>
+                <td class="w-full h-8">
+                  <div class="grid grid-cols-3 gap-0.5">
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                    <Input size="sm" class="font-mono" value="0" />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </ScrollArea>
     </ResizablePanel>

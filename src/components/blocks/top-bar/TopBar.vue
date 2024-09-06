@@ -7,8 +7,11 @@ import { routes, type IRoute, type IRouteCategory } from '@/components/blocks/si
 import { useWorkspacesStore } from '@/stores/workspaces'
 import { cn } from '@/lib/utils'
 
-import { useTestRolesStore } from '@/stores/testRoles'
-const testRoles = useTestRolesStore().testRoles
+// import { useTestRolesStore } from '@/stores/testRoles'
+// const testRoles = useTestRolesStore().testRoles
+
+import { useEditorStateStore } from '@/stores/editorStates'
+const editorStates = useEditorStateStore().editorStates
 
 import WorkspaceSelect from '@/components/blocks/side-nav/WorkspaceSelect.vue'
 
@@ -282,6 +285,16 @@ function itemPath(path: string) {
       <Separator orientation="vertical" />
       <BreadCrumbs v-if="!hideBreadcrumbs" />
       <div class="flex gap-4 ml-auto">
+        <Select v-model="useEditorStateStore().currentEditorState">
+          <SelectTrigger class="w-28 lg:w-32 h-8">
+            <SelectValue placeholder="Select a stage" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="state in editorStates" :key="state" :value="state">
+              {{ state }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <!-- <div class="flex items-center gap-2">
           <span class="text-xs font-medium text-muted-foreground">Test role:</span>
           <Select v-model="useTestRolesStore().currentTestRole">

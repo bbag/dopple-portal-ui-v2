@@ -126,3 +126,7 @@ body {
 [data-sonner-toaster] {
   font-family: inherit !important;
 }
+
+.font-mono {
+  font-family: 'Source Code Pro', monospace;
+}
