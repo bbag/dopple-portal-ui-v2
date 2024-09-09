@@ -67,9 +67,6 @@ function itemIcon(type: string) {
       return IconCircleDot
   }
 }
-
-const dummyAspectRatio = ref([0.5])
-const dummyFov = ref([90])
 </script>
 
 <template>
@@ -124,12 +121,12 @@ const dummyFov = ref([90])
             </Dialog>
           </div>
           <!-- <div style="box-shadow: inset 0 0 0 4px red" class="h-full">Test</div> -->
-          <ScrollArea class="h-[calc(100%-2.5rem)]">
+          <ScrollArea class="h-[calc(100%-2.5rem)] [&>div>div]:table-fixed [&>div>div]:w-full">
             <!-- <FileTree :nodes="hierarchyItems" size="sm" class="p-2 pb-4" /> -->
             <div class="p-2">
               <SceneHierarchyItem
                 v-for="(item, i) in hierarchyItems.items"
-                :key="item.title"
+                :key="item.id"
                 :item="item"
                 :is-last-child="i === hierarchyItems.items.length - 1"
                 class="relative pr-2 pl-6"
@@ -222,7 +219,7 @@ const dummyFov = ref([90])
     </ResizablePanel>
     <ResizableHandle />
     <ResizablePanel>
-      <ScrollArea class="h-full">
+      <ScrollArea class="h-full [&>div>div]:table-fixed [&>div>div]:w-full">
         <div v-if="!hierarchyItems.activeItem" class="p-4">
           <h3 class="font-semibold mb-2">Settings</h3>
           <p class="text-sm text-muted-foreground italic">
@@ -243,19 +240,19 @@ const dummyFov = ref([90])
                 </td>
               </tr>
               <tr>
-                <td class="pr-4 h-8">Name</td>
+                <td class="pr-4 h-8 whitespace-nowrap">ID</td>
                 <td class="w-full h-8">
-                  <Input size="sm" class="font-mono" v-model="hierarchyItems.activeItem.title" />
+                  <div class="flex items-center gap-2 font-mono">
+                    <span class="px-2 py-1 bg-muted text-muted-foreground text-xs">{{
+                      hierarchyItems.activeItem.id
+                    }}</span>
+                  </div>
                 </td>
               </tr>
               <tr>
-                <td class="pr-4 h-8">Translation</td>
+                <td class="pr-4 h-8">Name</td>
                 <td class="w-full h-8">
-                  <div class="grid grid-cols-3 gap-0.5">
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
-                  </div>
+                  <Input size="sm" class="font-mono" v-model="hierarchyItems.activeItem.title" />
                 </td>
               </tr>
             </tbody>
@@ -264,14 +261,18 @@ const dummyFov = ref([90])
                 <td class="pr-4 h-8 whitespace-nowrap">Aspect Ratio</td>
                 <td class="w-full h-8">
                   <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
-                    <Input size="sm" class="font-mono w-14" v-model.number="dummyAspectRatio[0]" />
+                    <Input
+                      size="sm"
+                      class="font-mono w-16"
+                      v-model.number="hierarchyItems.activeItem.aspectRatio[0]"
+                    />
                     <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
                       <span>0</span>
                       <Slider
                         :default-value="[0.5]"
-                        :max="1"
-                        :step="0.01"
-                        v-model="dummyAspectRatio"
+                        :max="2"
+                        :step="0.001"
+                        v-model="hierarchyItems.activeItem.aspectRatio"
                       />
                       <span>1</span>
                     </div>
@@ -282,7 +283,11 @@ const dummyFov = ref([90])
                 <td class="pr-4 h-8 whitespace-nowrap">FOV</td>
                 <td class="w-full h-8">
                   <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
-                    <Input size="sm" class="font-mono w-14" v-model.number="dummyFov[0]" />
+                    <Input
+                      size="sm"
+                      class="font-mono w-16"
+                      v-model.number="hierarchyItems.activeItem.fov[0]"
+                    />
                     <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
                       <span>10</span>
                       <Slider
@@ -290,7 +295,7 @@ const dummyFov = ref([90])
                         :max="120"
                         :min="10"
                         :step="1"
-                        v-model="dummyFov"
+                        v-model="hierarchyItems.activeItem.fov"
                       />
                       <span>120</span>
                     </div>
@@ -303,21 +308,47 @@ const dummyFov = ref([90])
                 <td class="pr-4 h-8">Translation</td>
                 <td class="w-full h-8">
                   <div class="grid grid-cols-3 gap-1">
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
+                    <Input
+                      size="sm"
+                      class="font-mono"
+                      v-model="hierarchyItems.activeItem.translation.x"
+                    />
+                    <Input
+                      size="sm"
+                      class="font-mono"
+                      v-model="hierarchyItems.activeItem.translation.y"
+                    />
+                    <Input
+                      size="sm"
+                      class="font-mono"
+                      v-model="hierarchyItems.activeItem.translation.z"
+                    />
                   </div>
                 </td>
               </tr>
             </tbody>
             <tbody v-else-if="hierarchyItems.activeItem.type === 'mesh'">
               <tr>
-                <td class="pr-4 h-8">Translation</td>
+                <td class="pr-4 h-8">X</td>
+                <td class="w-full h-8">Y</td>
+              </tr>
+            </tbody>
+            <tbody v-else-if="hierarchyItems.activeItem.type === 'texture'">
+              <tr>
+                <td class="pr-4 h-8">Resolution</td>
                 <td class="w-full h-8">
-                  <div class="grid grid-cols-3 gap-0.5">
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
-                    <Input size="sm" class="font-mono" value="0" />
+                  <span class="font-mono">
+                    {{ hierarchyItems.activeItem.resolution.w }} x
+                    {{ hierarchyItems.activeItem.resolution.h }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-4 h-8">File</td>
+                <td class="w-full h-8">
+                  <div class="flex items-center gap-2 justify-between">
+                    <span class="font-mono">{{ hierarchyItems.activeItem.file }}</span>
+                    <Button size="xs" variant="outline">Edit...</Button>
                   </div>
                 </td>
               </tr>

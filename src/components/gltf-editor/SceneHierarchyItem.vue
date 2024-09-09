@@ -55,7 +55,6 @@ const props = defineProps({
 })
 
 const isOpen = ref(false)
-const isVisible = ref(true)
 
 function itemIcon(type: string) {
   switch (type) {
@@ -97,13 +96,13 @@ function itemIcon(type: string) {
       <!-- Main item bar -->
       <ContextMenuTrigger as-child>
         <div
-          class="flex items-center justify-between gap-4 rounded transition-colors hover:bg-muted"
+          class="flex items-center justify-between rounded transition-colors hover:bg-muted"
           :class="props.item.children?.length ? '' : 'ml-6'"
         >
           <!-- 'Expand' caret button, item icon, and title button -->
-          <div class="flex items-center">
+          <div class="flex items-center min-w-0">
             <CollapsibleTrigger v-if="props.item.children?.length" as-child>
-              <Button variant="ghost" class="p-0.5 h-6 w-6">
+              <Button variant="ghost" class="shrink-0 p-0.5 h-6 w-6">
                 <IconCaretRightFilled
                   class="w-3.5 h-3.5 text-muted-foreground transition-all"
                   :class="{ 'rotate-90': isOpen, hidden: !props.item.children?.length }"
@@ -111,7 +110,7 @@ function itemIcon(type: string) {
               </Button>
             </CollapsibleTrigger>
             <button
-              class="flex items-center gap-1.5 text-sm px-1 py-1 whitespace-nowrap"
+              class="flex items-center gap-1.5 text-sm px-1 py-1 shrink-1 min-w-0 truncate"
               :class="
                 hierarchyItems.activeItem === props.item ? 'text-blue-500 dark:text-blue-300' : ''
               "
@@ -122,7 +121,7 @@ function itemIcon(type: string) {
                   <TooltipTrigger asChild>
                     <component
                       :is="itemIcon(item.type)"
-                      class="w-4 h-4"
+                      class="w-4 h-4 shrink-0"
                       :class="
                         hierarchyItems.activeItem === props.item
                           ? 'text-blue-500 dark:text-blue-300'
@@ -134,7 +133,12 @@ function itemIcon(type: string) {
                 </Tooltip>
               </TooltipProvider>
               <span
-                :class="!isVisible && hierarchyItems.activeItem !== props.item ? 'opacity-50' : ''"
+                class="truncate"
+                :class="
+                  props.item.isHidden && hierarchyItems.activeItem !== props.item
+                    ? 'opacity-50'
+                    : ''
+                "
               >
                 {{ props.item.title || 'Untitled' }}
               </span>
@@ -146,11 +150,13 @@ function itemIcon(type: string) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button class="p-0.5" @click="isVisible = !isVisible">
+                  <button class="p-0.5" @click="props.item.isHidden = !props.item.isHidden">
                     <component
-                      :is="isVisible ? IconEye : IconEyeOff"
+                      :is="props.item.isHidden ? IconEyeOff : IconEye"
                       class="w-4 h-4"
-                      :class="isVisible ? 'text-muted-foreground' : 'text-muted-foreground/50'"
+                      :class="
+                        props.item.isHidden ? 'text-muted-foreground/50' : 'text-muted-foreground'
+                      "
                     />
                   </button>
                 </TooltipTrigger>
@@ -189,12 +195,12 @@ function itemIcon(type: string) {
           <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
           Edit
         </ContextMenuItem>
-        <ContextMenuItem @click="isVisible = !isVisible">
+        <ContextMenuItem @click="props.item.isHidden = !props.item.isHidden">
           <component
-            :is="isVisible ? IconEyeOff : IconEye"
+            :is="props.item.isHidden ? IconEye : IconEyeOff"
             class="w-4 h-4 mr-2 text-muted-foreground"
           />
-          {{ isVisible ? 'Hide' : 'Unhide' }}
+          {{ props.item.isHidden ? 'Unhide' : 'Hide' }}
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem class="text-destructive dark:text-rose-400">
