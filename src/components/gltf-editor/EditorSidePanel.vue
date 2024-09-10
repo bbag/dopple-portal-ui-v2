@@ -87,7 +87,7 @@ function itemIcon(type: string) {
         </div>
         <TabsContent value="scenes" class="h-full mt-0">
           <div class="flex justify-between items-end p-2 pb-0">
-            <h3 class="flex gap-2 items-center px-2 text-sm font-semibold">
+            <h3 class="flex gap-2 items-center px-1 text-sm font-semibold">
               <IconWorld class="w-4 h-4 text-muted-foreground" />
               Scene
             </h3>
@@ -349,6 +349,18 @@ function itemIcon(type: string) {
                   <div class="flex items-center gap-2 justify-between">
                     <span class="font-mono">{{ hierarchyItems.activeItem.file }}</span>
                     <Button size="xs" variant="outline">Edit...</Button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-4 h-8 align-top">Preview</td>
+                <td class="w-full h-8">
+                  <div class="flex items-center gap-2 justify-between">
+                    <img
+                      :src="hierarchyItems.activeItem.preview"
+                      :alt="hierarchyItems.activeItem.file"
+                      class="w-full max-w-48 rounded-sm"
+                    />
                   </div>
                 </td>
               </tr>

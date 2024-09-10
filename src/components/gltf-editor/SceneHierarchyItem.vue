@@ -13,18 +13,26 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import {
+  IconBulb,
   IconCaretRightFilled,
   IconCircleDot,
   IconCube,
@@ -167,13 +175,31 @@ function itemIcon(type: string) {
                   <IconDots class="w-4 h-4 text-muted-foreground" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
+                      Add...
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent class="w-36">
+                        <DropdownMenuItem>
+                          <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
+                          Group
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <IconBulb class="w-4 h-4 mr-2 text-muted-foreground" />
+                          Light Node
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
+                          Empty Node
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
                   <DropdownMenuItem v-if="$props.item.type === 'group'">
-                    <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
                     <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-                    Rename
+                    Edit
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem class="text-destructive dark:text-rose-400">
@@ -187,10 +213,30 @@ function itemIcon(type: string) {
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem v-if="$props.item.type === 'group'">
+        <!-- <ContextMenuItem v-if="$props.item.type === 'group'">
           <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
           Add
-        </ContextMenuItem>
+        </ContextMenuItem> -->
+        <ContextMenuSub v-if="$props.item.type === 'group'">
+          <ContextMenuSubTrigger>
+            <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
+            Add...
+          </ContextMenuSubTrigger>
+          <ContextMenuSubContent class="w-36">
+            <ContextMenuItem>
+              <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
+              Group
+            </ContextMenuItem>
+            <ContextMenuItem>
+              <IconBulb class="w-4 h-4 mr-2 text-muted-foreground" />
+              Light Node
+            </ContextMenuItem>
+            <ContextMenuItem>
+              <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
+              Empty Node
+            </ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
         <ContextMenuItem>
           <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
           Edit

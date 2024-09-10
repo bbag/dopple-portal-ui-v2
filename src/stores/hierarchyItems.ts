@@ -1,4 +1,8 @@
 import { defineStore } from 'pinia'
+import PlaceholderAlbedo from '../assets/img/placeholder-albedo.png'
+import PlaceholderAO from '../assets/img/placeholder-ao.png'
+import PlaceholderNormal from '../assets/img/placeholder-normal.png'
+import PlaceholderRoughness from '../assets/img/placeholder-roughness.png'
 
 export interface ItemGeneric {
   id: string
@@ -26,16 +30,8 @@ export interface ItemGroup extends ItemGeneric {
   children: HierarchyItem[]
 }
 
-export interface ItemEnvironment extends ItemGeneric {
-  type: 'environment'
-}
-
-export interface ItemMesh extends ItemGeneric {
-  type: 'mesh'
-}
-
-export interface ItemNode extends ItemGeneric {
-  type: 'node'
+export interface ItemAnimation extends ItemGeneric {
+  type: 'animation'
 }
 
 export interface ItemCamera extends ItemGeneric {
@@ -63,26 +59,42 @@ export interface ItemCamera extends ItemGeneric {
   autoRotateSpeed: number
 }
 
+export interface ItemEnvironment extends ItemGeneric {
+  type: 'environment'
+}
+
 export interface ItemGlobal extends ItemGeneric {
   type: 'global'
+}
+
+export interface ItemLight extends ItemGeneric {
+  type: 'light'
+}
+
+export interface ItemMaterial extends ItemGeneric {
+  type: 'material'
+  baseColor: string
+  emissiveColor: string
+  doubleSided: boolean
+  alphaCutoff: number
+  alphaMode: 'Opaque' | 'Mask' | 'Blend'
+  roughnessFactor: number
+  metallicFactor: number
+}
+
+export interface ItemMesh extends ItemGeneric {
+  type: 'mesh'
+}
+
+export interface ItemNode extends ItemGeneric {
+  type: 'node'
 }
 
 export interface ItemTexture extends ItemGeneric {
   type: 'texture'
   file: string
   resolution: { w: number; h: number }
-}
-
-export interface ItemMaterial extends ItemGeneric {
-  type: 'material'
-}
-
-export interface ItemAnimation extends ItemGeneric {
-  type: 'animation'
-}
-
-export interface ItemLight extends ItemGeneric {
-  type: 'light'
+  preview: string
 }
 
 function randomId() {
@@ -732,37 +744,79 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 type: 'material',
                 id: randomId(),
                 title: 'back_circuit_ivory',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               },
               {
                 type: 'material',
                 id: randomId(),
                 title: 'back_circuit_onyx',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               },
               {
                 type: 'material',
                 id: randomId(),
                 title: 'back_grey_oak',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               },
               {
                 type: 'material',
                 id: randomId(),
                 title: 'back_natural_oak',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               },
               {
                 type: 'material',
                 id: randomId(),
                 title: 'cushions_boucle_onyx',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               },
               {
                 type: 'material',
                 id: randomId(),
                 title: 'cushions_leather_dune',
-                isHidden: false
+                isHidden: false,
+                baseColor: '#FEFEFE',
+                emissiveColor: '#000000',
+                doubleSided: true,
+                alphaCutoff: 0.5,
+                alphaMode: 'Opaque',
+                roughnessFactor: 1,
+                metallicFactor: 1
               }
             ]
           },
@@ -781,7 +835,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_AO',
                 isHidden: false,
                 file: 'body_ao.png',
-                resolution: { w: 1024, h: 1024 }
+                resolution: { w: 1024, h: 1024 },
+                preview: PlaceholderAO
               },
               {
                 type: 'texture',
@@ -789,7 +844,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_Normal',
                 isHidden: false,
                 file: 'body_normal.png',
-                resolution: { w: 4096, h: 4096 }
+                resolution: { w: 4096, h: 4096 },
+                preview: PlaceholderNormal
               },
               {
                 type: 'texture',
@@ -797,7 +853,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_Onyx_Albedo',
                 isHidden: false,
                 file: 'body_onyx_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               },
               {
                 type: 'texture',
@@ -805,7 +862,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_Onyx_Metallic_Roughness',
                 isHidden: false,
                 file: 'body_onyx_metallic_roughness.png',
-                resolution: { w: 1024, h: 1024 }
+                resolution: { w: 1024, h: 1024 },
+                preview: PlaceholderRoughness
               },
               {
                 type: 'texture',
@@ -813,7 +871,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_Quartz_Albedo',
                 isHidden: false,
                 file: 'body_quartz_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               },
               {
                 type: 'texture',
@@ -821,7 +880,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Body_Quartz_Metallic_Roughness',
                 isHidden: false,
                 file: 'body_quartz_metallic_roughness.png',
-                resolution: { w: 1024, h: 1024 }
+                resolution: { w: 1024, h: 1024 },
+                preview: PlaceholderRoughness
               },
               {
                 type: 'texture',
@@ -829,7 +889,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Dune_Albedo',
                 isHidden: false,
                 file: 'cushions_dune_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               },
               {
                 type: 'texture',
@@ -837,7 +898,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Ivory_Albedo',
                 isHidden: false,
                 file: 'cushions_ivory_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               },
               {
                 type: 'texture',
@@ -845,7 +907,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Leather_AO',
                 isHidden: false,
                 file: 'cushions_leather_ao.png',
-                resolution: { w: 1024, h: 1024 }
+                resolution: { w: 1024, h: 1024 },
+                preview: PlaceholderAO
               },
               {
                 type: 'texture',
@@ -853,7 +916,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Leather_Normal',
                 isHidden: false,
                 file: 'cushions_leather_normal.png',
-                resolution: { w: 4096, h: 4096 }
+                resolution: { w: 4096, h: 4096 },
+                preview: PlaceholderNormal
               },
               {
                 type: 'texture',
@@ -861,7 +925,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Pink_Albedo',
                 isHidden: false,
                 file: 'cushions_pink_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               },
               {
                 type: 'texture',
@@ -869,7 +934,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 title: 'Cushions_Steel_Albedo',
                 isHidden: false,
                 file: 'cushions_steel_albedo.png',
-                resolution: { w: 2048, h: 2048 }
+                resolution: { w: 2048, h: 2048 },
+                preview: PlaceholderAlbedo
               }
             ]
           },
