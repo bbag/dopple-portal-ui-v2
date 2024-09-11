@@ -8,7 +8,9 @@ import { buttonVariants } from '../../ui/button'
 <template>
   <ul class="space-y-4">
     <li class="relative pl-6 sm:pl-8">
-      <IconPackageImport class="absolute left-0 top-0.5 w-4 h-4 text-blue-500 sm:w-5 sm:h-5" />
+      <IconPackageImport
+        class="absolute left-0 top-0.5 w-4 h-4 text-blue-500 dark:text-blue-400 sm:w-5 sm:h-5"
+      />
       Add new glTFs from your workspace files into your scene using the
       <span class="align-middle" :class="buttonVariants({ size: 'xs', variant: 'blue' })"
         ><IconPackageImport class="w-4 h-4 mr-2 inline-block" />Import to Scene</span
@@ -16,7 +18,9 @@ import { buttonVariants } from '../../ui/button'
       button.
     </li>
     <li class="relative pl-6 sm:pl-8">
-      <IconFileUpload class="absolute left-0 top-0.5 w-4 h-4 text-blue-500 sm:w-5 sm:h-5" />
+      <IconFileUpload
+        class="absolute left-0 top-0.5 w-4 h-4 text-blue-500 dark:text-blue-400 sm:w-5 sm:h-5"
+      />
       Need to upload new files to your workspace for this project? Click
       <RouterLink
         class="text-blue-500 dark:text-blue-300 underline"
