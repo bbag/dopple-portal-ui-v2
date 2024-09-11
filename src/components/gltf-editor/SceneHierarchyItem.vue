@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
 
 import { useHierarchyItemsStore } from '@/stores/hierarchyItems'
 const hierarchyItems = useHierarchyItemsStore()
@@ -29,11 +29,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import {
   IconBulb,
   IconCaretRightFilled,
+  IconCheck,
   IconCircleDot,
   IconCube,
   IconDots,
@@ -45,7 +47,8 @@ import {
   IconStack2,
   IconTrashX,
   IconVideo,
-  IconWorld
+  IconWorld,
+  IconX
 } from '@tabler/icons-vue'
 
 import IconMaterial from '@/assets/icons/material.svg'
@@ -84,6 +87,31 @@ function itemIcon(type: string) {
       return IconCircleDot
   }
 }
+
+const isRenaming = ref(false)
+const renameValue = ref('')
+const renameInput = useTemplateRef('rename-input')
+
+onMounted(() => {
+  renameValue.value = props.item.title
+})
+
+function handleRename() {
+  props.item.title = renameValue.value
+  isRenaming.value = false
+}
+
+function handleCancelRename() {
+  isRenaming.value = false
+  renameValue.value = props.item.title
+}
+
+function handleStartRename() {
+  isRenaming.value = true
+  // nextTick(() => {
+  //   renameInput.value?.$el.focus()
+  // })
+}
 </script>
 <template>
   <Collapsible v-model:open="isOpen" class="relative pl-5">
@@ -117,8 +145,35 @@ function itemIcon(type: string) {
                 />
               </Button>
             </CollapsibleTrigger>
+            <div v-if="isRenaming" class="h-7 grid items-center">
+              <Input
+                type="text"
+                size="xs"
+                v-model="renameValue"
+                class="w-full pr-11 col-start-1 col-end-2 row-start-1 row-end-2"
+                ref="rename-input"
+                @keyup.enter="handleRename"
+                @keyup.esc="handleCancelRename"
+              />
+              <div
+                class="pr-1 justify-self-end col-start-1 col-end-2 row-start-1 row-end-2 flex gap-1 items-center justify-end"
+              >
+                <Button size="icon-xs" variant="success" class="h-4 w-4" @click="handleRename">
+                  <IconCheck class="w-3 h-3" />
+                </Button>
+                <Button
+                  size="icon-xs"
+                  variant="outline"
+                  class="h-4 w-4 text-destructive hover:text-destructive/80"
+                  @click="handleCancelRename"
+                >
+                  <IconX class="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
             <button
-              class="flex items-center gap-1.5 text-sm px-1 py-1 shrink-1 min-w-0 truncate"
+              v-else
+              class="h-7 flex items-center gap-1.5 text-sm px-1 shrink-1 min-w-0 truncate"
               :class="
                 hierarchyItems.activeItem === props.item ? 'text-blue-500 dark:text-blue-300' : ''
               "
@@ -197,9 +252,9 @@ function itemIcon(type: string) {
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
-                  <DropdownMenuItem v-if="$props.item.type === 'group'">
+                  <DropdownMenuItem @click="handleStartRename">
                     <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-                    Edit
+                    Rename
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem class="text-destructive dark:text-rose-400">
@@ -237,9 +292,9 @@ function itemIcon(type: string) {
             </ContextMenuItem>
           </ContextMenuSubContent>
         </ContextMenuSub>
-        <ContextMenuItem>
+        <ContextMenuItem @click="handleStartRename">
           <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-          Edit
+          Rename
         </ContextMenuItem>
         <ContextMenuItem @click="props.item.isHidden = !props.item.isHidden">
           <component

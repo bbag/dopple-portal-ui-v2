@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from 'vue';
-import type { Component } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue'
+import type { Component } from 'vue'
 
 import { Button } from '../button'
 
@@ -11,14 +11,7 @@ import {
   useForwardPropsEmits
 } from 'radix-vue'
 
-import {
-  TourContent,
-  TourDescription,
-  TourFooter,
-  TourHeader,
-  TourTitle,
-  TourTrigger,
-} from '.'
+import { TourContent, TourDescription, TourFooter, TourHeader, TourTitle, TourTrigger } from '.'
 
 interface Step {
   content: Component | string
@@ -48,7 +41,7 @@ function incrementStep() {
 }
 
 function handleOpenChange(openState: boolean) {
-  if (openState === true) currentStep.value = 0 
+  if (openState === true) currentStep.value = 0
 }
 </script>
 
@@ -57,20 +50,27 @@ function handleOpenChange(openState: boolean) {
     <slot />
     <TourContent v-if="props.steps" class="w-sm">
       <TourHeader>
-        <TourTitle>
+        <TourTitle class="sm:mb-4">
           {{ props.steps[currentStep].title }}
         </TourTitle>
         <TourDescription v-if="props.steps[currentStep].description">
           {{ props.steps[currentStep].description }}
         </TourDescription>
       </TourHeader>
-      <div>
-        <span v-if="typeof props.steps[currentStep].content === 'string'">{{ props.steps[currentStep].content }}</span>
+      <div class="text-sm sm:text-base">
+        <span v-if="typeof props.steps[currentStep].content === 'string'">{{
+          props.steps[currentStep].content
+        }}</span>
         <component v-else :is="props.steps[currentStep].content" />
       </div>
-      <TourFooter class="flex items-center sm:justify-between gap-2">
+      <TourFooter class="flex items-center sm:justify-between gap-2 sm:mt-4">
         <TourTrigger as-child>
-          <Button class="w-[4.5rem] hidden sm:flex" size="sm" variant="secondary" ref="close-button">
+          <Button
+            class="w-[4.5rem] hidden sm:flex"
+            size="sm"
+            variant="secondary"
+            ref="close-button"
+          >
             Skip
           </Button>
         </TourTrigger>
@@ -84,7 +84,7 @@ function handleOpenChange(openState: boolean) {
         </div>
         <div class="w-full sm:w-auto flex gap-2 sm:order-last">
           <Button
-            class="w-full sm:w-[4.5rem]"
+            class="w-full sm:w-auto sm:min-w-[4.5rem]"
             @click="isNotFirstStep ? currentStep-- : null"
             size="sm"
             variant="secondary"
@@ -93,7 +93,7 @@ function handleOpenChange(openState: boolean) {
             Back
           </Button>
           <Button
-            class="w-full sm:w-[4.5rem]"
+            class="w-full sm:w-auto sm:min-w-[4.5rem]"
             @click="incrementStep"
             size="sm"
             variant="blue"

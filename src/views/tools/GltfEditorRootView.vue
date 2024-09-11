@@ -14,38 +14,36 @@ import {
   TourFooter,
   TourHeader,
   TourTitle,
-  TourTrigger,
+  TourTrigger
 } from '@/components/ui/tour-dialog'
 
 import EditorSidePanel from '@/components/gltf-editor/EditorSidePanel.vue'
 
-import Temp from './Temp.vue'
+import StepWelcome from '../../components/gltf-editor/tour-steps/StepWelcome.vue'
+import StepOtherTips from '../../components/gltf-editor/tour-steps/StepOtherTips.vue'
+import StepCollaboration from '../../components/gltf-editor/tour-steps/StepCollaboration.vue'
+import StepWorkingWithAssets from '../../components/gltf-editor/tour-steps/StepWorkingWithAssets.vue'
 
 // const testRef = useTemplateRef<HTMLDivElement>('foo')
 
 const tourSteps = [
   {
-    target: '[data-tour-step="0"]',
-    title: 'Welcome!',
-    content: Temp,
+    title: 'Welcome to the Dopple glTF Editor',
+    content: StepWelcome
   },
   {
-    target: '[data-tour-step="a"]',
-    title: 'Step 1',
-    content: 'Awesome',
+    title: 'Working with assets',
+    content: StepWorkingWithAssets
   },
   {
-    target: '[data-tour-step="b"]',
-    title: 'Step 2',
-    content: 'Cool',
+    title: 'Collaboration',
+    content: StepCollaboration
   },
   {
-    target: '[data-tour-step="3"]',
-    title: 'Step 3',
-    content: 'And finally, this is some info for the last step of the tour.',
+    title: 'Other good-to-knows',
+    content: StepOtherTips
   }
 ]
-
 </script>
 
 <template>
@@ -67,17 +65,8 @@ const tourSteps = [
         <div class="my-8" data-tour-step="0">A second line with some content</div>
         <div>Final line with another bit of <span data-tour-step="0">content</span></div>
       </ResizablePanel>
-    </ResizablePanelGroup>    
-    <!-- Tour -->
-    <!-- <div class="m-32">
-      Some content <span ref="foo" class="text-emerald-500">HERE</span> to test custom anchor positioning.
-    </div>
-    <Tour :steps="tourSteps" :test-ref="testRef">
-      <TourTrigger>Start Tour</TourTrigger>
-    </Tour>
-    <div class="m-16">Padding stuff</div> -->
+    </ResizablePanelGroup>
   </div>
-
 </template>
 
 <style scoped></style>
