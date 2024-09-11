@@ -26,8 +26,8 @@ const router = createRouter({
           component: () => import('@/views/workspaces/WorkspaceOverviewView.vue')
         },
         {
-          path: 'assets',
-          name: 'Assets',
+          path: 'files',
+          name: 'Workspace Files',
           component: () => import('@/views/assets/AssetsView.vue')
         },
         {

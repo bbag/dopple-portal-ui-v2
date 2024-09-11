@@ -1,9 +1,11 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 import {
+  IconBox,
   IconChartDots,
   IconExternalLink,
   IconFile3d,
+  IconFiles,
   IconFileCode,
   IconFolders,
   IconPackage,
@@ -60,13 +62,13 @@ export const routes: IRouteCategory[] = [
       typeof route.params === 'object' && 'workspace' in route.params ? true : false,
     routes: [
       {
-        name: 'Assets',
-        icon: IconPackage,
-        path: 'assets'
+        name: 'Workspace Files',
+        icon: IconFiles,
+        path: 'files'
       },
       {
         name: 'Projects',
-        icon: IconFolders,
+        icon: IconBox,
         path: 'projects'
       },
       {

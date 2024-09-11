@@ -12,6 +12,7 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuSub,
   ContextMenuSubContent,
@@ -22,6 +23,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
@@ -37,13 +39,19 @@ import {
   IconCaretRightFilled,
   IconCheck,
   IconCircleDot,
+  IconColorFilter,
   IconCube,
   IconDots,
   IconEye,
   IconEyeOff,
   IconHaze,
+  IconMickey,
   IconPencil,
   IconPlus,
+  IconPoint,
+  IconRuler,
+  IconSphere,
+  IconSquare,
   IconStack2,
   IconTrashX,
   IconVideo,
@@ -112,6 +120,83 @@ function handleStartRename() {
   //   renameInput.value?.$el.focus()
   // })
 }
+
+const addNodeItems = [
+  {
+    text: 'Meshes',
+    component: 'menu-label'
+  },
+  {
+    text: 'Plane',
+    component: 'menu-item',
+    icon: IconSquare
+  },
+  {
+    text: 'Cube',
+    component: 'menu-item',
+    icon: IconCube
+  },
+  {
+    text: 'Sphere',
+    component: 'menu-item',
+    icon: IconSphere
+  },
+  {
+    text: 'Empty Node',
+    component: 'menu-item',
+    icon: IconCircleDot
+  },
+  { component: 'menu-separator' },
+  {
+    text: 'Lights',
+    component: 'menu-label'
+  },
+  {
+    text: 'Point Light',
+    component: 'menu-item',
+    icon: IconBulb
+  },
+  {
+    text: 'Directional Light',
+    component: 'menu-item',
+    icon: IconBulb
+  },
+  {
+    text: 'Spotlight',
+    component: 'menu-item',
+    icon: IconBulb
+  },
+  { component: 'menu-separator' },
+  {
+    text: 'Cameras',
+    component: 'menu-label'
+  },
+  {
+    text: 'Perspective Camera',
+    component: 'menu-item',
+    icon: IconVideo
+  },
+  { component: 'menu-separator' },
+  {
+    text: 'Prefabs',
+    component: 'menu-label'
+  },
+  {
+    text: 'Scale Checker',
+    component: 'menu-item',
+    icon: IconRuler
+  },
+  {
+    text: 'Color Checker',
+    component: 'menu-item',
+    icon: IconColorFilter
+  },
+  {
+    text: 'Suzanne',
+    component: 'menu-item',
+    icon: IconMickey
+  }
+]
 </script>
 <template>
   <Collapsible v-model:open="isOpen" class="relative pl-5">
@@ -158,17 +243,38 @@ function handleStartRename() {
               <div
                 class="pr-1 justify-self-end col-start-1 col-end-2 row-start-1 row-end-2 flex gap-1 items-center justify-end"
               >
-                <Button size="icon-xs" variant="success" class="h-4 w-4" @click="handleRename">
-                  <IconCheck class="w-3 h-3" />
-                </Button>
-                <Button
-                  size="icon-xs"
-                  variant="outline"
-                  class="h-4 w-4 text-destructive hover:text-destructive/80"
-                  @click="handleCancelRename"
-                >
-                  <IconX class="w-3 h-3" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger as-child>
+                      <Button
+                        size="icon-xs"
+                        variant="success"
+                        class="h-4 w-4"
+                        @click="handleRename"
+                      >
+                        <IconCheck class="w-3 h-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent class="text-sm">
+                      <p>Rename</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger as-child>
+                      <Button
+                        size="icon-xs"
+                        variant="outline"
+                        class="h-4 w-4 text-destructive hover:text-destructive/80 dark:text-red-400 dark:hover:text-red-400/80"
+                        @click="handleCancelRename"
+                      >
+                        <IconX class="w-3 h-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent class="text-sm">
+                      <p>Cancel</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
             <button
@@ -236,8 +342,25 @@ function handleStartRename() {
                       Add...
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
-                      <DropdownMenuSubContent class="w-36">
-                        <DropdownMenuItem>
+                      <DropdownMenuSubContent class="min-w-48">
+                        <component
+                          :is="
+                            menuItem.component === 'menu-separator'
+                              ? DropdownMenuSeparator
+                              : menuItem.component === 'menu-label'
+                                ? DropdownMenuLabel
+                                : DropdownMenuItem
+                          "
+                          v-for="menuItem in addNodeItems"
+                          :key="menuItem.text"
+                        >
+                          <component
+                            :is="menuItem.icon"
+                            class="w-4 h-4 mr-2 text-muted-foreground"
+                          />
+                          {{ menuItem.text }}
+                        </component>
+                        <!-- <DropdownMenuItem>
                           <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
                           Group
                         </DropdownMenuItem>
@@ -248,7 +371,7 @@ function handleStartRename() {
                         <DropdownMenuItem>
                           <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
                           Empty Node
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> -->
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
@@ -277,8 +400,22 @@ function handleStartRename() {
             <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
             Add...
           </ContextMenuSubTrigger>
-          <ContextMenuSubContent class="w-36">
-            <ContextMenuItem>
+          <ContextMenuSubContent class="min-w-48">
+            <component
+              :is="
+                menuItem.component === 'menu-separator'
+                  ? ContextMenuSeparator
+                  : menuItem.component === 'menu-label'
+                    ? ContextMenuLabel
+                    : ContextMenuItem
+              "
+              v-for="menuItem in addNodeItems"
+              :key="menuItem.text"
+            >
+              <component :is="menuItem.icon" class="w-4 h-4 mr-2 text-muted-foreground" />
+              {{ menuItem.text }}
+            </component>
+            <!-- <ContextMenuItem>
               <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
               Group
             </ContextMenuItem>
@@ -289,7 +426,7 @@ function handleStartRename() {
             <ContextMenuItem>
               <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
               Empty Node
-            </ContextMenuItem>
+            </ContextMenuItem> -->
           </ContextMenuSubContent>
         </ContextMenuSub>
         <ContextMenuItem @click="handleStartRename">

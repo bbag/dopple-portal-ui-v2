@@ -1,21 +1,7 @@
 <script setup lang="ts">
-import { onMounted, useTemplateRef } from 'vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-// import {
-//   Tour,
-//   TourContent,
-//   TourTrigger,
-// } from '@/components/ui/tour'
 import { Button } from '@/components/ui/button'
-import {
-  Tour,
-  TourContent,
-  TourDescription,
-  TourFooter,
-  TourHeader,
-  TourTitle,
-  TourTrigger
-} from '@/components/ui/tour-dialog'
+import { Tour, TourTrigger } from '@/components/ui/tour-dialog'
 
 import EditorSidePanel from '@/components/gltf-editor/EditorSidePanel.vue'
 
@@ -23,21 +9,31 @@ import StepWelcome from '../../components/gltf-editor/tour-steps/StepWelcome.vue
 import StepOtherTips from '../../components/gltf-editor/tour-steps/StepOtherTips.vue'
 import StepCollaboration from '../../components/gltf-editor/tour-steps/StepCollaboration.vue'
 import StepWorkingWithAssets from '../../components/gltf-editor/tour-steps/StepWorkingWithAssets.vue'
+import StepHierarchy from '../../components/gltf-editor/tour-steps/StepHierarchy.vue'
+import StepViewport from '../../components/gltf-editor/tour-steps/StepViewport.vue'
 
 // const testRef = useTemplateRef<HTMLDivElement>('foo')
 
 const tourSteps = [
   {
-    title: 'Welcome to the Dopple glTF Editor',
+    title: 'Welcome to the Dopple glTF Editor!',
     content: StepWelcome
   },
   {
-    title: 'Working with assets',
+    title: 'Working with a team?',
+    content: StepCollaboration
+  },
+  {
+    title: 'Hierarchy and settings',
+    content: StepHierarchy
+  },
+  {
+    title: 'Importing assets',
     content: StepWorkingWithAssets
   },
   {
-    title: 'Collaboration',
-    content: StepCollaboration
+    title: 'Your scene viewport',
+    content: StepViewport
   },
   {
     title: 'Other good-to-knows',
@@ -54,16 +50,12 @@ const tourSteps = [
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel class="grid place-content-center">
-        <div>
-          Main content here.
-          <Tour :steps="tourSteps">
-            <TourTrigger as-child>
-              <Button size="xs" variant="blue">Start Tour</Button>
-            </TourTrigger>
-          </Tour>
-        </div>
-        <div class="my-8" data-tour-step="0">A second line with some content</div>
-        <div>Final line with another bit of <span data-tour-step="0">content</span></div>
+        <span>Viewport stuff will go here...</span>
+        <Tour :steps="tourSteps">
+          <TourTrigger as-child>
+            <Button size="xs" variant="blue" class="mt-4">Dev: Trigger Tour</Button>
+          </TourTrigger>
+        </Tour>
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>

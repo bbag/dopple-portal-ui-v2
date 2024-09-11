@@ -14,7 +14,7 @@ const assets = useAssetsStore().assets
   <div class="bg-muted overflow-x-auto p-8">
     <div class="max-w-5xl mx-auto space-y-4">
       <h1 class="text-3xl font-bold flex justify-between">
-        Workspace Assets
+        Workspace Files
         <Button variant="outline">
           <IconFileUpload class="w-5 h-5 mr-2 text-muted-foreground" />
           Upload Files

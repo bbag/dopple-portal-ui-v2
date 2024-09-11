@@ -5,6 +5,7 @@ import {
   IconArrowBackUp,
   IconArrowForwardUp,
   IconBulb,
+  IconCamera,
   IconClipboardCopy,
   IconCloudUp,
   IconColorFilter,
@@ -32,21 +33,26 @@ export const menuItems = [
         component: MenubarItem,
         icon: IconFilePlus
       },
+      // {
+      //   text: 'Upload...',
+      //   component: MenubarItem,
+      //   icon: IconUpload
+      // },
+      // { component: MenubarSeparator },
       {
-        text: 'Upload...',
+        text: 'Save Local...',
         component: MenubarItem,
-        icon: IconUpload
+        icon: IconDownload
       },
-      { component: MenubarSeparator },
       {
         text: 'Save to Cloud...',
         component: MenubarItem,
         icon: IconCloudUp
       },
       {
-        text: 'Save Local...',
+        text: 'Snapshot...',
         component: MenubarItem,
-        icon: IconDownload
+        icon: IconCamera
       },
       { component: MenubarSeparator },
       {

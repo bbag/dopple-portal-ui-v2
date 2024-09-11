@@ -84,7 +84,7 @@ function handleOpenChange(openState: boolean) {
         </div>
         <div class="w-full sm:w-auto flex gap-2 sm:order-last">
           <Button
-            class="w-full sm:w-auto sm:min-w-[4.5rem]"
+            class="w-full sm:w-auto sm:min-w-[5rem]"
             @click="isNotFirstStep ? currentStep-- : null"
             size="sm"
             variant="secondary"
@@ -93,12 +93,12 @@ function handleOpenChange(openState: boolean) {
             Back
           </Button>
           <Button
-            class="w-full sm:w-auto sm:min-w-[4.5rem]"
+            class="w-full sm:w-auto sm:min-w-[5rem]"
             @click="incrementStep"
             size="sm"
             variant="blue"
           >
-            {{ isNotLastStep ? 'Next' : 'Close' }}
+            {{ isNotLastStep ? 'Next' : 'Let’s go' }}
           </Button>
         </div>
       </TourFooter>
