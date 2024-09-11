@@ -93,7 +93,7 @@ function itemIcon(type: string) {
             </h3>
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="xs" variant="blue">
+                <Button size="xs" variant="blue" data-tour-step="1">
                   <IconPackageImport class="w-4 h-4 mr-2" />
                   Import to Scene
                 </Button>
@@ -129,7 +129,7 @@ function itemIcon(type: string) {
                 :key="item.id"
                 :item="item"
                 :is-last-child="i === hierarchyItems.items.length - 1"
-                class="relative pr-2 pl-6"
+                class="pr-2 pl-6"
               />
             </div>
           </ScrollArea>

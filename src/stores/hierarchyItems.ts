@@ -179,7 +179,7 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
       },
       {
         type: 'group',
-        id: '123', // Error: Type 'number' is not assignable to type 'string'.
+        id: randomId(),
         title: 'TheChair',
         isHidden: false,
         translation: { x: 0, y: 0, z: 0 },
@@ -206,7 +206,7 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
           {
             type: 'group',
             id: randomId(),
-            title: 'Meshes',
+            title: 'Nodes',
             isHidden: false,
             translation: { x: 0, y: 0, z: 0 },
             rotation: { x: 0, y: 0, z: 0 },
