@@ -10,9 +10,6 @@ import { cn } from '@/lib/utils'
 // import { useTestRolesStore } from '@/stores/testRoles'
 // const testRoles = useTestRolesStore().testRoles
 
-import { useEditorStateStore } from '@/stores/editorStates'
-const editorStates = useEditorStateStore().editorStates
-
 import WorkspaceSelect from '@/components/blocks/side-nav/WorkspaceSelect.vue'
 
 import { menuItems } from '@/components/gltf-editor/editorMenuItems'
@@ -55,7 +52,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import BreadCrumbs from '@/components/blocks/breadcrumbs/BreadCrumbs.vue'
 import UserDropdown from './UserDropdown.vue'
 
-import { IconArrowNarrowLeft, IconArrowNarrowRight, IconCloudUp } from '@tabler/icons-vue'
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from '@tabler/icons-vue'
 import IconMenu from '@/assets/icons/menu.svg'
 import IconTreeCorner from '@/assets/icons/tree-corner.svg'
 import IconTreeSplit from '@/assets/icons/tree-split.svg'
@@ -118,6 +115,14 @@ function itemPath(path: string) {
     return `/w/${route.params.workspace}/${path}`
   }
 }
+
+// Editor states
+import { useEditorStateStore } from '@/stores/editorState'
+const editorStateStore = useEditorStateStore()
+
+// editorStateStore.count++
+// const editorStateStore = useEditorStateStore()
+// const editorState = editorStateStore.currentEditorState
 </script>
 
 <template>
@@ -161,21 +166,6 @@ function itemPath(path: string) {
                 </h2>
                 <template v-for="(item, itemIndex) in category.routes" :key="itemIndex">
                   <Tooltip>
-                    <!-- <TooltipTrigger as-child v-show="!$props.isCollapsed">
-                      <component
-                        :is="item.path.startsWith('http') ? 'a' : RouterLink"
-                        :href="item.path"
-                        :to="item.path.startsWith('http') ? undefined : itemPath(item.path)"
-                        :target="item.path.startsWith('http') ? '_blank' : undefined"
-                        v-show="$props.isCollapsed"
-                        class="inline-flex items-center justify-start gap-2 h-10 px-2 w-full transition-colors relative rounded-lg bg-blue-500 bg-opacity-0 hover:text-blue-500 after:-left-3"
-                      >
-                        <component :is="item.icon" class="size-6 shrink-0" />
-                      </component>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" :side-offset="5">
-                      {{ item.name }}
-                    </TooltipContent> -->
                     <component
                       :is="item.path.startsWith('http') ? 'a' : RouterLink"
                       :href="item.path"
@@ -234,7 +224,15 @@ function itemPath(path: string) {
       <Separator orientation="vertical" />
       <Menubar class="border-none rounded-none">
         <MenubarMenu v-for="menu in menuItems" :key="menu.text">
-          <MenubarTrigger>{{ menu.text }}</MenubarTrigger>
+          <MenubarTrigger class="relative">
+            {{ menu.text }}
+            <span
+              v-if="
+                menu.text === 'File' && editorStateStore.currentEditorState === 'Has Notifications'
+              "
+              class="absolute right-1.5 top-1.5 inline-block w-1.5 h-1.5 ml-2 rounded-full bg-yellow-500"
+            ></span>
+          </MenubarTrigger>
           <MenubarContent>
             <component v-for="(item, i) in menu.children" :key="i" :is="item.component">
               <component
@@ -243,6 +241,13 @@ function itemPath(path: string) {
                 class="w-5 h-5 mr-2 text-muted-foreground"
               />
               {{ item.text }}
+              <span
+                v-if="
+                  item.text === 'Save Local...' &&
+                  editorStateStore.currentEditorState === 'Has Notifications'
+                "
+                class="absolute left-4 top-1.5 inline-block w-1.5 h-1.5 ml-2 rounded-full bg-yellow-500"
+              ></span>
             </component>
           </MenubarContent>
         </MenubarMenu>
@@ -284,13 +289,14 @@ function itemPath(path: string) {
       </div>
       <Separator orientation="vertical" />
       <BreadCrumbs v-if="!hideBreadcrumbs" />
-      <div class="flex gap-4 ml-auto">
-        <Select v-model="useEditorStateStore().currentEditorState">
-          <SelectTrigger class="w-28 lg:w-32 h-8">
+      <div class="flex items-center gap-4 ml-auto">
+        <span class="text-xs font-semibold whitespace-nowrap -mr-2">Editor state:</span>
+        <Select v-model="editorStateStore.currentEditorState">
+          <SelectTrigger class="w-44 h-8">
             <SelectValue placeholder="Select a stage" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="state in editorStates" :key="state" :value="state">
+            <SelectItem v-for="state in editorStateStore.states" :key="state" :value="state">
               {{ state }}
             </SelectItem>
           </SelectContent>

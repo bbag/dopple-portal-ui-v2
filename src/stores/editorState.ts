@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export type TEditorState = 'Empty' | 'Partial' | 'Populated'
+export type TEditorState = 'Empty' | 'Populated' | 'Has Notifications'
 
 // export const useEditorStateStore = defineStore('editorStates', () => {
 //   const editorStates: TEditorState[] = ['Empty', 'Partial', 'Populated']
@@ -8,9 +8,9 @@ export type TEditorState = 'Empty' | 'Partial' | 'Populated'
 //   return { currentEditorState, editorStates }
 // })
 
-export const useEditorStateStore = defineStore('editorStates', {
+export const useEditorStateStore = defineStore('editorState', {
   state: () => ({
-    editorStates: ['Empty', 'Partial', 'Populated'] as TEditorState[],
-    currentEditorState: 'Empty' as TEditorState
+    states: ['Populated', 'Empty', 'Has Notifications'] as TEditorState[],
+    currentEditorState: 'Populated' as TEditorState
   })
 })

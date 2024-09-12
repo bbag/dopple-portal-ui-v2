@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 import FileTree from '@/components/blocks/file-tree/FileTree.vue'
 
-import { Button } from '../ui/button'
+import { Button, buttonVariants } from '../ui/button'
 import {
   Dialog,
   DialogContent,
@@ -19,13 +19,20 @@ import { ScrollArea } from '../ui/scroll-area'
 import { Slider } from '../ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+// Hierarchy items
 import SceneHierarchyItem from './SceneHierarchyItem.vue'
 import { useHierarchyItemsStore } from '@/stores/hierarchyItems'
 const hierarchyItems = useHierarchyItemsStore()
 
-import { useEditorStateStore } from '@/stores/editorStates'
-const currentEditorState = useEditorStateStore().currentEditorState
+// Empty state hierarchy items (i.e. Global settings only)
+import { useHierarchyItemsEmptyStore } from '@/stores/hierarchyItemsEmpty'
+const hierarchyItemsEmpty = useHierarchyItemsEmptyStore()
 
+// Editor states
+import { useEditorStateStore } from '@/stores/editorState'
+const editorStateStore = useEditorStateStore()
+
+// Assets
 import { useAssetsStore } from '@/stores/assets'
 const assets = useAssetsStore().assets
 
@@ -35,6 +42,7 @@ const tabs = [
 ]
 
 import {
+  IconAlertTriangle,
   IconCircleDot,
   IconCube,
   IconHaze,
@@ -86,6 +94,9 @@ function itemIcon(type: string) {
           </TabsList>
         </div>
         <TabsContent value="scenes" class="h-full mt-0">
+          <!-- <div v-if="editorStateStore.currentEditorState === 'Empty'">
+            <p></p>
+          </div> -->
           <div class="flex justify-between items-end p-2 pb-0">
             <h3 class="flex gap-2 items-center px-1 text-sm font-semibold">
               <IconWorld class="w-4 h-4 text-muted-foreground" />
@@ -125,12 +136,29 @@ function itemIcon(type: string) {
             <!-- <FileTree :nodes="hierarchyItems" size="sm" class="p-2 pb-4" /> -->
             <div class="p-2">
               <SceneHierarchyItem
+                v-show="editorStateStore.currentEditorState !== 'Empty'"
                 v-for="(item, i) in hierarchyItems.items"
                 :key="item.id"
                 :item="item"
                 :is-last-child="i === hierarchyItems.items.length - 1"
                 class="pr-2 pl-6"
               />
+              <SceneHierarchyItem
+                v-show="editorStateStore.currentEditorState === 'Empty'"
+                v-for="(item, i) in hierarchyItemsEmpty.items"
+                :key="item.id"
+                :item="item"
+                :is-last-child="i === hierarchyItemsEmpty.items.length - 1"
+                class="pr-2 pl-6"
+              />
+              <p
+                v-show="editorStateStore.currentEditorState === 'Empty'"
+                class="p-4 w-max max-w-full mx-auto mt-4 rounded-md bg-muted text-sm text-muted-foreground"
+              >
+                Project is empty. Click
+                <strong class="text-blue-500">Import to Scene</strong>
+                to begin.
+              </p>
             </div>
           </ScrollArea>
         </TabsContent>
@@ -252,7 +280,12 @@ function itemIcon(type: string) {
               <tr>
                 <td class="pr-4 h-8">Name</td>
                 <td class="w-full h-8">
-                  <Input size="sm" class="font-mono" v-model="hierarchyItems.activeItem.title" />
+                  <Input
+                    size="sm"
+                    class="font-mono"
+                    v-model="hierarchyItems.activeItem.title"
+                    :disabled="hierarchyItems.activeItem.canRename === false"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -352,6 +385,19 @@ function itemIcon(type: string) {
                   </div>
                 </td>
               </tr>
+              <tr v-if="hierarchyItems.activeItem.notification === 'file-missing'">
+                <td class="pr-4 h-8"></td>
+                <td class="w-full h-8">
+                  <div
+                    class="relative mb-4 pl-10 p-2 rounded-md border border-rose-300 bg-rose-50 text-rose-600 dark:border-rose-400/20 dark:bg-rose-400/5 dark:text-rose-400"
+                  >
+                    <IconAlertTriangle
+                      class="absolute left-3 top-2.5 w-4 h-4 text-rose-600 dark:text-rose-400"
+                    />
+                    File moved or missing. Click “Edit” to select another.
+                  </div>
+                </td>
+              </tr>
               <tr>
                 <td class="pr-4 h-8 align-top">Preview</td>
                 <td class="w-full h-8">
@@ -362,6 +408,13 @@ function itemIcon(type: string) {
                       class="w-full max-w-48 rounded-sm"
                     />
                   </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <td colspan="2" class="w-full h-8 text-xs pt-6 text-muted-foreground text-center">
+                  (These are just a few dummy example settings...)
                 </td>
               </tr>
             </tbody>

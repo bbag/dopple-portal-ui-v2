@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
+import { computed, onMounted, ref, toRaw } from 'vue'
 
 import { useHierarchyItemsStore } from '@/stores/hierarchyItems'
 const hierarchyItems = useHierarchyItemsStore()
@@ -98,7 +98,7 @@ function itemIcon(type: string) {
 
 const isRenaming = ref(false)
 const renameValue = ref('')
-const renameInput = useTemplateRef('rename-input')
+// const renameInput = useTemplateRef('rename-input')
 
 onMounted(() => {
   renameValue.value = props.item.title
@@ -197,6 +197,33 @@ const addNodeItems = [
     icon: IconMickey
   }
 ]
+
+// Editor states
+import { useEditorStateStore } from '@/stores/editorState'
+const editorStateStore = useEditorStateStore()
+
+function checkForNotification(obj) {
+  if (editorStateStore.currentEditorState !== 'Has Notifications') {
+    return false
+  }
+
+  if (obj.notification) {
+    return true
+  }
+
+  if (obj.children && Array.isArray(obj.children)) {
+    for (const child of obj.children) {
+      if (checkForNotification(child)) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+// Checks if this item or any of its children/grandchildren have notifications
+// const itemHasNotification = computed(() => checkForNotification(props.item))
 </script>
 <template>
   <Collapsible v-model:open="isOpen" class="relative pl-5">
@@ -287,16 +314,22 @@ const addNodeItems = [
             >
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger asChild>
-                    <component
-                      :is="itemIcon(item.type)"
-                      class="w-4 h-4 shrink-0"
-                      :class="
-                        hierarchyItems.activeItem === props.item
-                          ? 'text-blue-500 dark:text-blue-300'
-                          : 'text-muted-foreground'
-                      "
-                    />
+                  <TooltipTrigger>
+                    <div class="relative">
+                      <component
+                        :is="itemIcon(item.type)"
+                        class="w-4 h-4 shrink-0"
+                        :class="
+                          hierarchyItems.activeItem === props.item
+                            ? 'text-blue-500 dark:text-blue-300'
+                            : 'text-muted-foreground'
+                        "
+                      />
+                      <span
+                        v-if="checkForNotification(props.item)"
+                        class="absolute left-2 -top-0.5 inline-block w-2.5 h-2.5 rounded-full border border-2 border-[hsl(var(--background))] bg-rose-500"
+                      ></span>
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent class="text-xs capitalize">{{ item.type }}</TooltipContent>
                 </Tooltip>
@@ -336,6 +369,13 @@ const addNodeItems = [
                   <IconDots class="w-4 h-4 text-muted-foreground" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    v-if="props.item.canRename !== false"
+                    @click="handleStartRename"
+                  >
+                    <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
+                    Rename
+                  </DropdownMenuItem>
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -360,25 +400,9 @@ const addNodeItems = [
                           />
                           {{ menuItem.text }}
                         </component>
-                        <!-- <DropdownMenuItem>
-                          <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
-                          Group
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <IconBulb class="w-4 h-4 mr-2 text-muted-foreground" />
-                          Light Node
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
-                          Empty Node
-                        </DropdownMenuItem> -->
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
-                  <DropdownMenuItem @click="handleStartRename">
-                    <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-                    Rename
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem class="text-destructive dark:text-rose-400">
                     <IconTrashX class="w-4 h-4 mr-2" />
@@ -391,10 +415,10 @@ const addNodeItems = [
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <!-- <ContextMenuItem v-if="$props.item.type === 'group'">
-          <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
-          Add
-        </ContextMenuItem> -->
+        <ContextMenuItem v-if="props.item.canRename !== false" @click="handleStartRename">
+          <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
+          Rename
+        </ContextMenuItem>
         <ContextMenuSub v-if="$props.item.type === 'group'">
           <ContextMenuSubTrigger>
             <IconPlus class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -415,24 +439,8 @@ const addNodeItems = [
               <component :is="menuItem.icon" class="w-4 h-4 mr-2 text-muted-foreground" />
               {{ menuItem.text }}
             </component>
-            <!-- <ContextMenuItem>
-              <IconStack2 class="w-4 h-4 mr-2 text-muted-foreground" />
-              Group
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <IconBulb class="w-4 h-4 mr-2 text-muted-foreground" />
-              Light Node
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <IconCircleDot class="w-4 h-4 mr-2 text-muted-foreground" />
-              Empty Node
-            </ContextMenuItem> -->
           </ContextMenuSubContent>
         </ContextMenuSub>
-        <ContextMenuItem @click="handleStartRename">
-          <IconPencil class="w-4 h-4 mr-2 text-muted-foreground" />
-          Rename
-        </ContextMenuItem>
         <ContextMenuItem @click="props.item.isHidden = !props.item.isHidden">
           <component
             :is="props.item.isHidden ? IconEye : IconEyeOff"

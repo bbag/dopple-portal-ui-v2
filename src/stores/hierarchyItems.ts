@@ -8,6 +8,8 @@ export interface ItemGeneric {
   id: string
   isHidden: boolean
   title: string
+  canRename?: boolean
+  notification?: string
 }
 
 export type HierarchyItem =
@@ -115,6 +117,7 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
         id: randomId(),
         title: 'Global',
         isHidden: false,
+        canRename: false,
         translation: { x: 0, y: 0, z: 0 },
         rotation: { x: 0, y: 0, z: 0 },
         scale: { x: 1, y: 1, z: 1 },
@@ -845,7 +848,8 @@ export const useHierarchyItemsStore = defineStore('hierarchyItems', {
                 isHidden: false,
                 file: 'body_normal.png',
                 resolution: { w: 4096, h: 4096 },
-                preview: PlaceholderNormal
+                preview: PlaceholderNormal,
+                notification: 'file-missing'
               },
               {
                 type: 'texture',
