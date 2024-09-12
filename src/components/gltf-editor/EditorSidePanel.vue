@@ -385,7 +385,12 @@ function itemIcon(type: string) {
                   </div>
                 </td>
               </tr>
-              <tr v-if="hierarchyItems.activeItem.notification === 'file-missing'">
+              <tr
+                v-if="
+                  editorStateStore.currentEditorState === 'Has Notifications' &&
+                  hierarchyItems.activeItem.notification === 'file-missing'
+                "
+              >
                 <td class="pr-4 h-8"></td>
                 <td class="w-full h-8">
                   <div
