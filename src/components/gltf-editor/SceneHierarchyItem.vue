@@ -70,6 +70,10 @@ const props = defineProps({
   item: {
     type: Object,
     required: true
+  },
+  indent: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -225,8 +229,9 @@ function checkForNotification(obj) {
 // Checks if this item or any of its children/grandchildren have notifications
 // const itemHasNotification = computed(() => checkForNotification(props.item))
 </script>
+
 <template>
-  <Collapsible v-model:open="isOpen" class="relative pl-5">
+  <Collapsible :data-hierarchy-open="isOpen" v-model:open="isOpen" class="relative pl-5">
     <ContextMenu>
       <!-- Tree lines on the left -->
       <div
@@ -244,8 +249,10 @@ function checkForNotification(obj) {
       <!-- Main item bar -->
       <ContextMenuTrigger as-child>
         <div
-          class="flex items-center justify-between rounded transition-colors hover:bg-muted"
+          data-hierarchy-item-bar
+          class="flex items-center justify-between rounded transition-colors bg-background hover:bg-muted"
           :class="props.item.children?.length ? '' : 'ml-6'"
+          :style="`--i: ${props.indent}`"
         >
           <!-- 'Expand' caret button, item icon, and title button -->
           <div class="flex items-center min-w-0">
@@ -461,8 +468,25 @@ function checkForNotification(obj) {
         :key="child.title"
         :item="child"
         :is-last-child="i === props.item.children.length - 1"
+        :indent="props.indent + 1"
       >
       </SceneHierarchyItem>
     </CollapsibleContent>
   </Collapsible>
 </template>
+
+<style scoped>
+[data-hierarchy-open] {
+  z-index: 1;
+}
+[data-hierarchy-open='true'] {
+  /* box-shadow: inset 0 0 0 1px red; */
+}
+
+[data-hierarchy-open='true'] [data-hierarchy-item-bar] {
+  /* box-shadow: inset 0 0 0 1px limegreen; */
+  position: sticky;
+  top: calc(var(--i, 0) * 1.75rem);
+  z-index: 2;
+}
+</style>

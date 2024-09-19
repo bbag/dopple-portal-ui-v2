@@ -20,7 +20,8 @@ import { Slider } from '../ui/slider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Hierarchy items
-import SceneHierarchyItem from './SceneHierarchyItem.vue'
+// import SceneHierarchyItem from './SceneHierarchyItem.vue'
+import HierarchyItem from '../blocks/scene-hierarchy/HierarchyItem.vue'
 import { useHierarchyItemsStore } from '@/stores/hierarchyItems'
 const hierarchyItems = useHierarchyItemsStore()
 
@@ -134,8 +135,15 @@ function itemIcon(type: string) {
           <!-- <div style="box-shadow: inset 0 0 0 4px red" class="h-full">Test</div> -->
           <ScrollArea class="h-[calc(100%-2.5rem)] [&>div>div]:table-fixed [&>div>div]:w-full">
             <!-- <FileTree :nodes="hierarchyItems" size="sm" class="p-2 pb-4" /> -->
-            <div class="p-2">
-              <SceneHierarchyItem
+            <div class="p-2 relative">
+              <HierarchyItem
+                v-for="(hierarchyItem, i) in hierarchyItems.items"
+                :item="hierarchyItem"
+                :key="hierarchyItem.id"
+                :is-last-child="i === hierarchyItems.items.length - 1"
+                class="pr-2 pl-6"
+              />
+              <!-- <SceneHierarchyItem
                 v-show="editorStateStore.currentEditorState !== 'Empty'"
                 v-for="(item, i) in hierarchyItems.items"
                 :key="item.id"
@@ -150,7 +158,7 @@ function itemIcon(type: string) {
                 :item="item"
                 :is-last-child="i === hierarchyItemsEmpty.items.length - 1"
                 class="pr-2 pl-6"
-              />
+              /> -->
               <p
                 v-show="editorStateStore.currentEditorState === 'Empty'"
                 class="p-4 w-max max-w-full mx-auto mt-4 rounded-md bg-muted text-sm text-muted-foreground"
@@ -248,183 +256,178 @@ function itemIcon(type: string) {
     <ResizableHandle />
     <ResizablePanel>
       <ScrollArea class="h-full [&>div>div]:table-fixed [&>div>div]:w-full">
-        <div v-if="!hierarchyItems.activeItem" class="p-4">
-          <h3 class="font-semibold mb-2">Settings</h3>
-          <p class="text-sm text-muted-foreground italic">
-            Select a node or group from the hierarchy above to view and edit its settings.
-          </p>
-        </div>
-        <div v-else class="p-4">
-          <h3 class="font-semibold mb-2">Settings</h3>
-          <table class="w-full text-sm">
-            <tbody>
-              <tr>
-                <td class="pr-4 h-8 whitespace-nowrap">Type</td>
-                <td class="w-full h-8">
-                  <div class="flex items-center gap-2 font-mono">
-                    <component :is="itemIcon(hierarchyItems.activeItem.type)" class="w-4 h-4" />
-                    {{ hierarchyItems.activeItem.type }}
+        <h3 class="font-semibold mb-2">Properties</h3>
+        <p v-if="!hierarchyItems.activeItem" class="text-sm text-muted-foreground italic">
+          Select a node or group from the hierarchy above to view and edit its settings.
+        </p>
+        <table v-else class="w-full text-sm">
+          <tbody>
+            <tr>
+              <td class="pr-4 h-8 whitespace-nowrap">Type</td>
+              <td class="w-full h-8">
+                <div class="flex items-center gap-2 font-mono">
+                  <component :is="itemIcon(hierarchyItems.activeItem.type)" class="w-4 h-4" />
+                  {{ hierarchyItems.activeItem.type }}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="pr-4 h-8 whitespace-nowrap">ID</td>
+              <td class="w-full h-8">
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="px-2 py-1 bg-muted text-muted-foreground text-xs">{{
+                    hierarchyItems.activeItem.id
+                  }}</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="pr-4 h-8">Name</td>
+              <td class="w-full h-8">
+                <Input
+                  size="sm"
+                  class="font-mono"
+                  v-model="hierarchyItems.activeItem.title"
+                  :disabled="hierarchyItems.activeItem.canRename === false"
+                />
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-if="hierarchyItems.activeItem.type === 'camera'">
+            <tr>
+              <td class="pr-4 h-8 whitespace-nowrap">Aspect Ratio</td>
+              <td class="w-full h-8">
+                <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
+                  <Input
+                    size="sm"
+                    class="font-mono w-16"
+                    v-model.number="hierarchyItems.activeItem.aspectRatio[0]"
+                  />
+                  <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
+                    <span>0</span>
+                    <Slider
+                      :default-value="[0.5]"
+                      :max="2"
+                      :step="0.001"
+                      v-model="hierarchyItems.activeItem.aspectRatio"
+                    />
+                    <span>1</span>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="pr-4 h-8 whitespace-nowrap">ID</td>
-                <td class="w-full h-8">
-                  <div class="flex items-center gap-2 font-mono">
-                    <span class="px-2 py-1 bg-muted text-muted-foreground text-xs">{{
-                      hierarchyItems.activeItem.id
-                    }}</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="pr-4 h-8 whitespace-nowrap">FOV</td>
+              <td class="w-full h-8">
+                <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
+                  <Input
+                    size="sm"
+                    class="font-mono w-16"
+                    v-model.number="hierarchyItems.activeItem.fov[0]"
+                  />
+                  <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
+                    <span>10</span>
+                    <Slider
+                      :default-value="[90]"
+                      :max="120"
+                      :min="10"
+                      :step="1"
+                      v-model="hierarchyItems.activeItem.fov"
+                    />
+                    <span>120</span>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="pr-4 h-8">Name</td>
-                <td class="w-full h-8">
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else-if="hierarchyItems.activeItem.type === 'group'">
+            <tr>
+              <td class="pr-4 h-8">Translation</td>
+              <td class="w-full h-8">
+                <div class="grid grid-cols-3 gap-1">
                   <Input
                     size="sm"
                     class="font-mono"
-                    v-model="hierarchyItems.activeItem.title"
-                    :disabled="hierarchyItems.activeItem.canRename === false"
+                    v-model="hierarchyItems.activeItem.translation.x"
                   />
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-if="hierarchyItems.activeItem.type === 'camera'">
-              <tr>
-                <td class="pr-4 h-8 whitespace-nowrap">Aspect Ratio</td>
-                <td class="w-full h-8">
-                  <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
-                    <Input
-                      size="sm"
-                      class="font-mono w-16"
-                      v-model.number="hierarchyItems.activeItem.aspectRatio[0]"
-                    />
-                    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
-                      <span>0</span>
-                      <Slider
-                        :default-value="[0.5]"
-                        :max="2"
-                        :step="0.001"
-                        v-model="hierarchyItems.activeItem.aspectRatio"
-                      />
-                      <span>1</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="pr-4 h-8 whitespace-nowrap">FOV</td>
-                <td class="w-full h-8">
-                  <div class="font-mono grid grid-cols-[auto_minmax(0,1fr)] gap-4 items-center">
-                    <Input
-                      size="sm"
-                      class="font-mono w-16"
-                      v-model.number="hierarchyItems.activeItem.fov[0]"
-                    />
-                    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-2 items-center">
-                      <span>10</span>
-                      <Slider
-                        :default-value="[90]"
-                        :max="120"
-                        :min="10"
-                        :step="1"
-                        v-model="hierarchyItems.activeItem.fov"
-                      />
-                      <span>120</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-else-if="hierarchyItems.activeItem.type === 'group'">
-              <tr>
-                <td class="pr-4 h-8">Translation</td>
-                <td class="w-full h-8">
-                  <div class="grid grid-cols-3 gap-1">
-                    <Input
-                      size="sm"
-                      class="font-mono"
-                      v-model="hierarchyItems.activeItem.translation.x"
-                    />
-                    <Input
-                      size="sm"
-                      class="font-mono"
-                      v-model="hierarchyItems.activeItem.translation.y"
-                    />
-                    <Input
-                      size="sm"
-                      class="font-mono"
-                      v-model="hierarchyItems.activeItem.translation.z"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-else-if="hierarchyItems.activeItem.type === 'mesh'">
-              <tr>
-                <td class="pr-4 h-8">X</td>
-                <td class="w-full h-8">Y</td>
-              </tr>
-            </tbody>
-            <tbody v-else-if="hierarchyItems.activeItem.type === 'texture'">
-              <tr>
-                <td class="pr-4 h-8">Resolution</td>
-                <td class="w-full h-8">
-                  <span class="font-mono">
-                    {{ hierarchyItems.activeItem.resolution.w }} x
-                    {{ hierarchyItems.activeItem.resolution.h }}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td class="pr-4 h-8">File</td>
-                <td class="w-full h-8">
-                  <div class="flex items-center gap-2 justify-between">
-                    <span class="font-mono">{{ hierarchyItems.activeItem.file }}</span>
-                    <Button size="xs" variant="outline">Edit...</Button>
-                  </div>
-                </td>
-              </tr>
-              <tr
-                v-if="
-                  editorStateStore.currentEditorState === 'Has Notifications' &&
-                  hierarchyItems.activeItem.notification === 'file-missing'
-                "
-              >
-                <td class="pr-4 h-8"></td>
-                <td class="w-full h-8">
-                  <div
-                    class="relative mb-4 pl-10 p-2 rounded-md border border-rose-300 bg-rose-50 text-rose-600 dark:border-rose-400/20 dark:bg-rose-400/5 dark:text-rose-400"
-                  >
-                    <IconAlertTriangle
-                      class="absolute left-3 top-2.5 w-4 h-4 text-rose-600 dark:text-rose-400"
-                    />
-                    File moved or missing. Click “Edit” to select another.
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="pr-4 h-8 align-top">Preview</td>
-                <td class="w-full h-8">
-                  <div class="flex items-center gap-2 justify-between">
-                    <img
-                      :src="hierarchyItems.activeItem.preview"
-                      :alt="hierarchyItems.activeItem.file"
-                      class="w-full max-w-48 rounded-sm"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr>
-                <td colspan="2" class="w-full h-8 text-xs pt-6 text-muted-foreground text-center">
-                  (These are just a few dummy example settings...)
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  <Input
+                    size="sm"
+                    class="font-mono"
+                    v-model="hierarchyItems.activeItem.translation.y"
+                  />
+                  <Input
+                    size="sm"
+                    class="font-mono"
+                    v-model="hierarchyItems.activeItem.translation.z"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else-if="hierarchyItems.activeItem.type === 'mesh'">
+            <tr>
+              <td class="pr-4 h-8">X</td>
+              <td class="w-full h-8">Y</td>
+            </tr>
+          </tbody>
+          <tbody v-else-if="hierarchyItems.activeItem.type === 'texture'">
+            <tr>
+              <td class="pr-4 h-8">Resolution</td>
+              <td class="w-full h-8">
+                <span class="font-mono">
+                  {{ hierarchyItems.activeItem.resolution.w }} x
+                  {{ hierarchyItems.activeItem.resolution.h }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="pr-4 h-8">File</td>
+              <td class="w-full h-8">
+                <div class="flex items-center gap-2 justify-between">
+                  <span class="font-mono">{{ hierarchyItems.activeItem.file }}</span>
+                  <Button size="xs" variant="outline">Edit...</Button>
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-if="
+                editorStateStore.currentEditorState === 'Has Notifications' &&
+                hierarchyItems.activeItem.notification === 'file-missing'
+              "
+            >
+              <td class="pr-4 h-8"></td>
+              <td class="w-full h-8">
+                <div
+                  class="relative mb-4 pl-10 p-2 rounded-md border border-rose-300 bg-rose-50 text-rose-600 dark:border-rose-400/20 dark:bg-rose-400/5 dark:text-rose-400"
+                >
+                  <IconAlertTriangle
+                    class="absolute left-3 top-2.5 w-4 h-4 text-rose-600 dark:text-rose-400"
+                  />
+                  File moved or missing. Click “Edit” to select another.
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="pr-4 h-8 align-top">Preview</td>
+              <td class="w-full h-8">
+                <div class="flex items-center gap-2 justify-between">
+                  <img
+                    :src="hierarchyItems.activeItem.preview"
+                    :alt="hierarchyItems.activeItem.file"
+                    class="w-full max-w-48 rounded-sm"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td colspan="2" class="w-full h-8 text-xs pt-6 text-muted-foreground text-center">
+                (These are just a few dummy example settings...)
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </ScrollArea>
     </ResizablePanel>
   </ResizablePanelGroup>
