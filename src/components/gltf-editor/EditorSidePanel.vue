@@ -255,7 +255,7 @@ function itemIcon(type: string) {
     </ResizablePanel>
     <ResizableHandle />
     <ResizablePanel>
-      <ScrollArea class="h-full [&>div>div]:table-fixed [&>div>div]:w-full">
+      <ScrollArea class="h-full [&>div>div]:table-fixed [&>div>div]:w-full p-4">
         <h3 class="font-semibold mb-2">Properties</h3>
         <p v-if="!hierarchyItems.activeItem" class="text-sm text-muted-foreground italic">
           Select a node or group from the hierarchy above to view and edit its settings.
