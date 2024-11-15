@@ -39,7 +39,7 @@ const assets = useAssetsStore().assets
 
 const tabs = [
   { label: 'Project Hierarchy', value: 'scenes' },
-  { label: 'History', value: 'history' }
+  { label: 'Config Mode', value: 'config-mode' }
 ]
 
 import {
@@ -55,6 +55,7 @@ import {
 
 import IconMaterial from '@/assets/icons/material.svg'
 import IconTexture from '@/assets/icons/texture.svg'
+import ConfigModePanel from './ConfigModePanel.vue'
 
 function itemIcon(type: string) {
   switch (type) {
@@ -171,84 +172,9 @@ function itemIcon(type: string) {
           </ScrollArea>
         </TabsContent>
         <TabsContent value="hotspots"> Hotspots menu will go here. </TabsContent>
-        <TabsContent value="history" class="h-full mt-0">
+        <TabsContent value="config-mode" class="h-full mt-0">
           <ScrollArea class="h-full">
-            <pre class="p-4 text-sm">
-[
-  {
-    "path": [
-      {
-        "type": "environments",
-        "id": "e5e34e44-5052-4f3e-9320-e9922f408877"
-      },
-      {
-        "type": "attributes",
-        "id": "selected"
-      },
-      {
-        "type": "properties",
-        "id": "Environment"
-      },
-      {
-        "type": "options",
-        "id": "Env 2"
-      }
-    ],
-    "operation": "set",
-    "value": false,
-    "when": 1725397815341,
-    "oldValue": null
-  },
-  {
-    "path": [
-      {
-        "type": "environments",
-        "id": "e5e34e44-5052-4f3e-9320-e9922f408877"
-      },
-      {
-        "type": "attributes",
-        "id": "selected"
-      },
-      {
-        "type": "properties",
-        "id": "Environment"
-      },
-      {
-        "type": "options",
-        "id": "Env 1"
-      }
-    ],
-    "operation": "set",
-    "value": false,
-    "when": 1725397815341,
-    "oldValue": null
-  },
-  {
-    "path": [
-      {
-        "type": "environments",
-        "id": "8e55537f-b5c3-4e92-bc5f-3cfa96428970"
-      },
-      {
-        "type": "attributes",
-        "id": "selected"
-      },
-      {
-        "type": "properties",
-        "id": "Environment"
-      },
-      {
-        "type": "options",
-        "id": "Env 3"
-      }
-    ],
-    "operation": "set",
-    "value": false,
-    "when": 1725397815340,
-    "oldValue": null
-  }
-]</pre
-            >
+            <ConfigModePanel />
           </ScrollArea>
         </TabsContent>
       </Tabs>
