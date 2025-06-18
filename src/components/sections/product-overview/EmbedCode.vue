@@ -9,56 +9,55 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const shikiTheme = 'material-theme-palenight'
 
-const snippetVc = `<script src="https://builds.dopple.io/atlatl-visual-component/releases/current/index.js"><\/script>
-<atlatl-visual client-id="${useClientStore().client.clientId}">
-  <av-product name="${useRoute().params.name}" namespace="${useRoute().params.workspace}"></av-product>
-</atlatl-visual>`
+const snippet = ref('')
 
-const snippetApiHtml = `<script src="https://builds.dopple.io/atlatl-visual-api/releases/current/index.js"><\/script>
-<canvas id="dopple-canvas" touch-action="none"></canvas>`
+const snippetRaw = `<div>
+    <div id="dopple-canvas"></div>
+    <div id="loader"></div>
+</div>
 
-const snippetApiJs = `async function loadDopple() {
-    // Get the <canvas> element to render the 3D product onto
-    const renderCanvas = document.getElementById('my-canvas');
-    const visual = new Atlatl.Visual(renderCanvas);
-    
-    // Replace with your client ID here
-    await visual.initClient('${useClientStore().client.clientId}');
+<script type="module">
+    import { DoppleXR } from 'https://www.dopple.io/path/to/script.js'
 
-    // Create and load the ProductTemplate
-    const template = new Atlatl.ProductTemplate(visual, '${useRoute().params.workspace}', '${useRoute().params.name}');
-    await template.load();
+    // Replace with your default selection
+    const selection = {}
 
-    // Create the Product instance
-    const myProduct = new Atlatl.Product(template);
-    
-    // Hide the loading screen to show the product once the product is ready
-    await myProduct.ready();
-    visual.loadingScreen.hide();
-});`
+    // Initialize Dopple
+    const dopple = new DoppleXR({
+        container: document.getElementById('dopple-canvas'),
+        selection,
+        owner: 'dopple',
+        workspace: '${useRoute().params.workspace}',
+        projectName: '${useRoute().params.name}'
+        productVersion: '2',
+    })
 
-const codeVc = ref('')
-const codeApiHtml = ref('')
-const codeApiJs = ref('')
+    await dopple.load()
+    dopple.run()
+
+    // Handle any loading events and logic for your UI
+    dopple.loadingManager.onProgress = (_url, loaded, total) => {
+        document.getElementById('loader').innerHTML = Math.round((loaded / total) * 100)} + '%'
+    }
+    dopple.loadingManager.onLoad = () => {
+        document.getElementById('loader').innerHTML = ''
+    }
+
+    dopple.resize()
+    dopple.animate()
+<\/script>`
 
 onMounted(async () => {
-  codeVc.value = await codeToHtml(snippetVc, {
+  snippet.value = await codeToHtml(snippetRaw, {
     lang: 'html',
-    theme: shikiTheme
-  })
-  codeApiHtml.value = await codeToHtml(snippetApiHtml, {
-    lang: 'html',
-    theme: shikiTheme
-  })
-  codeApiJs.value = await codeToHtml(snippetApiJs, {
-    lang: 'javascript',
     theme: shikiTheme
   })
 })
 </script>
 
 <template>
-  <Tabs default-value="vc">
+  <div v-html="snippet"></div>
+  <!-- <Tabs default-value="vc">
     <TabsList class="grid grid-cols-2 w-full">
       <TabsTrigger value="vc"> Visual Component </TabsTrigger>
       <TabsTrigger value="api"> Visual API </TabsTrigger>
@@ -86,7 +85,7 @@ onMounted(async () => {
         </ScrollArea>
       </div>
     </TabsContent>
-  </Tabs>
+  </Tabs> -->
 </template>
 
 <style></style>

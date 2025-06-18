@@ -198,6 +198,18 @@ const router = createRouter({
           ]
         },
         {
+          path: 'json-mapper',
+          name: 'JSON Mapper',
+          component: () => import('@/views/tools/JsonMapperView.vue'),
+          children: [
+            {
+              path: '',
+              name: 'JSON Mapper Home',
+              component: () => import('@/views/tools/JsonMapperRootView.vue')
+            }
+          ]
+        },
+        {
           path: 'ui-builder',
           name: 'UI Builder',
           component: () => import('@/views/tools/UiBuilderView.vue'),

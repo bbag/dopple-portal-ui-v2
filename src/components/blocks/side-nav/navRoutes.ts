@@ -2,6 +2,7 @@ import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 import {
   IconBox,
+  IconBraces,
   IconChartDots,
   IconExternalLink,
   IconFile3d,
@@ -102,6 +103,11 @@ export const routes: IRouteCategory[] = [
         name: 'glTF Editor',
         icon: IconGltfEditor,
         path: 'editor'
+      },
+      {
+        name: 'JSON Mapper',
+        icon: IconBraces,
+        path: 'json-mapper'
       },
       {
         name: 'Virtual Studio',
