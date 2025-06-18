@@ -1238,9 +1238,21 @@ const exampleVariantCapitalization = computed(() => {
               <div v-else class="p-4 pt-2 text-muted-foreground text-sm">
                 No variants yet in this group. Add a variant to get started.
               </div>
+              <p class="font-semibold mb-2 mt-4">Add new variant:</p>
+              <div class="flex items-center gap-2 max-w-96">
+                <Input
+                  v-model="newItemNames[group.id]"
+                  :placeholder="`Add variant to ${group.groupName}`"
+                  @keydown.enter="addItem(group.id)"
+                />
+                <Button @click="addItem(group.id)">
+                  <IconPlus class="mr-2 size-5" />
+                  Add Variant
+                </Button>
+              </div>
             </div>
           </details>
-          <Separator class="my-8" />
+          <Separator class="!my-8" />
           <p class="font-semibold">Add new variant group:</p>
           <div class="flex items-center gap-2 max-w-128 mb-4">
             <Input
