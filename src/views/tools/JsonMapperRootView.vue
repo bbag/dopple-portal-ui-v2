@@ -3,7 +3,8 @@
 // Much of the implementation is either incomplete or not done as optimally as it would be in a
 // production app; the stuff here is just to spitball ideas and test usability.
 
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
+import { codeToHtml } from 'shiki'
 
 import Button from '@/components/ui/button/Button.vue'
 
@@ -50,6 +51,8 @@ import TableCell from '@/components/ui/table/TableCell.vue'
 import TableHead from '@/components/ui/table/TableHead.vue'
 import TableHeader from '@/components/ui/table/TableHeader.vue'
 import TableRow from '@/components/ui/table/TableRow.vue'
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import {
   IconBolt,
@@ -163,6 +166,7 @@ type Option = {
   id: string
   property: string
   values: OptionValue[]
+  isEnabled: boolean
   isVisible: boolean
 }
 
@@ -206,22 +210,26 @@ const namingConventions = [
     exampleVariant: 'MyVariant'
   },
   {
-    label: 'Name with Spaces',
-    value: 'name-with-spaces',
+    label: 'Words with Spaces',
+    value: 'words-with-spaces',
     exampleOption: 'My Option',
     exampleVariant: 'My Variant'
   }
 ]
 const doppleNamingConvention = ref('kebab-case')
-const variantNamingConvention = ref('name-with-spaces')
+const variantNamingConvention = ref('words-with-spaces')
 const variantCapitalizationOptions = [
   {
     label: 'No Change',
     value: 'no-change'
   },
   {
-    label: 'Capitalize Words',
-    value: 'capitalize'
+    label: 'Capitalize Each Word',
+    value: 'capitalize-each'
+  },
+  {
+    label: 'Capitalize First Word',
+    value: 'capitalize-first'
   },
   {
     label: 'All Uppercase',
@@ -258,6 +266,9 @@ const editingValue = ref('')
 const originalValue = ref('')
 
 // Computed properties
+const enabledOptions = computed(() => {
+  return options.value.filter((option) => option.isEnabled)
+})
 // const selectedItem = computed(() => {
 //   if (!selectedItemId.value) {
 //     return null
@@ -285,7 +296,8 @@ const formattedJson = computed(() => {
       const selections = itemSelections.value[item.id as keyof typeof itemSelections.value] || {}
 
       for (const [property, value] of Object.entries(selections)) {
-        if (value) {
+        const isPropertyEnabled = options.value.find((opt) => opt.property === property)?.isEnabled
+        if (value && isPropertyEnabled) {
           itemData.selection[property as keyof typeof itemData.selection] = value
         }
       }
@@ -296,6 +308,8 @@ const formattedJson = computed(() => {
 
   return JSON.stringify(output, null, 2)
 })
+
+const activeOutputTab = ref('json-map')
 
 // Utility functions
 const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9)
@@ -382,6 +396,7 @@ const addOption = () => {
     id: generateId(),
     property: newOptionProperty.value.trim(),
     values: [],
+    isEnabled: true,
     isVisible: true
   }
 
@@ -597,8 +612,12 @@ function convertWordCapitalization(wordArray: string[]) {
       case 'all-uppercase':
         wordArray[wordIndex] = word.toLocaleUpperCase()
         break
-      case 'capitalize':
+      case 'capitalize-each':
         wordArray[wordIndex] = word.charAt(0).toLocaleUpperCase() + word.slice(1)
+        break
+      case 'capitalize-first':
+        wordArray[wordIndex] =
+          wordIndex === 0 ? word.charAt(0).toLocaleUpperCase() + word.slice(1) : word
         break
       default:
         break
@@ -635,6 +654,7 @@ function convertNamingConvention(name: string) {
     case 'kebab-case':
       nameSplitArray = name.split('-')
       break
+    case 'words-with-spaces':
     default:
       nameSplitArray = name.split(' ')
       break
@@ -705,6 +725,72 @@ function generateVariantsFromProductConfig() {
 const exampleVariantCapitalization = computed(() => {
   return `An option named “${options.value[0].property}” in your Dopple product config will generate a variant named “${convertNamingConvention(options.value[0].property)}”.`
 })
+
+// Shiki code block for example usage
+const exampleUsageJsRef = ref('')
+const exampleUsageHtmlRef = ref('')
+const exampleUsageJs = `// Include the JSON map in your page's scripts
+const jsonMap = [
+	{
+		group: 'Luggage Color',
+		variants: [
+			{
+				variantName: 'Red',
+				selection: {
+					luggage_color: 'color_red'
+				}
+			},
+			{
+				variantName: 'Yellow',
+				selection: {
+					luggage_color: 'color_yellow'
+				}
+			},
+			{
+				variantName: 'Navy Blue',
+				selection: {
+					luggage_color: 'color_navy_blue'
+				}
+			}
+		]
+	}
+]
+
+// Update the 3D luggage product's color whenever the \`<select>\` element is changed
+const colorSelect = document.getElementById('color-selection')
+colorSelect.addEventListener('change', async (event) => {
+	// Get the variant group value (based on its \`data-variant-group\` attribute)
+	const group = colorSelect.dataset.variantGroup;
+
+	// Get the selected color
+	const variantName = event.target.value;
+
+	// Find the corresponding \`selection\` object for the selected color
+	const selection = jsonMap
+		.find((item) => item.group === group)?.variants
+		.find((variant) => variant.variantName === variantName)?.selection;
+
+	// Call \`dopple.updateSelection()\` to update the 3D product
+	if (selection) {
+		await dopple.updateSelection(selection);
+	}
+});`
+const exampleUsageHtml = `<select id="color-selection" data-variant-group="Luggage Color">
+	<option value="Red">Red</option>
+	<option value="Yellow">Yellow</option>
+	<option value="Navy Blue">Navy Blue</option>
+</select>`
+
+onMounted(async () => {
+  exampleUsageJsRef.value = await codeToHtml(exampleUsageJs, {
+    lang: 'js',
+    theme: 'material-theme-palenight'
+  })
+  exampleUsageHtmlRef.value = await codeToHtml(exampleUsageHtml, {
+    lang: 'html',
+    theme: 'material-theme-palenight'
+  })
+})
 </script>
 
 <template>
@@ -727,11 +813,17 @@ const exampleVariantCapitalization = computed(() => {
       </CardHeader>
       <CardContent>
         <div v-if="!options.length" class="space-y-2">
+          <!-- <div
+						class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
+					>
+						No properties created yet. You can automatically fetch them for a specific product from
+						Dopple, or manually add them below.
+					</div> -->
           <div
             class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
           >
             No properties created yet. You can automatically fetch them for a specific product from
-            Dopple, or manually add them below.
+            Dopple below.
           </div>
           <fieldset class="border p-2 rounded-md">
             <legend class="px-2 font-semibold text-sm">Fetch product config from Dopple</legend>
@@ -762,157 +854,168 @@ const exampleVariantCapitalization = computed(() => {
               </Button>
             </div>
           </fieldset>
-          <Separator class="!my-8" />
-          <p class="font-semibold">Manually add properties:</p>
-          <div class="flex items-center gap-2 max-w-128 mb-4">
-            <Input
-              v-model="newOptionProperty"
-              placeholder="Option property (e.g., size)"
-              @keydown.enter="addOption"
-            />
-            <Button @click="addOption">
-              <IconPlus class="mr-2 size-5" />
-              Add Property
-            </Button>
-          </div>
+          <!-- <Separator class="!my-8" />
+					<p class="font-semibold">Manually add properties:</p>
+					<div class="flex items-center gap-2 max-w-128 mb-4">
+						<Input
+							v-model="newOptionProperty"
+							placeholder="Option property (e.g., size)"
+							@keydown.enter="addOption"
+						/>
+						<Button @click="addOption">
+							<IconPlus class="mr-2 size-5" />
+							Add Property
+						</Button>
+					</div> -->
         </div>
         <div v-else class="space-y-2">
           <p class="font-bold text-xs uppercase text-muted-foreground">Properties:</p>
-          <details
+          <div
             v-for="(option, optionIndex) in options"
             :key="option.id"
-            class="border rounded-md"
+            class="flex gap-2 items-start"
           >
-            <summary class="flex items-center gap-2 cursor-pointer text-sm font-semibold p-2">
-              <span
-                class="flex items-center justify-center rounded-full font-bold min-w-6 h-6 px-1 py-1 text-xs bg-accent text-muted-foreground"
-              >
-                {{ optionIndex + 1 }}
-              </span>
-              {{ option.property }}
-            </summary>
-            <div class="p-4 pt-2 border-t">
-              <div class="flex items-center gap-2 pt-2">
-                <h3 v-if="editingStates.option !== option.id" class="w-full text-sm">
-                  <span class="font-medium text-muted-foreground">Property:</span>
-                  <Code class="ml-2">{{ option.property }}</Code>
-                </h3>
-                <Input
-                  v-else
-                  v-model="editingValue"
-                  @blur="finishEditing('option', option.id)"
-                  @keyup.enter="finishEditing('option', option.id)"
-                  @keyup.escape="cancelEditing"
-                  ref="editInput"
-                  class="w-full h-8"
-                />
-                <Button
-                  @click="startEditing('option', option.id, option.property)"
-                  variant="outline"
-                  size="sm"
+            <Checkbox class="size-5 mt-3" v-model="option.isEnabled" />
+            <details class="border rounded-md w-full">
+              <summary class="flex items-center gap-2 cursor-pointer text-sm font-semibold p-2">
+                <span
+                  class="flex items-center justify-center rounded-full font-bold min-w-6 h-6 px-1 py-1 text-xs bg-accent text-muted-foreground"
                 >
-                  <IconPencil class="mr-2 size-5 text-muted-foreground" />
-                  Rename
-                </Button>
-                <Button @click="removeOption(option.id)" variant="outline" size="sm">
-                  <IconCopy class="mr-2 size-5 text-muted-foreground" />
-                  Duplicate
-                </Button>
-                <Button
-                  @click="removeOption(option.id)"
-                  variant="outline"
-                  size="sm"
-                  class="text-destructive dark:text-rose-400"
-                >
-                  <IconTrashX class="mr-2 size-5" />
-                  Remove
-                </Button>
+                  {{ optionIndex + 1 }}
+                </span>
+                {{ option.property }}
+              </summary>
+              <div class="p-4 pt-2 border-t">
+                <!-- <div class="flex items-center gap-2 pt-2">
+									<h3 v-if="editingStates.option !== option.id" class="w-full text-sm">
+										<span class="font-medium text-muted-foreground">Property:</span>
+										<Code class="ml-2">{{ option.property }}</Code>
+									</h3>
+									<Input
+										v-else
+										v-model="editingValue"
+										@blur="finishEditing('option', option.id)"
+										@keyup.enter="finishEditing('option', option.id)"
+										@keyup.escape="cancelEditing"
+										ref="editInput"
+										class="w-full h-8"
+									/>
+									<Button
+										@click="startEditing('option', option.id, option.property)"
+										variant="outline"
+										size="sm"
+									>
+										<IconPencil class="mr-2 size-5 text-muted-foreground" />
+										Rename
+									</Button>
+									<Button @click="removeOption(option.id)" variant="outline" size="sm">
+										<IconCopy class="mr-2 size-5 text-muted-foreground" />
+										Duplicate
+									</Button>
+									<Button
+										@click="removeOption(option.id)"
+										variant="outline"
+										size="sm"
+										class="text-destructive dark:text-rose-400"
+									>
+										<IconTrashX class="mr-2 size-5" />
+										Remove
+									</Button>
+								</div>
+								<Separator class="!my-4" /> -->
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead class="w-full whitespace-nowrap"> Options </TableHead>
+                      <!-- <TableHead> Actions </TableHead> -->
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow v-for="value in option.values" :key="value.id">
+                      <TableCell class="w-full py-1 whitespace-nowrap font-mono pl-1">
+                        <span
+                          v-if="editingStates.optionValue !== value.id"
+                          class="inline-flex items-center h-8 pl-3"
+                        >
+                          <Code>{{ value.value }}</Code>
+                        </span>
+                        <Input
+                          v-else
+                          v-model="editingValue"
+                          @blur="finishEditing('optionValue', value.id)"
+                          @keyup.enter="finishEditing('optionValue', value.id)"
+                          @keyup.escape="cancelEditing"
+                          ref="editInput"
+                          class="h-8 ml-1"
+                        />
+                      </TableCell>
+                      <!-- <TableCell class="py-1">
+												<div class="flex gap-2 items-center">
+													<Button
+														@click="startEditing('optionValue', value.id, value.value)"
+														title="Edit"
+														variant="outline"
+														size="icon-xs"
+													>
+														<IconPencil class="size-4 text-muted-foreground" />
+													</Button>
+													<Button
+														@click="startEditing('optionValue', value.id, value.value)"
+														title="Duplicate"
+														variant="outline"
+														size="icon-xs"
+													>
+														<IconCopy class="size-4 text-muted-foreground" />
+													</Button>
+													<Button
+														@click="removeOptionValue(option.id, value.id)"
+														title="Delete"
+														variant="outline"
+														size="icon-xs"
+													>
+														<IconTrashX class="size-4 text-muted-foreground" />
+													</Button>
+												</div>
+											</TableCell> -->
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <!-- <p class="font-semibold mb-2 mt-4">Add new option:</p>
+								<div class="flex items-center gap-2 max-w-96">
+									<Input
+										v-model="newOptionValues[option.id]"
+										:placeholder="`Add value for ${option.property}`"
+										@keydown.enter="addOptionValue(option.id)"
+									/>
+									<Button @click="addOptionValue(option.id)">
+										<IconPlus class="mr-2 size-5" />
+										Add Option
+									</Button>
+								</div> -->
               </div>
-              <Separator class="!my-4" />
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead class="w-full whitespace-nowrap"> Option Name </TableHead>
-                    <TableHead> Actions </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow v-for="value in option.values" :key="value.id">
-                    <TableCell class="w-full py-1 whitespace-nowrap font-mono pl-1">
-                      <span
-                        v-if="editingStates.optionValue !== value.id"
-                        class="inline-flex items-center h-8 pl-3"
-                      >
-                        <Code>{{ value.value }}</Code>
-                      </span>
-                      <Input
-                        v-else
-                        v-model="editingValue"
-                        @blur="finishEditing('optionValue', value.id)"
-                        @keyup.enter="finishEditing('optionValue', value.id)"
-                        @keyup.escape="cancelEditing"
-                        ref="editInput"
-                        class="h-8 ml-1"
-                      />
-                    </TableCell>
-                    <TableCell class="py-1">
-                      <div class="flex gap-2 items-center">
-                        <Button
-                          @click="startEditing('optionValue', value.id, value.value)"
-                          title="Edit"
-                          variant="outline"
-                          size="icon-xs"
-                        >
-                          <IconPencil class="size-4 text-muted-foreground" />
-                        </Button>
-                        <Button
-                          @click="startEditing('optionValue', value.id, value.value)"
-                          title="Duplicate"
-                          variant="outline"
-                          size="icon-xs"
-                        >
-                          <IconCopy class="size-4 text-muted-foreground" />
-                        </Button>
-                        <Button
-                          @click="removeOptionValue(option.id, value.id)"
-                          title="Delete"
-                          variant="outline"
-                          size="icon-xs"
-                        >
-                          <IconTrashX class="size-4 text-muted-foreground" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-              <p class="font-semibold mb-2 mt-4">Add new option:</p>
-              <div class="flex items-center gap-2 max-w-96">
-                <Input
-                  v-model="newOptionValues[option.id]"
-                  :placeholder="`Add value for ${option.property}`"
-                  @keydown.enter="addOptionValue(option.id)"
-                />
-                <Button @click="addOptionValue(option.id)">
-                  <IconPlus class="mr-2 size-5" />
-                  Add Option
-                </Button>
-              </div>
-            </div>
-          </details>
-          <Separator class="!my-8" />
-          <p class="font-semibold">Add new property:</p>
-          <div class="flex items-center gap-2 max-w-128 mb-4">
-            <Input
-              v-model="newOptionProperty"
-              placeholder="Option property (e.g., size)"
-              @keydown.enter="addOption"
-            />
-            <Button @click="addOption">
-              <IconPlus class="mr-2 size-5" />
-              Add Property
-            </Button>
+            </details>
           </div>
+          <Separator class="!my-6" />
+          <Button
+            variant="outline"
+            @click="options = []"
+            class="text-destructive dark:text-rose-400 !mt-0"
+          >
+            Reset Properties
+          </Button>
+          <!-- <Separator class="!my-8" />
+					<p class="font-semibold">Add new property:</p>
+					<div class="flex items-center gap-2 max-w-128 mb-4">
+						<Input
+							v-model="newOptionProperty"
+							placeholder="Option property (e.g., size)"
+							@keydown.enter="addOption"
+						/>
+						<Button @click="addOption">
+							<IconPlus class="mr-2 size-5" />
+							Add Property
+						</Button>
+					</div> -->
         </div>
       </CardContent>
     </Card>
@@ -1009,7 +1112,7 @@ const exampleVariantCapitalization = computed(() => {
             <Separator class="my-4" />
             <div class="p-2">
               <div class="flex items-center gap-2">
-                <h3>Preview result:</h3>
+                <h3>Show preview:</h3>
                 <Switch v-model="isPreviewShown" />
               </div>
               <ScrollArea class="h-64 border rounded-md mt-2" v-show="isPreviewShown">
@@ -1037,7 +1140,7 @@ const exampleVariantCapitalization = computed(() => {
               </ScrollArea>
             </div>
           </fieldset>
-          <Separator class="!my-8" />
+          <Separator class="!my-6" />
           <p class="font-semibold">Manually add variant groups:</p>
           <div class="flex items-center gap-2 max-w-128 mb-4">
             <Input
@@ -1065,10 +1168,10 @@ const exampleVariantCapitalization = computed(() => {
                 <DropdownMenuLabel>Select/Deselect All</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
-                  v-for="option in options"
+                  v-for="option in enabledOptions"
                   :key="option.id"
                   class="font-mono"
-                  v-model:model-value="option.isVisible"
+                  v-model:checked="option.isVisible"
                   @select="(e) => e.preventDefault()"
                 >
                   {{ option.property }}
@@ -1187,12 +1290,12 @@ const exampleVariantCapitalization = computed(() => {
                       <TableHeader>
                         <TableRow>
                           <TableHead class="whitespace-nowrap"> Dopple Property </TableHead>
-                          <TableHead class="w-full whitespace-nowrap"> Dopple Value </TableHead>
+                          <TableHead class="w-full whitespace-nowrap"> Dopple Option </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         <TableRow
-                          v-for="option in options"
+                          v-for="option in enabledOptions"
                           :key="option.id"
                           v-show="option.isVisible"
                         >
@@ -1252,7 +1355,7 @@ const exampleVariantCapitalization = computed(() => {
               </div>
             </div>
           </details>
-          <Separator class="!my-8" />
+          <Separator class="!my-6" />
           <p class="font-semibold">Add new variant group:</p>
           <div class="flex items-center gap-2 max-w-128 mb-4">
             <Input
@@ -1272,7 +1375,7 @@ const exampleVariantCapitalization = computed(() => {
       <CardHeader>
         <CardTitle>
           <span class="text-blue-500 dark:text-blue-300">Step 3:</span>
-          JSON Output
+          JSON Map Output
         </CardTitle>
         <CardDescription>
           Include the JSON map below in your page’s JavaScript to handle updating the 3D product
@@ -1280,7 +1383,48 @@ const exampleVariantCapitalization = computed(() => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <pre class="bg-accent text-sm p-4 rounded-md text-primary">{{ formattedJson }}</pre>
+        <!-- <pre>{{ options }}</pre> -->
+        <Tabs v-if="formattedJson.length > 2" v-model:model-value="activeOutputTab">
+          <TabsList>
+            <TabsTrigger value="json-map">JSON Map</TabsTrigger>
+            <TabsTrigger value="example-usage">Example Usage</TabsTrigger>
+          </TabsList>
+          <TabsContent value="json-map">
+            <pre class="bg-accent text-sm p-4 rounded-md text-primary">{{ formattedJson }}</pre>
+          </TabsContent>
+          <TabsContent value="example-usage">
+            <p class="my-4">
+              First, make sure your ecommerce frontend has markup that indicates the groups and
+              variants you've set up.
+            </p>
+            <p class="my-4">
+              Your setup may differ, but the example below uses a
+              <Code>data-variant-group</Code> attribute to indicate a variant group, and the
+              <Code>value</Code> attribute on each <Code>&lt;option&gt;</Code> indicates the
+              variant's name.
+            </p>
+            <div v-html="exampleUsageHtmlRef"></div>
+            <p class="my-4">
+              Next, include the JSON map in your page's scripts, along with any logic to call
+              Dopple's <Code>updateSelection()</Code> method with the selection object for each
+              variant whenever it gets chosen.
+            </p>
+            <p class="my-4">
+              This example adds a <Code>change</Code> event listener to the color
+              <Code>&lt;select&gt;</Code>, but the same concept can be applied to any elements in
+              your own page.
+            </p>
+            <div v-html="exampleUsageJsRef"></div>
+          </TabsContent>
+        </Tabs>
+        <div
+          v-else
+          class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
+        >
+          No JSON map can be created yet. As you fill in your Dopple product config and ecommerce
+          variants in <strong>Step 1</strong> and <strong>Step 2</strong> above, the resulting JSON
+          map will be updated here automatically.
+        </div>
       </CardContent>
     </Card>
   </div>
