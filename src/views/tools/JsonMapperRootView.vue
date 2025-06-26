@@ -127,6 +127,8 @@ async function handleFetchDummyProduct() {
 
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
+  options.value = []
+
   const dummyProperties = Object.keys(dummyConfig.value)
 
   for (let i = 0; i < dummyProperties.length; i++) {
@@ -812,19 +814,7 @@ onMounted(async () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div v-if="!options.length" class="space-y-2">
-          <!-- <div
-						class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
-					>
-						No properties created yet. You can automatically fetch them for a specific product from
-						Dopple, or manually add them below.
-					</div> -->
-          <div
-            class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
-          >
-            No properties created yet. You can automatically fetch them for a specific product from
-            Dopple below.
-          </div>
+        <div class="space-y-2">
           <fieldset class="border p-2 rounded-md">
             <legend class="px-2 font-semibold text-sm">Fetch product config from Dopple</legend>
             <div class="flex gap-4 p-2 flex-col xl:flex-row xl:items-end">
@@ -854,168 +844,196 @@ onMounted(async () => {
               </Button>
             </div>
           </fieldset>
-          <!-- <Separator class="!my-8" />
-					<p class="font-semibold">Manually add properties:</p>
-					<div class="flex items-center gap-2 max-w-128 mb-4">
-						<Input
-							v-model="newOptionProperty"
-							placeholder="Option property (e.g., size)"
-							@keydown.enter="addOption"
-						/>
-						<Button @click="addOption">
-							<IconPlus class="mr-2 size-5" />
-							Add Property
-						</Button>
-					</div> -->
+          <Separator class="!my-8" />
+          <!-- <div
+            v-if="!options.length"
+            class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 !mb-8"
+          >
+            No product config data yet. Enter your product info below to automatically fetch it from
+            Dopple.
+          </div>
+          <p class="font-semibold">Create new property:</p>
+          <div class="flex items-center gap-2 max-w-128 mb-4">
+            <Input
+              v-model="newOptionProperty"
+              placeholder="Option property (e.g., size)"
+              @keydown.enter="addOption"
+            />
+            <Button @click="addOption">
+              <IconPlus class="mr-2 size-5" />
+              Add Property
+            </Button>
+          </div> -->
         </div>
-        <div v-else class="space-y-2">
+        <div class="space-y-2">
           <p class="font-bold text-xs uppercase text-muted-foreground">Properties:</p>
           <div
-            v-for="(option, optionIndex) in options"
-            :key="option.id"
-            class="flex gap-2 items-start"
+            v-if="!options.length"
+            class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 !mb-8"
           >
-            <Checkbox class="size-5 mt-3" v-model="option.isEnabled" />
-            <details class="border rounded-md w-full">
-              <summary class="flex items-center gap-2 cursor-pointer text-sm font-semibold p-2">
-                <span
-                  class="flex items-center justify-center rounded-full font-bold min-w-6 h-6 px-1 py-1 text-xs bg-accent text-muted-foreground"
-                >
-                  {{ optionIndex + 1 }}
-                </span>
-                {{ option.property }}
-              </summary>
-              <div class="p-4 pt-2 border-t">
-                <!-- <div class="flex items-center gap-2 pt-2">
-									<h3 v-if="editingStates.option !== option.id" class="w-full text-sm">
-										<span class="font-medium text-muted-foreground">Property:</span>
-										<Code class="ml-2">{{ option.property }}</Code>
-									</h3>
-									<Input
-										v-else
-										v-model="editingValue"
-										@blur="finishEditing('option', option.id)"
-										@keyup.enter="finishEditing('option', option.id)"
-										@keyup.escape="cancelEditing"
-										ref="editInput"
-										class="w-full h-8"
-									/>
-									<Button
-										@click="startEditing('option', option.id, option.property)"
-										variant="outline"
-										size="sm"
-									>
-										<IconPencil class="mr-2 size-5 text-muted-foreground" />
-										Rename
-									</Button>
-									<Button @click="removeOption(option.id)" variant="outline" size="sm">
-										<IconCopy class="mr-2 size-5 text-muted-foreground" />
-										Duplicate
-									</Button>
-									<Button
-										@click="removeOption(option.id)"
-										variant="outline"
-										size="sm"
-										class="text-destructive dark:text-rose-400"
-									>
-										<IconTrashX class="mr-2 size-5" />
-										Remove
-									</Button>
-								</div>
-								<Separator class="!my-4" /> -->
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead class="w-full whitespace-nowrap"> Options </TableHead>
-                      <!-- <TableHead> Actions </TableHead> -->
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow v-for="value in option.values" :key="value.id">
-                      <TableCell class="w-full py-1 whitespace-nowrap font-mono pl-1">
-                        <span
-                          v-if="editingStates.optionValue !== value.id"
-                          class="inline-flex items-center h-8 pl-3"
-                        >
-                          <Code>{{ value.value }}</Code>
-                        </span>
-                        <Input
-                          v-else
-                          v-model="editingValue"
-                          @blur="finishEditing('optionValue', value.id)"
-                          @keyup.enter="finishEditing('optionValue', value.id)"
-                          @keyup.escape="cancelEditing"
-                          ref="editInput"
-                          class="h-8 ml-1"
-                        />
-                      </TableCell>
-                      <!-- <TableCell class="py-1">
-												<div class="flex gap-2 items-center">
-													<Button
-														@click="startEditing('optionValue', value.id, value.value)"
-														title="Edit"
-														variant="outline"
-														size="icon-xs"
-													>
-														<IconPencil class="size-4 text-muted-foreground" />
-													</Button>
-													<Button
-														@click="startEditing('optionValue', value.id, value.value)"
-														title="Duplicate"
-														variant="outline"
-														size="icon-xs"
-													>
-														<IconCopy class="size-4 text-muted-foreground" />
-													</Button>
-													<Button
-														@click="removeOptionValue(option.id, value.id)"
-														title="Delete"
-														variant="outline"
-														size="icon-xs"
-													>
-														<IconTrashX class="size-4 text-muted-foreground" />
-													</Button>
-												</div>
-											</TableCell> -->
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <!-- <p class="font-semibold mb-2 mt-4">Add new option:</p>
-								<div class="flex items-center gap-2 max-w-96">
-									<Input
-										v-model="newOptionValues[option.id]"
-										:placeholder="`Add value for ${option.property}`"
-										@keydown.enter="addOptionValue(option.id)"
-									/>
-									<Button @click="addOptionValue(option.id)">
-										<IconPlus class="mr-2 size-5" />
-										Add Option
-									</Button>
-								</div> -->
-              </div>
-            </details>
+            No product config data yet. Automatically fetch it from Dopple above, or manually create
+            a new property below to get started.
           </div>
-          <Separator class="!my-6" />
-          <Button
-            variant="outline"
-            @click="options = []"
-            class="text-destructive dark:text-rose-400 !mt-0"
-          >
-            Reset Properties
-          </Button>
-          <!-- <Separator class="!my-8" />
-					<p class="font-semibold">Add new property:</p>
-					<div class="flex items-center gap-2 max-w-128 mb-4">
-						<Input
-							v-model="newOptionProperty"
-							placeholder="Option property (e.g., size)"
-							@keydown.enter="addOption"
-						/>
-						<Button @click="addOption">
-							<IconPlus class="mr-2 size-5" />
-							Add Property
-						</Button>
-					</div> -->
+          <div v-else class="space-y-2">
+            <div
+              v-for="(option, optionIndex) in options"
+              :key="option.id"
+              class="flex gap-2 items-start"
+            >
+              <Checkbox class="size-5 mt-3" v-model="option.isEnabled" />
+              <details class="border rounded-md w-full">
+                <summary class="flex items-center gap-2 cursor-pointer text-sm font-semibold p-2">
+                  <span
+                    class="flex items-center justify-center rounded-full font-bold min-w-6 h-6 px-1 py-1 text-xs bg-accent text-muted-foreground"
+                  >
+                    {{ optionIndex + 1 }}
+                  </span>
+                  {{ option.property }}
+                  <span class="text-muted-foreground font-normal">
+                    ({{ option.values.length }} option{{ option.values.length === 1 ? '' : 's' }})
+                  </span>
+                </summary>
+                <div class="p-4 pt-2 border-t">
+                  <div class="flex items-center gap-2 pt-2">
+                    <h3 v-if="editingStates.option !== option.id" class="w-full text-sm">
+                      <span class="font-medium text-muted-foreground">Property:</span>
+                      <Code class="ml-2">{{ option.property }}</Code>
+                    </h3>
+                    <Input
+                      v-else
+                      v-model="editingValue"
+                      @blur="finishEditing('option', option.id)"
+                      @keyup.enter="finishEditing('option', option.id)"
+                      @keyup.escape="cancelEditing"
+                      ref="editInput"
+                      class="w-full h-8"
+                    />
+                    <Button
+                      @click="startEditing('option', option.id, option.property)"
+                      variant="outline"
+                      size="sm"
+                    >
+                      <IconPencil class="mr-2 size-5 text-muted-foreground" />
+                      Rename
+                    </Button>
+                    <Button @click="removeOption(option.id)" variant="outline" size="sm">
+                      <IconCopy class="mr-2 size-5 text-muted-foreground" />
+                      Duplicate
+                    </Button>
+                    <Button
+                      @click="removeOption(option.id)"
+                      variant="outline"
+                      size="sm"
+                      class="text-destructive dark:text-rose-400"
+                    >
+                      <IconTrashX class="mr-2 size-5" />
+                      Remove
+                    </Button>
+                  </div>
+                  <Separator class="!my-4" />
+                  <div
+                    v-if="!option.values.length"
+                    class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
+                  >
+                    No options yet. Options for this property can be manually added below.
+                  </div>
+                  <Table v-else>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead class="w-full whitespace-nowrap"> Options </TableHead>
+                        <TableHead> Actions </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow v-for="value in option.values" :key="value.id">
+                        <TableCell class="w-full py-1 whitespace-nowrap font-mono pl-1">
+                          <span
+                            v-if="editingStates.optionValue !== value.id"
+                            class="inline-flex items-center h-8 pl-3"
+                          >
+                            <Code>{{ value.value }}</Code>
+                          </span>
+                          <Input
+                            v-else
+                            v-model="editingValue"
+                            @blur="finishEditing('optionValue', value.id)"
+                            @keyup.enter="finishEditing('optionValue', value.id)"
+                            @keyup.escape="cancelEditing"
+                            ref="editInput"
+                            class="h-8 ml-1"
+                          />
+                        </TableCell>
+                        <TableCell class="py-1">
+                          <div class="flex gap-2 items-center">
+                            <Button
+                              @click="startEditing('optionValue', value.id, value.value)"
+                              title="Edit"
+                              variant="outline"
+                              size="icon-xs"
+                            >
+                              <IconPencil class="size-4 text-muted-foreground" />
+                            </Button>
+                            <Button
+                              @click="startEditing('optionValue', value.id, value.value)"
+                              title="Duplicate"
+                              variant="outline"
+                              size="icon-xs"
+                            >
+                              <IconCopy class="size-4 text-muted-foreground" />
+                            </Button>
+                            <Button
+                              @click="removeOptionValue(option.id, value.id)"
+                              title="Delete"
+                              variant="outline"
+                              size="icon-xs"
+                            >
+                              <IconTrashX class="size-4 text-muted-foreground" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                  <p class="font-semibold mb-2 mt-4">Add new option:</p>
+                  <div class="flex items-center gap-2 max-w-96">
+                    <Input
+                      v-model="newOptionValues[option.id]"
+                      placeholder="Option name"
+                      @keydown.enter="addOptionValue(option.id)"
+                    />
+                    <Button @click="addOptionValue(option.id)">
+                      <IconPlus class="mr-2 size-5" />
+                      Add Option
+                    </Button>
+                  </div>
+                </div>
+              </details>
+            </div>
+            <p class="text-sm italic text-muted-foreground !mt-4">
+              Any properties that don’t relate to any of your variants may be deselected.
+            </p>
+            <!-- <Separator class="!my-6" />
+						<Button
+							variant="outline"
+							@click="options = []"
+							class="text-destructive dark:text-rose-400 !mt-0"
+						>
+							Reset Properties
+						</Button> -->
+          </div>
+          <Separator class="!my-8" />
+          <p class="font-semibold">Add new property:</p>
+          <div class="flex items-center gap-2 max-w-128 mb-4">
+            <Input
+              v-model="newOptionProperty"
+              placeholder="Property name (e.g. size, main-color)"
+              @keydown.enter="addOption"
+            />
+            <Button @click="addOption" :disabled="!newOptionProperty">
+              <IconPlus class="mr-2 size-5" />
+              Add Property
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -1101,7 +1119,7 @@ onMounted(async () => {
                   </Select>
                 </div>
               </div>
-              <Button @click="generateVariantsFromProductConfig" :state="fetchState">
+              <Button @click="generateVariantsFromProductConfig">
                 <IconBolt class="mr-2 size-5" />
                 Auto-generate
               </Button>
@@ -1141,14 +1159,14 @@ onMounted(async () => {
             </div>
           </fieldset>
           <Separator class="!my-6" />
-          <p class="font-semibold">Manually add variant groups:</p>
+          <p class="font-semibold">Add new variant group:</p>
           <div class="flex items-center gap-2 max-w-128 mb-4">
             <Input
               v-model="newGroupName"
               placeholder="Variant group name (e.g., Product Color)"
               @keydown.enter="addGroup"
             />
-            <Button @click="addGroup">
+            <Button @click="addGroup" :disabled="!newGroupName">
               <IconPlus class="mr-2 size-5" />
               Add Group
             </Button>
@@ -1191,6 +1209,9 @@ onMounted(async () => {
                 {{ groupIndex + 1 }}
               </span>
               {{ group.groupName }}
+              <span class="text-muted-foreground font-normal">
+                ({{ group.items.length }} variant{{ group.items.length === 1 ? '' : 's' }})
+              </span>
             </summary>
             <div class="p-4 border-t">
               <div class="flex items-center gap-2 pt-2">
