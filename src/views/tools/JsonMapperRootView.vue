@@ -58,6 +58,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import {
   IconBolt,
+  IconClipboardText,
   IconCloudDownload,
   IconCopy,
   IconFilter,
@@ -1445,7 +1446,13 @@ onMounted(async () => {
             <TabsTrigger value="example-usage">Example Usage</TabsTrigger>
           </TabsList>
           <TabsContent value="json-map">
-            <pre class="bg-accent text-sm p-4 rounded-md text-primary">{{ formattedJson }}</pre>
+            <div class="relative">
+              <pre class="bg-accent text-sm p-4 rounded-md text-primary">{{ formattedJson }}</pre>
+              <Button variant="outline" size="sm" class="absolute top-2 right-2 px-2">
+                <IconClipboardText class="size-5 text-muted-foreground mr-1" />
+                Copy
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="example-usage">
             <p class="my-4">
