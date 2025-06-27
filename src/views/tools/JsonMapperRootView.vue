@@ -23,6 +23,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
@@ -61,8 +63,13 @@ import {
   IconFilter,
   IconPencil,
   IconPlus,
+  IconSortDescending,
   IconTrashX
 } from '@tabler/icons-vue'
+
+// Property sort options
+const sortOrder = ref('Default')
+const sortOptions = ['Default', 'Alphabetical']
 
 // Fetch some dummy product data from Dopple
 const fetchOwner = ref('dopple')
@@ -866,7 +873,30 @@ onMounted(async () => {
           </div> -->
         </div>
         <div class="space-y-2">
-          <p class="font-bold text-xs uppercase text-muted-foreground">Properties:</p>
+          <div class="flex items-end justify-between gap-4 flex-wrap">
+            <p class="font-bold text-xs uppercase text-muted-foreground">Properties:</p>
+            <DropdownMenu v-if="options.length">
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" class="h-8 px-2">
+                  <IconSortDescending class="mr-2 size-5 text-muted-foreground" />
+                  Sort
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-fit min-w-60" align="end">
+                <DropdownMenuLabel>Sort order:</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup v-model="sortOrder">
+                  <DropdownMenuRadioItem
+                    v-for="option in sortOptions"
+                    :key="option"
+                    :value="option"
+                  >
+                    {{ option }}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <div
             v-if="!options.length"
             class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 !mb-8"
@@ -1177,7 +1207,7 @@ onMounted(async () => {
             <p class="font-bold text-xs uppercase text-muted-foreground">Variant Groups:</p>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
-                <Button variant="outline">
+                <Button variant="outline" class="h-8 px-2">
                   <IconFilter class="mr-2 size-5 text-muted-foreground" />
                   Filter Dopple Properties
                 </Button>
