@@ -706,6 +706,10 @@ function convertNamingConvention(name: string) {
 
 function generateVariantsFromProductConfig() {
   for (let i = 0; i < options.value.length; i++) {
+    if (!options.value[i].isEnabled) {
+      continue
+    }
+
     newGroupName.value = convertNamingConvention(options.value[i].property)
     addGroup()
 
