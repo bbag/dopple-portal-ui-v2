@@ -68,11 +68,31 @@ import {
   IconTrashX
 } from '@tabler/icons-vue'
 
-// Property sort options
-const sortOrder = ref('Default')
-const sortOptions = ['Default', 'Alphabetical']
+type Selection = {
+  [propertyName: string]: string
+}
+type Variant = {
+  id: string
+  name: string
+  selection: Selection
+}
+type VariantGroup = {
+  id: string
+  groupName: string
+  variants: Variant[]
+}
+type OptionValue = {
+  id: string
+  value: string
+}
+type Option = {
+  id: string
+  property: string
+  values: OptionValue[]
+  isEnabled: boolean
+  isVisible: boolean
+}
 
-// Fetch some dummy product data from Dopple
 const fetchOwner = ref('dopple')
 const fetchWorkspace = ref('demo-assets')
 const fetchProduct = ref('luggage')
@@ -140,60 +160,32 @@ async function handleFetchDummyProduct() {
   const dummyProperties = Object.keys(dummyConfig.value)
 
   for (let i = 0; i < dummyProperties.length; i++) {
-    newOptionProperty.value = dummyProperties[i]
+    newPropertyName.value = dummyProperties[i]
     addOption()
 
     const dummyOptions = Object.keys(dummyConfig.value[dummyProperties[i]].options)
 
     for (const option of dummyOptions) {
-      newOptionValues[options.value[i].id] = option
-      addOptionValue(options.value[i].id)
+      newPropertyOptions[options.value[i].id] = option
+      addPropertyOption(options.value[i].id)
     }
   }
 
   fetchState.value = 'default'
 }
 
-// Types and reactive data
-type Selection = {
-  [propertyName: string]: string
-}
-type Item = {
-  id: string
-  name: string
-  selection: Selection
-}
-type ItemGroup = {
-  id: string
-  groupName: string
-  items: Item[]
-}
-type OptionValue = {
-  id: string
-  value: string
-}
-type Option = {
-  id: string
-  property: string
-  values: OptionValue[]
-  isEnabled: boolean
-  isVisible: boolean
-}
-
-const itemGroups = ref<ItemGroup[]>([])
+const variantGroups = ref<VariantGroup[]>([])
 const options = ref<Option[]>([])
-const itemSelections = ref({})
-const itemOptionStates = ref({})
+const variantSelections = ref({})
+const variantOptionStates = ref({})
 
-// UI state
-const selectedItemIds = ref<string[]>([])
+const selectedVariantIds = ref<string[]>([])
 const newGroupName = ref('')
-const newItemNames = reactive({})
-const newOptionProperty = ref('')
-const newOptionValues = reactive({})
+const newVariantNames = reactive({})
+const newPropertyName = ref('')
+const newPropertyOptions = reactive({})
 const isPreviewShown = ref(false)
 
-// Naming conventions for auto-generating variant groups
 const namingConventions = [
   {
     label: 'kebab-case',
@@ -265,67 +257,53 @@ const variantCapitalization = ref('no-change')
 //   }
 // })
 
-// Editing state
 const editingStates = reactive({
   group: null,
-  item: null,
+  variant: null,
   option: null,
   optionValue: null
 })
 const editingValue = ref('')
 const originalValue = ref('')
 
-// Computed properties
 const enabledOptions = computed(() => {
   return options.value.filter((option) => option.isEnabled)
 })
-// const selectedItem = computed(() => {
-//   if (!selectedItemId.value) {
-//     return null
-//   }
-//   for (const group of itemGroups.value) {
-//     const item = group.items.find((item) => item.id === selectedItemId.value)
-//     if (item) {
-//       return item
-//     }
-//   }
-//   return null
-// })
+
+const activeOutputTab = ref('json-map')
 
 const formattedJson = computed(() => {
-  const output = itemGroups.value.map((group) => ({
+  const output = variantGroups.value.map((group) => ({
     // id: group.id,
     group: group.groupName,
-    variants: group.items.map((item) => {
-      const itemData: { variantName: string; selection: Selection } = {
-        // id: item.id,
-        variantName: item.name,
+    variants: group.variants.map((variant) => {
+      const variantData: { variantName: string; selection: Selection } = {
+        // id: variant.id,
+        variantName: variant.name,
         selection: {}
       }
 
-      const selections = itemSelections.value[item.id as keyof typeof itemSelections.value] || {}
+      const selections =
+        variantSelections.value[variant.id as keyof typeof variantSelections.value] || {}
 
       for (const [property, value] of Object.entries(selections)) {
         const isPropertyEnabled = options.value.find((opt) => opt.property === property)?.isEnabled
         if (value && isPropertyEnabled) {
-          itemData.selection[property as keyof typeof itemData.selection] = value
+          variantData.selection[property as keyof typeof variantData.selection] = value
         }
       }
 
-      return itemData
+      return variantData
     })
   }))
 
   return JSON.stringify(output, null, 2)
 })
 
-const activeOutputTab = ref('json-map')
-
-// Utility functions
 const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9)
 
-// Group management
-const addGroup = () => {
+const addVariantGroup = () => {
+  console.log('adding new group')
   if (!newGroupName.value.trim()) {
     return
   }
@@ -333,86 +311,84 @@ const addGroup = () => {
   const newGroup = {
     id: generateId(),
     groupName: newGroupName.value.trim(),
-    items: []
+    variants: []
   }
 
-  itemGroups.value.push(newGroup)
-  newItemNames[newGroup.id as keyof typeof newItemNames] = ''
+  variantGroups.value.push(newGroup)
+  newVariantNames[newGroup.id as keyof typeof newVariantNames] = ''
   newGroupName.value = ''
 }
 
 const removeGroup = (groupId: string) => {
-  const group = itemGroups.value.find((g) => g.id === groupId)
+  const group = variantGroups.value.find((g) => g.id === groupId)
   if (group) {
-    group.items.forEach((item) => {
-      delete itemSelections.value[item.id]
+    group.variants.forEach((variant) => {
+      delete variantSelections.value[variant.id]
 
-      const index = selectedItemIds.value.indexOf(item.id)
+      const index = selectedVariantIds.value.indexOf(variant.id)
       if (index !== -1) {
-        selectedItemIds.value.splice(index, 1)
+        selectedVariantIds.value.splice(index, 1)
       }
     })
   }
 
-  itemGroups.value = itemGroups.value.filter((g) => g.id !== groupId)
-  delete newItemNames[groupId]
+  variantGroups.value = variantGroups.value.filter((g) => g.id !== groupId)
+  delete newVariantNames[groupId]
 }
 
-// Item management
-const addItem = (groupId: string) => {
-  const itemName = newItemNames[groupId]
-  if (!itemName || !itemName.trim()) {
+const addVariant = (groupId: string) => {
+  const variantName = newVariantNames[groupId]
+  if (!variantName || !variantName.trim()) {
     return
   }
 
-  const group = itemGroups.value.find((g) => g.id === groupId)
+  const group = variantGroups.value.find((g) => g.id === groupId)
   if (!group) {
     return
   }
 
-  const newItem = {
+  const newVariant = {
     id: generateId(),
-    name: itemName.trim(),
+    name: variantName.trim(),
     selection: {}
   }
 
-  group.items.push(newItem)
-  itemSelections.value[newItem.id] = {}
-  newItemNames[groupId] = ''
+  group.variants.push(newVariant)
+  variantSelections.value[newVariant.id] = {}
+  newVariantNames[groupId] = ''
 }
 
-const removeItem = (groupId: string, itemId: string) => {
-  const group = itemGroups.value.find((g) => g.id === groupId)
+const removeVariant = (groupId: string, variantId: string) => {
+  const group = variantGroups.value.find((g) => g.id === groupId)
   if (!group) {
     return
   }
 
-  group.items = group.items.filter((item) => item.id !== itemId)
-  delete itemSelections.value[itemId]
+  group.variants = group.variants.filter((variant) => variant.id !== variantId)
+  delete variantSelections.value[variantId]
 
-  const index = selectedItemIds.value.indexOf(itemId)
+  const index = selectedVariantIds.value.indexOf(variantId)
   if (index !== -1) {
-    selectedItemIds.value.splice(index, 1)
+    selectedVariantIds.value.splice(index, 1)
   }
 }
 
-// Option management
 const addOption = () => {
-  if (!newOptionProperty.value.trim()) {
+  if (!newPropertyName.value.trim()) {
     return
   }
 
   const newOption = {
     id: generateId(),
-    property: newOptionProperty.value.trim(),
+    property: newPropertyName.value.trim(),
     values: [],
     isEnabled: true,
     isVisible: true
   }
 
   options.value.push(newOption)
-  newOptionValues[newOption.id] = ''
-  newOptionProperty.value = ''
+  newPropertyOptions[newOption.id] = ''
+  newPropertyName.value = ''
 }
 
 const removeOption = (optionId: string) => {
@@ -421,16 +397,16 @@ const removeOption = (optionId: string) => {
     return
   }
 
-  Object.values(itemSelections.value).forEach((selections) => {
+  Object.values(variantSelections.value).forEach((selections) => {
     delete selections[option.property]
   })
 
   options.value = options.value.filter((opt) => opt.id !== optionId)
-  delete newOptionValues[optionId]
+  delete newPropertyOptions[optionId]
 }
 
-const addOptionValue = (optionId: string) => {
-  const valueText = newOptionValues[optionId]
+const addPropertyOption = (optionId: string) => {
+  const valueText = newPropertyOptions[optionId]
   if (!valueText?.trim()) {
     return
   }
@@ -446,7 +422,7 @@ const addOptionValue = (optionId: string) => {
   }
 
   option.values.push(newValue)
-  newOptionValues[optionId] = ''
+  newPropertyOptions[optionId] = ''
 }
 
 const removeOptionValue = (optionId: string, valueId: string) => {
@@ -460,7 +436,7 @@ const removeOptionValue = (optionId: string, valueId: string) => {
     return
   }
 
-  Object.values(itemSelections.value).forEach((selections) => {
+  Object.values(variantSelections.value).forEach((selections) => {
     if (selections[option.property] === value.value) {
       delete selections[option.property]
     }
@@ -469,15 +445,15 @@ const removeOptionValue = (optionId: string, valueId: string) => {
   option.values = option.values.filter((v) => v.id !== valueId)
 }
 
-// Item option selection
-const initializeItemOptionState = (itemId: string) => {
-  if (!itemOptionStates.value[itemId]) {
-    itemOptionStates.value[itemId] = {}
+// Variant option selection
+const initializeVariantOptionState = (variantId: string) => {
+  if (!variantOptionStates.value[variantId]) {
+    variantOptionStates.value[variantId] = {}
   }
 
   for (const option of options.value) {
-    if (!itemOptionStates.value[itemId][option.property]) {
-      itemOptionStates.value[itemId][option.property] = {
+    if (!variantOptionStates.value[variantId][option.property]) {
+      variantOptionStates.value[variantId][option.property] = {
         enabled: false,
         selectedValue: option.values[0]?.value || ''
       }
@@ -485,37 +461,31 @@ const initializeItemOptionState = (itemId: string) => {
   }
 }
 
-const getItemOptionState = (itemId: string, property: string) => {
-  initializeItemOptionState(itemId)
+const getVariantOptionState = (variantId: string, property: string) => {
+  initializeVariantOptionState(variantId)
   return (
-    itemOptionStates.value[itemId][property] || {
+    variantOptionStates.value[variantId][property] || {
       enabled: false,
       selectedValue: ''
     }
   )
 }
 
-const updateItemSelections = (itemId: string) => {
-  if (!itemSelections.value[itemId]) {
-    itemSelections.value[itemId] = {}
+const updateVariantSelections = (variantId: string) => {
+  if (!variantSelections.value[variantId]) {
+    variantSelections.value[variantId] = {}
   }
 
-  Object.keys(itemOptionStates.value[itemId] || {}).forEach((property) => {
-    const state = itemOptionStates.value[itemId][property]
+  Object.keys(variantOptionStates.value[variantId] || {}).forEach((property) => {
+    const state = variantOptionStates.value[variantId][property]
     if (state.enabled && state.selectedValue) {
-      itemSelections.value[itemId][property] = state.selectedValue
+      variantSelections.value[variantId][property] = state.selectedValue
     } else {
-      delete itemSelections.value[itemId][property]
+      delete variantSelections.value[variantId][property]
     }
   })
 }
 
-// const getSelectedOptionsCount = (item: string) => {
-//   const selections = itemSelections.value[item.id] || {}
-//   return Object.keys(selections).length
-// }
-
-// Editing functions
 const startEditing = async (type, id: string, currentValue: string) => {
   Object.keys(editingStates).forEach((key) => {
     editingStates[key] = null
@@ -550,15 +520,15 @@ const finishEditing = (type, id: string) => {
 
   switch (type) {
     case 'group': {
-      const group = itemGroups.value.find((g) => g.id === id)
+      const group = variantGroups.value.find((g) => g.id === id)
       if (group) group.groupName = newValue
       break
     }
-    case 'item': {
-      for (const group of itemGroups.value) {
-        const item = group.items.find((i) => i.id === id)
-        if (item) {
-          item.name = newValue
+    case 'variant': {
+      for (const group of variantGroups.value) {
+        const variant = group.variants.find((i) => i.id === id)
+        if (variant) {
+          variant.name = newValue
           break
         }
       }
@@ -570,8 +540,8 @@ const finishEditing = (type, id: string) => {
         const oldProperty = option.property
         option.property = newValue
 
-        // Update all item selections to use the new property name
-        Object.values(itemSelections.value).forEach((selections) => {
+        // Update all variant selections to use the new property name
+        Object.values(variantSelections.value).forEach((selections) => {
           if (selections[oldProperty]) {
             selections[newValue] = selections[oldProperty]
             delete selections[oldProperty]
@@ -587,8 +557,8 @@ const finishEditing = (type, id: string) => {
           const oldValue = value.value
           value.value = newValue
 
-          // Update all item selections that use this value
-          Object.values(itemSelections.value).forEach((selections) => {
+          // Update all variant selections that use this value
+          Object.values(variantSelections.value).forEach((selections) => {
             Object.keys(selections).forEach((property) => {
               if (selections[property] === oldValue) {
                 selections[property] = newValue
@@ -712,25 +682,25 @@ function generateVariantsFromProductConfig() {
     }
 
     newGroupName.value = convertNamingConvention(options.value[i].property)
-    addGroup()
+    addVariantGroup()
 
     for (let j = 0; j < options.value[i].values.length; j++) {
-      newItemNames[itemGroups.value[i].id] = convertNamingConvention(
+      newVariantNames[variantGroups.value[i].id] = convertNamingConvention(
         options.value[i].values[j].value
       )
 
-      addItem(itemGroups.value[i].id)
+      addVariant(variantGroups.value[i].id)
 
-      const itemId = itemGroups.value[i].items[j].id
+      const variantId = variantGroups.value[i].variants[j].id
 
-      initializeItemOptionState(itemId)
+      initializeVariantOptionState(variantId)
 
-      itemOptionStates.value[itemId][options.value[i].property] = {
+      variantOptionStates.value[variantId][options.value[i].property] = {
         enabled: true,
         selectedValue: options.value[i].values[j].value
       }
 
-      updateItemSelections(itemId)
+      updateVariantSelections(variantId)
     }
   }
   newGroupName.value = ''
@@ -812,8 +782,6 @@ onMounted(async () => {
     <header class="flex justify-between gap-4 mb-8">
       <h1 class="text-3xl font-bold">JSON Map Builder</h1>
     </header>
-
-    <!-- Options Schema Section -->
     <Card>
       <CardHeader>
         <CardTitle class="flex items-center flex-wrap gap-2 text-2xl font-bold whitespace-nowrap">
@@ -850,7 +818,18 @@ onMounted(async () => {
                   <Input type="number" min="1" v-model="fetchVersion" />
                 </div>
               </div>
-              <Button @click="handleFetchDummyProduct" :state="fetchState">
+              <Button
+                @click="handleFetchDummyProduct"
+                :state="fetchState"
+                :disabled="
+                  !(
+                    fetchOwner.trim() &&
+                    fetchWorkspace.trim() &&
+                    fetchProduct.trim() &&
+                    fetchVersion
+                  )
+                "
+              >
                 <IconCloudDownload class="mr-2 size-5" />
                 Fetch
               </Button>
@@ -858,24 +837,24 @@ onMounted(async () => {
           </fieldset>
           <Separator class="!my-8" />
           <!-- <div
-            v-if="!options.length"
-            class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 !mb-8"
-          >
-            No product config data yet. Enter your product info below to automatically fetch it from
-            Dopple.
-          </div>
-          <p class="font-semibold">Create new property:</p>
-          <div class="flex items-center gap-2 max-w-128 mb-4">
-            <Input
-              v-model="newOptionProperty"
-              placeholder="Option property (e.g., size)"
-              @keydown.enter="addOption"
-            />
-            <Button @click="addOption">
-              <IconPlus class="mr-2 size-5" />
-              Add Property
-            </Button>
-          </div> -->
+						v-if="!options.length"
+						class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 !mb-8"
+					>
+						No product config data yet. Enter your product info below to automatically fetch it from
+						Dopple.
+					</div>
+					<p class="font-semibold">Create new property:</p>
+					<div class="flex items-center gap-2 max-w-128 mb-4">
+						<Input
+							v-model="newPropertyName"
+							placeholder="Option property (e.g., size)"
+							@keydown.enter="addOption"
+						/>
+						<Button @click="addOption">
+							<IconPlus class="mr-2 size-5" />
+							Add Property
+						</Button>
+					</div> -->
         </div>
         <div class="space-y-2">
           <div class="flex items-end justify-between gap-4 flex-wrap">
@@ -1032,11 +1011,14 @@ onMounted(async () => {
                   <p class="font-semibold mb-2 mt-4">Add new option:</p>
                   <div class="flex items-center gap-2 max-w-96">
                     <Input
-                      v-model="newOptionValues[option.id]"
+                      v-model="newPropertyOptions[option.id]"
                       placeholder="Option name"
-                      @keydown.enter="addOptionValue(option.id)"
+                      @keydown.enter="addPropertyOption(option.id)"
                     />
-                    <Button @click="addOptionValue(option.id)">
+                    <Button
+                      @click="addPropertyOption(option.id)"
+                      :disabled="!newPropertyOptions[option.id]"
+                    >
                       <IconPlus class="mr-2 size-5" />
                       Add Option
                     </Button>
@@ -1045,7 +1027,7 @@ onMounted(async () => {
               </details>
             </div>
             <p class="text-sm italic text-muted-foreground !mt-4">
-              Any properties that don’t relate to any of your variants may be deselected.
+              Any properties that do not relate to any of your variants may be deselected.
             </p>
             <!-- <Separator class="!my-6" />
 						<Button
@@ -1060,11 +1042,11 @@ onMounted(async () => {
           <p class="font-semibold">Add new property:</p>
           <div class="flex items-center gap-2 max-w-128 mb-4">
             <Input
-              v-model="newOptionProperty"
+              v-model="newPropertyName"
               placeholder="Property name (e.g. size, main-color)"
               @keydown.enter="addOption"
             />
-            <Button @click="addOption" :disabled="!newOptionProperty">
+            <Button @click="addOption" :disabled="!newPropertyName">
               <IconPlus class="mr-2 size-5" />
               Add Property
             </Button>
@@ -1084,7 +1066,7 @@ onMounted(async () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div v-if="!itemGroups.length" class="space-y-2">
+        <div v-if="!variantGroups.length" class="space-y-2">
           <div
             class="border border-yellow-500/25 bg-yellow-500/10 text-yellow-700 dark:text-yellow-200 rounded-md text-sm p-4 mb-4"
           >
@@ -1194,31 +1176,34 @@ onMounted(async () => {
             </div>
           </fieldset>
           <Separator class="!my-6" />
-          <p class="font-semibold">Add new variant group:</p>
-          <div class="flex items-center gap-2 max-w-128 mb-4">
-            <Input
-              v-model="newGroupName"
-              placeholder="Variant group name (e.g., Product Color)"
-              @keydown.enter="addGroup"
-            />
-            <Button @click="addGroup" :disabled="!newGroupName">
-              <IconPlus class="mr-2 size-5" />
-              Add Group
-            </Button>
-          </div>
+          <!-- <p class="font-semibold">Add new variant group:</p>
+					<div class="flex items-center gap-2 max-w-128 mb-4">
+						<Input
+							v-model="newGroupName"
+							placeholder="Variant group name (e.g., Product Color)"
+							@keydown.enter="addVariantGroup"
+						/>
+						<Button @click="addVariantGroup" :disabled="!newGroupName">
+							<IconPlus class="mr-2 size-5" />
+							Add Group
+						</Button>
+					</div> -->
         </div>
         <div v-else class="space-y-2">
           <div class="flex items-end justify-between gap-4 flex-wrap">
             <p class="font-bold text-xs uppercase text-muted-foreground">Variant Groups:</p>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
-                <Button variant="outline" class="h-8 px-2">
+                <Button variant="outline" class="h-8 px-2" :disabled="!enabledOptions.length">
                   <IconFilter class="mr-2 size-5 text-muted-foreground" />
                   Filter Dopple Properties
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent class="w-fit min-w-60" align="end">
-                <DropdownMenuLabel>Select/Deselect All</DropdownMenuLabel>
+                <DropdownMenuLabel class="flex gap-3 items-center">
+                  <Checkbox class="size-5" />
+                  Select/Deselect All
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
                   v-for="option in enabledOptions"
@@ -1229,11 +1214,14 @@ onMounted(async () => {
                 >
                   {{ option.property }}
                 </DropdownMenuCheckboxItem>
+                <p class="text-xs text-muted-foreground italic p-2">
+                  No product config properties found.
+                </p>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           <details
-            v-for="(group, groupIndex) in itemGroups"
+            v-for="(group, groupIndex) in variantGroups"
             :key="group.id"
             class="border rounded-md"
           >
@@ -1245,7 +1233,7 @@ onMounted(async () => {
               </span>
               {{ group.groupName }}
               <span class="text-muted-foreground font-normal">
-                ({{ group.items.length }} variant{{ group.items.length === 1 ? '' : 's' }})
+                ({{ group.variants.length }} variant{{ group.variants.length === 1 ? '' : 's' }})
               </span>
             </summary>
             <div class="p-4 border-t">
@@ -1286,11 +1274,11 @@ onMounted(async () => {
                 </Button>
               </div>
               <Separator class="my-4" />
-              <div v-if="group.items.length" class="space-y-2">
+              <div v-if="group.variants.length" class="space-y-2">
                 <p class="font-bold text-xs uppercase text-muted-foreground">Variants:</p>
                 <details
-                  v-for="(item, itemIndex) in group.items"
-                  :key="item.id"
+                  v-for="(variant, variantIndex) in group.variants"
+                  :key="variant.id"
                   class="border rounded-md"
                 >
                   <summary
@@ -1299,39 +1287,43 @@ onMounted(async () => {
                     <span
                       class="flex items-center justify-center rounded-full font-bold min-w-6 h-6 px-1 py-1 text-xs bg-accent text-muted-foreground"
                     >
-                      {{ itemIndex + 1 }}
+                      {{ variantIndex + 1 }}
                     </span>
-                    {{ item.name }}
+                    {{ variant.name }}
                   </summary>
                   <div class="p-4 pt-2 border-t">
                     <div class="flex items-center gap-2 pt-2">
-                      <h4 v-if="editingStates.item !== item.id" class="w-full text-sm">
+                      <h4 v-if="editingStates.variant !== variant.id" class="w-full text-sm">
                         <span class="font-medium text-muted-foreground"> Variant Name: </span>
-                        <Code class="ml-2">{{ item.name }}</Code>
+                        <Code class="ml-2">{{ variant.name }}</Code>
                       </h4>
                       <Input
                         v-else
                         v-model="editingValue"
-                        @blur="finishEditing('item', item.id)"
-                        @keyup.enter="finishEditing('item', item.id)"
+                        @blur="finishEditing('variant', variant.id)"
+                        @keyup.enter="finishEditing('variant', variant.id)"
                         @keyup.escape="cancelEditing"
                         ref="editInput"
                         class="w-full h-8"
                       />
                       <Button
-                        @click="startEditing('item', item.id, item.name)"
+                        @click="startEditing('variant', variant.id, variant.name)"
                         variant="outline"
                         size="sm"
                       >
                         <IconPencil class="mr-2 size-5 text-muted-foreground" />
                         Rename
                       </Button>
-                      <Button @click="removeItem(group.id, item.id)" variant="outline" size="sm">
+                      <Button
+                        @click="removeVariant(group.id, variant.id)"
+                        variant="outline"
+                        size="sm"
+                      >
                         <IconCopy class="mr-2 size-5 text-muted-foreground" />
                         Duplicate
                       </Button>
                       <Button
-                        @click="removeItem(group.id, item.id)"
+                        @click="removeVariant(group.id, variant.id)"
                         variant="outline"
                         size="sm"
                         class="text-destructive dark:text-rose-400"
@@ -1358,9 +1350,9 @@ onMounted(async () => {
                           <TableCell class="py-1 whitespace-nowrap font-mono">
                             <div class="flex items-center gap-2">
                               <Checkbox
-                                :id="`checkbox-${item.id}-${option.property}`"
-                                v-model="getItemOptionState(item.id, option.property).enabled"
-                                @update:modelValue="updateItemSelections(item.id)"
+                                :id="`checkbox-${variant.id}-${option.property}`"
+                                v-model="getVariantOptionState(variant.id, option.property).enabled"
+                                @update:modelValue="updateVariantSelections(variant.id)"
                                 class="size-5"
                               />
                               <Code>{{ option.property }}</Code>
@@ -1368,10 +1360,14 @@ onMounted(async () => {
                           </TableCell>
                           <TableCell class="py-1 w-full">
                             <Select
-                              :id="`select-${item.id}-${option.property}`"
-                              v-model="getItemOptionState(item.id, option.property).selectedValue"
-                              @update:modelValue="updateItemSelections(item.id)"
-                              :disabled="!getItemOptionState(item.id, option.property).enabled"
+                              :id="`select-${variant.id}-${option.property}`"
+                              v-model="
+                                getVariantOptionState(variant.id, option.property).selectedValue
+                              "
+                              @update:modelValue="updateVariantSelections(variant.id)"
+                              :disabled="
+                                !getVariantOptionState(variant.id, option.property).enabled
+                              "
                             >
                               <SelectTrigger class="w-full h-8">
                                 <SelectValue placeholder="Select an option" class="font-mono" />
@@ -1400,11 +1396,11 @@ onMounted(async () => {
               <p class="font-semibold mb-2 mt-4">Add new variant:</p>
               <div class="flex items-center gap-2 max-w-96">
                 <Input
-                  v-model="newItemNames[group.id]"
+                  v-model="newVariantNames[group.id]"
                   :placeholder="`Add variant to ${group.groupName}`"
-                  @keydown.enter="addItem(group.id)"
+                  @keydown.enter="addVariant(group.id)"
                 />
-                <Button @click="addItem(group.id)">
+                <Button @click="addVariant(group.id)">
                   <IconPlus class="mr-2 size-5" />
                   Add Variant
                 </Button>
@@ -1412,18 +1408,18 @@ onMounted(async () => {
             </div>
           </details>
           <Separator class="!my-6" />
-          <p class="font-semibold">Add new variant group:</p>
-          <div class="flex items-center gap-2 max-w-128 mb-4">
-            <Input
-              v-model="newGroupName"
-              placeholder="Variant group name (e.g., Product Color)"
-              @keydown.enter="addGroup"
-            />
-            <Button @click="addGroup">
-              <IconPlus class="mr-2 size-5" />
-              Add Group
-            </Button>
-          </div>
+        </div>
+        <p class="font-semibold">Add new variant group:</p>
+        <div class="flex items-center gap-2 max-w-128 mb-4 mt-2">
+          <Input
+            v-model="newGroupName"
+            placeholder="Variant group name (e.g., Product Color)"
+            @keydown.enter="addVariantGroup"
+          />
+          <Button @click="addVariantGroup" :disabled="!newGroupName">
+            <IconPlus class="mr-2 size-5" />
+            Add Group
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -1491,3 +1487,51 @@ onMounted(async () => {
     </Card>
   </div>
 </template>
+
+<style>
+:root {
+  interpolate-size: allow-keywords;
+}
+details {
+  overflow: hidden;
+}
+summary {
+  position: relative;
+  user-select: none;
+}
+summary::marker,
+summary::-webkit-details-marker {
+  content: '';
+  display: none;
+}
+summary::after {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" stroke-width="2" stroke="%231E1E1E" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6" /></svg>');
+  background-position: 50%;
+  background-repeat: no-repeat;
+  content: '';
+  display: block;
+  height: 1.25rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 250ms cubic-bezier(0.5, 0, 0.25, 1);
+  width: 1.25rem;
+}
+details:open > summary::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+@supports (transition-behavior: allow-discrete) {
+  details::details-content {
+    block-size: 0;
+    transition:
+      block-size 250ms cubic-bezier(0.5, 0, 0.25, 1),
+      content-visibility 250ms;
+    transition-behavior: allow-discrete;
+  }
+  details:open::details-content {
+    block-size: auto;
+  }
+}
+</style>
