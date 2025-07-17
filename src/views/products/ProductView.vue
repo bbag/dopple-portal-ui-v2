@@ -22,12 +22,16 @@ const tabs = [
     path: `/w/${workspace}/products/${name}`
   },
   {
+    name: 'Live Preview',
+    path: `/w/${workspace}/products/${name}/preview`
+  },
+  {
     name: 'Configurability',
     path: `/w/${workspace}/products/${name}/configurability`
   },
   {
-    name: 'Live Preview',
-    path: `/w/${workspace}/products/${name}/preview`
+    name: 'Implementation',
+    path: `/w/${workspace}/products/${name}/implementation`
   }
 ]
 
@@ -41,12 +45,12 @@ const actions = [
     name: 'Virtual Studio',
     path: `/w/${workspace}/studio/${name}`,
     icon: IconSlideshow
-  },
-  {
-    name: 'UI Builder',
-    path: `/w/${workspace}/ui-builder/${name}`,
-    icon: IconUiBuilder
   }
+  // {
+  //   name: 'UI Builder',
+  //   path: `/w/${workspace}/ui-builder/${name}`,
+  //   icon: IconUiBuilder
+  // }
 ]
 </script>
 

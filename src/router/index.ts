@@ -66,14 +66,19 @@ const router = createRouter({
                 //   component: () => import('@/views/products/ProductEnvironmentView.vue')
                 // },
                 {
+                  path: 'preview',
+                  name: 'Live Preview',
+                  component: () => import('@/views/products/ProductLivePreviewView.vue')
+                },
+                {
                   path: 'configurability',
                   name: 'Configurability',
                   component: () => import('@/views/products/ProductConfigurabilityView.vue')
                 },
                 {
-                  path: 'preview',
-                  name: 'Live Preview',
-                  component: () => import('@/views/products/ProductLivePreviewView.vue')
+                  path: 'implementation',
+                  name: 'Implementation',
+                  component: () => import('@/views/products/ProductImplementationView.vue')
                 }
               ]
             }
