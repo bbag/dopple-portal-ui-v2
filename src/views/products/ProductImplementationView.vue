@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
-import { codeToHtml } from 'shiki'
+import { computed, reactive, ref, onMounted, watch } from 'vue'
+import { codeToHtml, getHighlighter } from 'shiki'
 
 import {
   Accordion,
@@ -83,153 +83,191 @@ type UiComponentCategory = {
   options: UiComponentOption[]
 }
 
-const uiComponentCategories = ref<UiComponentCategory[]>([
+const uiComponentCategories = ref(
   {
-    title: 'General UI',
-    slug: 'general',
-    options: [
-      {
-        name: 'Loading screen',
-        slug: 'loading-screen',
-        isSelected: true
-      },
-      {
-        name: 'Side menu with config options',
-        slug: 'config-menu',
-        isSelected: false,
-        tooltip: 'Generates a basic selection menu UI with your product’s configurable options.'
-      },
-      {
-        name: 'Gesture indicator after load',
-        slug: 'gesture-indicator',
-        isSelected: false,
-        tooltip:
-          'Shows a small, animated hand icon at the bottom of the canvas hinting that the product is interactive.'
-      },
-      {
-        name: 'Hotspots',
-        slug: 'hotspots',
-        isSelected: false
+    'general-ui': {
+      title: 'General UI',
+      options: {
+        'loading-screen': {
+          name: 'Loading screen',
+          isSelected: false
+        },
+        'config-menu': {
+          name: 'Side menu with config options',
+          isSelected: false,
+          tooltip: 'Generates a basic selection menu UI with your product’s configurable options.'
+        },
+        'gesture-indicator': {
+          name: 'Gesture indicator after load',
+          isSelected: false,
+          tooltip:
+            'Shows a small, animated hand icon at the bottom of the canvas hinting that the product is interactive.'
+        }
       }
-    ]
-  },
-  {
-    title: 'Mini UI',
-    slug: 'mini-ui',
-    options: [
-      {
-        name: 'Fullscreen',
-        slug: 'fullscreen',
-        isSelected: false
-      },
-      {
-        name: 'Augmented reality',
-        slug: 'ar',
-        isSelected: false
-      },
-      {
-        name: 'Snapshot',
-        slug: 'snapshot',
-        isSelected: false
-      },
-      {
-        name: 'Controls/gestures',
-        slug: 'controls',
-        isSelected: false
+    },
+    'mini-ui': {
+      title: 'Mini UI',
+      options: {
+        fullscreen: {
+          name: 'Fullscreen',
+          isSelected: true
+        },
+        ar: {
+          name: 'Augmented Reality',
+          isSelected: false
+        },
+        snapshot: {
+          name: 'Snapshot',
+          isSelected: false
+        },
+        gestures: {
+          name: 'Controls/Gestures',
+          isSelected: false
+        }
       }
-    ]
-  },
+    },
+    accessibility: {
+      title: 'Accessibility',
+      options: {
+        'aria-label': {
+          name: 'Custom ARIA label for the canvas',
+          isSelected: false
+        },
+        'aria-description': {
+          name: 'Custom ARIA description for the canvas',
+          isSelected: false
+        },
+        'live-region': {
+          name: 'Announce to screen readers when the configuration changes',
+          isSelected: false
+        }
+      }
+    }
+  }
   // {
-  //   title: 'Loading Screen',
+  //   title: 'General UI',
+  //   slug: 'general',
   //   options: [
   //     {
-  //       name: 'Progress bar',
-  //       isSelected: false
+  //       name: 'Loading screen',
+  //       slug: 'loading-screen',
+  //       isSelected: true
   //     },
   //     {
-  //       name: 'Progress percentage',
+  //       name: 'Side menu with config options',
+  //       slug: 'config-menu',
+  //       isSelected: false,
+  //       tooltip: 'Generates a basic selection menu UI with your product’s configurable options.'
+  //     },
+  //     {
+  //       name: 'Gesture indicator after load',
+  //       slug: 'gesture-indicator',
+  //       isSelected: false,
+  //       tooltip:
+  //         'Shows a small, animated hand icon at the bottom of the canvas hinting that the product is interactive.'
+  //     },
+  //     {
+  //       name: 'Hotspots',
+  //       slug: 'hotspots',
   //       isSelected: false
   //     }
   //   ]
   // },
-  {
-    title: 'Accessibility',
-    slug: 'accessibility',
-    options: [
-      {
-        name: 'Custom ARIA label for the canvas',
-        slug: 'aria-label',
-        isSelected: false
-      },
-      {
-        name: 'Custom ARIA description for the canvas',
-        slug: 'aria-description',
-        isSelected: false
-      },
-      {
-        name: 'Announce to screen readers when the configuration changes',
-        slug: 'live-region',
-        isSelected: false
-      }
-    ]
-  }
-])
+  // {
+  //   title: 'Mini UI',
+  //   slug: 'mini-ui',
+  //   options: [
+  //     {
+  //       name: 'Fullscreen',
+  //       slug: 'fullscreen',
+  //       isSelected: false
+  //     },
+  //     {
+  //       name: 'Augmented reality',
+  //       slug: 'ar',
+  //       isSelected: false
+  //     },
+  //     {
+  //       name: 'Snapshot',
+  //       slug: 'snapshot',
+  //       isSelected: false
+  //     },
+  //     {
+  //       name: 'Controls/gestures',
+  //       slug: 'controls',
+  //       isSelected: false
+  //     }
+  //   ]
+  // },
+  // {
+  //   title: 'Accessibility',
+  //   slug: 'accessibility',
+  //   options: [
+  //     {
+  //       name: 'Custom ARIA label for the canvas',
+  //       slug: 'aria-label',
+  //       isSelected: false
+  //     },
+  //     {
+  //       name: 'Custom ARIA description for the canvas',
+  //       slug: 'aria-description',
+  //       isSelected: false
+  //     },
+  //     {
+  //       name: 'Announce to screen readers when the configuration changes',
+  //       slug: 'live-region',
+  //       isSelected: false
+  //     }
+  //   ]
+  // }
+)
 
 const activeUiComponentCategories = ref<string[]>([])
-for (const category of uiComponentCategories.value) {
-  activeUiComponentCategories.value.push(category.title)
+for (const category of Object.keys(uiComponentCategories.value) as Array<
+  keyof typeof uiComponentCategories.value
+>) {
+  activeUiComponentCategories.value.push(uiComponentCategories.value[category].title)
 }
 
 const activeOutputTab = ref('html')
 
-// Returns the UiComponentOption object based on its name
-function getCategoryOption(optionName: string) {
-  let foundOption = { name: optionName, isSelected: false }
+const showMiniUi = true
+const showLoadingScreen = false
 
-  uiComponentCategories.value.forEach((category) => {
-    category.options.forEach((option) => {
-      if (option.name === optionName) {
-        foundOption = option
-      }
-    })
+const htmlStructure = [
+  '<div>',
+  '    <p>Actual dynamic code snippet coming soon...</p>',
+  showMiniUi && '    <div>Mini UI!</div>',
+  showLoadingScreen && '    <div>Loading Screen</div>',
+  '</div>'
+]
+
+const htmlStructure2 = `<div>
+	<p>Awesome</p>${showMiniUi ? '	<div>Mini UI!</div>' : ''}${
+    showLoadingScreen ? '	<div>Loading Screen</div>' : ''
+  }
+</div>`
+
+const htmlSnippet = computed(() => {
+  const parts: string[] = []
+
+  htmlStructure.forEach((item) => {
+    if (item) {
+      parts.push(item as string)
+    }
   })
 
-  return foundOption
-}
-
-const snippetHtmlRef = ref('')
-
-watch(uiComponentCategories.value, async (newObj) => {
-  // console.log('newObj')
+  return parts.join('\n')
 })
 
-// const computedSnippetLoadingScreen = computed(() => {
-//   return `${
-//     getCategoryOption('Loading screen')?.isSelected &&
-//     `
-// 	<div class="loading-screen">
-// 	Loading... <span class="progress">45%</span>
-// </div>`
-//   }`
-// })
+const finalHtmlSnippet = ref('')
 
-// const snippetHtmlRef = ref('')
-// const snippetHtml = ref(`<div class="wrapper">
-// 	<div id="dopple-container"></div>${computedSnippetLoadingScreen.value}
-// </div>`)
-
-// const shikiTheme = 'material-theme-palenight'
-
-// onMounted(async () => {
-//   snippetHtmlRef.value = await codeToHtml(snippetHtml.value, {
-//     lang: 'html',
-//     theme: shikiTheme
-//   })
-// })
-
-function logChange(name: string, newValue: boolean) {
-  console.log(name, newValue)
-}
+onMounted(async () => {
+  finalHtmlSnippet.value = await codeToHtml(htmlSnippet.value, {
+    lang: 'html',
+    theme: 'material-theme-palenight'
+  })
+})
 </script>
 
 <template>
@@ -327,19 +365,20 @@ function logChange(name: string, newValue: boolean) {
                               v-model="option.isSelected"
                               class="size-5"
                               @update:model-value="
-                                (newValue) => logChange(option.name, newValue as boolean)
+                                (newValue) =>
+                                  console.log('logChange(option.name, newValue as boolean)')
                               "
                             />
                             {{ option.name }}
                           </label>
-                          <Tooltip v-if="option.tooltip">
-                            <TooltipTrigger>
-                              <IconInfoCircle class="size-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent class="max-w-64 text-sm">
-                              {{ option.tooltip }}
-                            </TooltipContent>
-                          </Tooltip>
+                          <!-- <Tooltip v-if="option.tooltip">
+														<TooltipTrigger>
+															<IconInfoCircle class="size-4 text-muted-foreground" />
+														</TooltipTrigger>
+														<TooltipContent class="max-w-64 text-sm">
+															{{ option.tooltip }}
+														</TooltipContent>
+													</Tooltip> -->
                         </li>
                       </ul>
                     </TooltipProvider>
@@ -373,7 +412,9 @@ function logChange(name: string, newValue: boolean) {
                     <TabsTrigger value="css">CSS</TabsTrigger>
                     <TabsTrigger value="js">JavaScript</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="html"> HTML </TabsContent>
+                  <TabsContent value="html">
+                    <div v-html="finalHtmlSnippet"></div>
+                  </TabsContent>
                   <TabsContent value="css"> CSS </TabsContent>
                   <TabsContent value="js"> </TabsContent>
                 </Tabs>
@@ -397,8 +438,8 @@ function logChange(name: string, newValue: boolean) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Label>JavaScript:</Label>
-          <div v-html="snippetHtmlRef"></div>
+          <!-- <Label>JavaScript:</Label> -->
+          <!-- <div v-html="snippetHtmlRef"></div> -->
         </CardContent>
       </Card>
     </div>
