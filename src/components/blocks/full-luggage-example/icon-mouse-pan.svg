@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
+	<style>
+		.mouse {
+			fill: hsl(209, 15%, 94%);
+			stroke: hsl(209, 9%, 14%);
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+		.highlight {
+			fill: hsla(209, 100%, 47%, 0.33);
+		}
+		.arrows {
+			fill: none;
+			stroke: hsl(209, 100%, 47%);
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+	</style>
+	<rect class="mouse" x="8.5" y="8" width="11" height="18" rx="5" />
+	<g class="arrows">
+		<polyline points="5.5,10 3.5,9 5.5,8" />
+		<polyline points="22.5,10 24.5,9 22.5,8" />
+		<line x1="3.5" y1="9" x2="7.5" y2="9" />
+		<line x1="24.5" y1="9" x2="20.5" y2="9" />
+		<polyline points="15,4 14,2 13,4" />
+		<line x1="14" y1="6" x2="14" y2="2" />
+	</g>
+	<path class="highlight" d="M14,8h0.5c2.8,0,5,2.2,5,5v2.5H15c-0.6,0-1-0.4-1-1V8z" />
+	<line class="mouse" x1="14" y1="11" x2="14" y2="13" />
+</svg>
