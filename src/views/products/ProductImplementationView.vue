@@ -42,6 +42,9 @@ import {
   arCss,
   arHtml,
   arJs,
+  autoRotateCss,
+  autoRotateHtml,
+  autoRotateJs,
   fullScreenCss,
   fullScreenHtml,
   fullScreenJs,
@@ -55,6 +58,9 @@ import {
   miniUiGroupStartHtml,
   miniUiGroupEndHtml,
   miniUiStartHtml,
+  shareCss,
+  shareHtml,
+  shareJs,
   snapshotCss,
   snapshotHtml,
   snapshotJs
@@ -220,9 +226,15 @@ const gesturesJsOutput = highlightSyntax(gesturesJs, 'js')
 
 // Code section: Auto-rotation
 const isAutoRotationActive = ref(false)
+const autoRotateHtmlOutput = highlightSyntax(autoRotateHtml, 'html')
+const autoRotateCssOutput = highlightSyntax(autoRotateCss, 'css')
+const autoRotateJsOutput = highlightSyntax(autoRotateJs, 'js')
 
 // Code section: Share
 const isShareActive = ref(false)
+const shareHtmlOutput = highlightSyntax(shareHtml, 'html')
+const shareCssOutput = highlightSyntax(shareCss, 'css')
+const shareJsOutput = highlightSyntax(shareJs, 'js')
 
 // Detect which components within the Mini UI are active
 const isMiniUiLeftGroupActive = computed(() =>
@@ -264,8 +276,14 @@ watchEffect(async () => {
     if (isMiniUiLeftGroupActive.value) {
       html.value += miniUiGroupLeftStartOutput.value
 
+      // Share
+      html.value += isShareActive.value ? shareHtmlOutput.value : ''
+
       // Controls & Gestures
       html.value += isGesturesActive.value ? gesturesHtmlOutput.value : ''
+
+      // Auto-rotation
+      html.value += isAutoRotationActive.value ? autoRotateHtmlOutput.value : ''
 
       // Snapshot
       html.value += isSnapshotActive.value ? snapshotHtmlOutput.value : ''
@@ -310,8 +328,14 @@ watchEffect(async () => {
   // Mini UI styles for components with dialogs (AR, Controls/Gestures, Snapshot, and Share)
   css.value += isMiniUiDialogActive.value ? miniUiDialogCssOutput.value : ''
 
+  // Mini UI: Share
+  css.value += isShareActive.value ? shareCssOutput.value : ''
+
   // Mini UI: Controls & Gestures
   css.value += isGesturesActive.value ? gesturesCssOutput.value : ''
+
+  // Mini UI: Auto-rotation
+  css.value += isAutoRotationActive.value ? autoRotateCssOutput.value : ''
 
   // Mini UI: Snapshot
   css.value += isSnapshotActive.value ? snapshotCssOutput.value : ''
@@ -339,8 +363,14 @@ watchEffect(async () => {
   // .load() and removing the `data-dopple-loading` attribute
   js.value += mainJsLoadOutput.value
 
+  // Share
+  js.value += isShareActive.value ? shareJsOutput.value : ''
+
   // Controls & Gestures
   js.value += isGesturesActive.value ? gesturesJsOutput.value : ''
+
+  // Auto-rotation
+  js.value += isAutoRotationActive.value ? autoRotateJsOutput.value : ''
 
   // Snapshot
   js.value += isSnapshotActive.value ? snapshotJsOutput.value : ''
@@ -468,7 +498,10 @@ onMounted(async () => {
                             account.
                           </template>
                           <template #settings>
-                            <p>Settings for the logNamespace and sessionId will go here.</p>
+                            <p>
+                              TODO: code snippet not yet implemented (will have settings for the
+                              logNamespace and sessionId here).
+                            </p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -480,7 +513,10 @@ onMounted(async () => {
                             stop auto-rotating once the user interacts with the 3D scene.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: code snippet not yet implemented (will have settings for
+                              auto-rotation speed and direction).
+                            </p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -492,7 +528,7 @@ onMounted(async () => {
                             accessible to screen readers.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>TODO: code snippet not yet implemented.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -503,7 +539,10 @@ onMounted(async () => {
                             Enable or disable rotating, panning, and/or zooming of the camera.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: code snippet not yet implemented (will have settings for which
+                              camera control actions are enabled/disabled).
+                            </p>
                           </template>
                         </ImplementationItem>
                       </ul>
@@ -525,7 +564,11 @@ onMounted(async () => {
                             options.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: code snippet not yet implemented (will have settings for
+                              outputting menu as list of select dropdowns or radio buttons within
+                              fieldsets).
+                            </p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Hotspots" v-model="isHotspotsActive">
@@ -534,7 +577,7 @@ onMounted(async () => {
                             hotspots on your product) to the Dopple container.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>TODO: code snippet not yet implemented.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -546,7 +589,11 @@ onMounted(async () => {
                             that the product is interactive.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: code snippet not yet implemented (will have callout to save the
+                              image yourself, since Dopple isn't responsible for hosting it for
+                              you).
+                            </p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Loading Screen" v-model="isLoadingScreenActive">
@@ -584,7 +631,7 @@ onMounted(async () => {
                             dialog if not.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>TODO: will have settings for setting the base URL to use for AR.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Auto-rotation" v-model="isAutoRotationActive">
@@ -592,15 +639,12 @@ onMounted(async () => {
                             Adds an icon button to toggle auto-rotation of the product on or off.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>TODO: will have settings for auto-rotation speed and direction</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Fullscreen Mode" v-model="isFullScreenActive">
                           <template #tooltip>
                             Adds an icon button for entering into full screen mode.
-                          </template>
-                          <template #settings>
-                            <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Controls/Gestures" v-model="isGesturesActive">
@@ -609,7 +653,11 @@ onMounted(async () => {
                             interact with the 3D scene.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: will have a .ZIP download link for the icon images + callout for
+                              hosting the images yourself, since Dopple isn't responsible for
+                              hosting them.
+                            </p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Shareable URL" v-model="isShareActive">
@@ -618,7 +666,7 @@ onMounted(async () => {
                             product’s current configuration.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>TODO: will have settings for setting the base URL.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Snapshot" v-model="isSnapshotActive">
@@ -627,7 +675,10 @@ onMounted(async () => {
                             current canvas.
                           </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <p>
+                              TODO: will have settings for entering a custom default filename for
+                              the downloaded image and default width/height.
+                            </p>
                           </template>
                         </ImplementationItem>
                       </ul>

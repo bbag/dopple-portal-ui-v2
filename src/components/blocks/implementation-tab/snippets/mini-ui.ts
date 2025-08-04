@@ -208,6 +208,69 @@ export const arJs = `\n\n	// Mini UI button: Augmented Reality
 	});`
 
 // --------------------------------------------------------------------------------------------- //
+// Auto-rotation                                                                                 //
+// --------------------------------------------------------------------------------------------- //
+
+export const autoRotateHtml = `\n\n			<!-- Auto-rotate -->
+			<button data-mini-ui-button="autorotate" title="Auto-rotate: Off" data-autorotate-state="inactive">
+				<svg data-autorotate-icon="active" width="24" height="24" viewBox="0 0 24 24">
+					<use xlink:href="#dopple-icon-autorotate-on" class="dopple-mini-ui-shadow" />
+					<g id="dopple-icon-autorotate-on">
+						<path d="M17 15.328c2.414 -.718 4 -1.94 4 -3.328c0 -2.21 -4.03 -4 -9 -4s-9 1.79 -9 4s4.03 4 9 4M9 13l3 3l-3 3" />
+					</g>
+				</svg>
+				<svg data-autorotate-icon="inactive" width="24" height="24" viewBox="0 0 24 24">
+					<use xlink:href="#dopple-icon-autorotate-off" class="dopple-mini-ui-shadow" />
+					<g id="dopple-icon-autorotate-off">
+						<path d="M8.3,8.3C5.2,9,3,10.4,3,12c0,2.2,4,4,9,4M18.6,14.7C20.1,14,21,13,21,12c0-2.2-4-4-9-4M9,13l3,3l-3,3M4,4L20,20" />
+					</g>
+				</svg>
+			</button>`
+export const autoRotateCss = `\n\n	/* Auto-rotate (Mini UI) */
+	[data-autorotate-state="inactive"] [data-autorotate-icon="active"],
+	[data-autorotate-state="active"] [data-autorotate-icon="inactive"] {
+		display: none;
+	}`
+export const autoRotateJs = `\n\n	// Mini UI button: Auto-rotate
+	const autorotateButton = doppleWrapper.querySelector("[data-mini-ui-button='autorotate']");
+	autorotateButton?.addEventListener("click", () => {
+		enableAutoRotation = !enableAutoRotation;
+		if (enableAutoRotation) {
+			autorotateButton.dataset.autorotateState = "active";
+			autorotateButton.title = "Auto-rotate: On";
+		} else {
+			autorotateButton.dataset.autorotateState = "inactive";
+			autorotateButton.title = "Auto-rotate: Off";
+		}
+	});
+
+	const autoRotationSpeed = 30; // Degrees per second
+	let enableAutoRotation = false;
+	let autoRotationStartTime = performance.now();
+	let autoRotationOldTime = autoRotationStartTime;
+	let autoRotationElapsedTime = 0;
+	let autoRotationIsRunning = false;
+
+	(function autoRotate() {
+		let delta = 0;
+		if (!autoRotationIsRunning) {
+			autoRotationStartTime = performance.now();
+			autoRotationOldTime = autoRotationStartTime;
+			autoRotationElapsedTime = 0;
+			autoRotationIsRunning = true;
+		} else {
+			const newTime = performance.now();
+			delta = (newTime - autoRotationOldTime) / 1000;
+			autoRotationOldTime = newTime;
+			autoRotationElapsedTime += delta;
+		}
+		if (enableAutoRotation) {
+			dopple.controls.azimuthAngle -= delta * (Math.PI / 180) * autoRotationSpeed;
+		}
+		requestAnimationFrame(autoRotate);
+	})();`
+
+// --------------------------------------------------------------------------------------------- //
 // Controls & Gestures                                                                           //
 // --------------------------------------------------------------------------------------------- //
 
@@ -364,8 +427,8 @@ export const gesturesJs = `\n\n	// Mini UI button: Controls & Gestures
 // Full Screen                                                                                   //
 // --------------------------------------------------------------------------------------------- //
 
-export const fullScreenHtml = `\n\n			<!-- Fullscreen -->
-			<button data-mini-ui-button="fullscreen" title="Enter Fullscreen" data-fullscreen-state="inactive">
+export const fullScreenHtml = `\n\n			<!-- Full Screen -->
+			<button data-mini-ui-button="fullscreen" title="Enter Full Screen" data-fullscreen-state="inactive">
 				<svg data-fullscreen-icon="inactive" width="24" height="24" viewBox="0 0 24 24">
 					<use xlink:href="#dopple-icon-fullscreen" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-fullscreen">
@@ -397,6 +460,85 @@ export const fullScreenJs = `\n\n	// Mini UI button: Full Screen
 			doppleWrapper.webkitRequestFullscreen?.();
 			fullscreenButton.dataset.fullscreenState = "active";
 			fullscreenButton.title = "Exit Fullscreen";
+		}
+	});`
+
+// --------------------------------------------------------------------------------------------- //
+// Share                                                                                         //
+// --------------------------------------------------------------------------------------------- //
+
+export const shareHtml = `\n\n			<!-- Share -->
+			<button data-mini-ui-button="share" title="Share">
+				<svg width="24" height="24" viewBox="0 0 24 24">
+					<use xlink:href="#dopple-icon-share" class="dopple-mini-ui-shadow"></use>
+					<g id="dopple-icon-share">
+						<path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M8.7 10.7l6.6 -3.4M8.7 13.3l6.6 3.4" />
+					</g>
+				</svg>
+			</button>
+			<dialog data-mini-ui-dialog="share" aria-labelledby="dopple-dialog-heading-share" aria-describedby="dopple-dialog-description-share" closedby="any">
+				<button data-mini-ui-action="close" title="Close" aria-label="Close dialog">
+					<svg width="20" height="20" viewBox="0 0 20 20">
+						<path d="M14 6l-8 8M6 6l8 8" />
+					</svg>
+				</button>
+				<h2 id="dopple-dialog-heading-share" class="dopple-dialog-heading">
+					Share Configuration
+				</h2>
+				<p id="dopple-dialog-description-share" class="dopple-dialog-description">
+					Copy the URL below to share your custom configuration.
+				</p>
+				<textarea id="dopple-share-link" readonly></textarea>
+				<div class="dopple-dialog-action-buttons">
+					<button id="dopple-share-copy-button" class="dopple-mini-ui-action-button">
+						Copy Link
+					</button>
+				</div>
+			</dialog>`
+export const shareCss = `\n\n	/* Share (Mini UI) */
+	#dopple-share-link {
+		background: var(--color-bg-muted);
+		border: 1px solid var(--color-border);
+		border-radius: 0.5rem;
+		color: var(--color-text);
+		font-size: 0.875rem;
+		font-family: inherit;
+		height: 8rem;
+		line-height: 1.5;
+		padding: 0.75rem 1rem;
+		resize: none;
+		width: 100%;
+	}`
+export const shareJs = `\n\n	// Mini UI button: Share
+	const shareUrlTextarea = document.getElementById("dopple-share-link");
+	const shareButton = doppleWrapper.querySelector("[data-mini-ui-button='share']");
+	shareButton?.addEventListener("click", async () => {
+		try {
+			isShareUrlCopied = false;
+			copyShareUrlButton.textContent = "Copy link";
+
+			const { url } = await dopple.generateShareURL({
+				baseUrl: window.location,
+				arMode: false,
+				qrCode: false
+			});
+			shareUrlTextarea.value = url;
+
+			const buttonDialog = doppleWrapper.querySelector("[data-mini-ui-dialog='share']");
+			buttonDialog.showModal();
+		} catch (error) {
+			console.error(error);
+		}
+	});
+
+	let isShareUrlCopied = false;
+	const copyShareUrlButton = document.getElementById("dopple-share-copy-button");
+	copyShareUrlButton.addEventListener("click", async () => {
+		await navigator.clipboard.writeText(shareUrlTextarea.value);
+
+		if (!isShareUrlCopied) {
+			isShareUrlCopied = true;
+			copyShareUrlButton.textContent = "Copied!";
 		}
 	});`
 
@@ -509,9 +651,10 @@ export const snapshotJs = `\n\n	// Mini UI button: Snapshot
 			console.error(error);
 		}
 	});
-	const saveSnapshotButton = document.getElementById("dopple-save-snapshot-button");
+
 	const snapshotWidth = document.getElementById("dopple-snapshot-width");
 	const snapshotHeight = document.getElementById("dopple-snapshot-height");
+	const saveSnapshotButton = document.getElementById("dopple-save-snapshot-button");
 	saveSnapshotButton.addEventListener("click", async () => {
 		await dopple.takeSnapshot({
 			fileName: dopple.projectName || "snapshot",
