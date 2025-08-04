@@ -1,14 +1,31 @@
 // --------------------------------------------------------------------------------------------- //
+// Code section: Mini UI                                                                         //
+// --------------------------------------------------------------------------------------------- //
+
+export const miniUiStartHtml = () => `\n\n	<!-- Mini UI -->
+	<div class="dopple-mini-ui">`
+export const miniUiEndHtml = () => `\n	</div>`
+export const miniUiGroupStartHtml = (group: 'left' | 'right') =>
+  `\n		<div data-mini-ui-side="${group}">`
+export const miniUiGroupEndHtml = () => `\n		</div>`
+
+// --------------------------------------------------------------------------------------------- //
+// Code section: Mini UI - Augmented Reality                                                     //
+// --------------------------------------------------------------------------------------------- //
+
+export const arHtml = () => `\n\n	<!-- Loading screen -->`
+
+// --------------------------------------------------------------------------------------------- //
 // Code section: Loading screen                                                                  //
 // --------------------------------------------------------------------------------------------- //
 
-export const loadingScreenHtml = () => `\n\n	<!-- Loading screen -->
+export const loadingScreenHtml = (loadingScreenText: string) => `\n\n	<!-- Loading screen -->
 	<div class="loading-screen">
 		<svg class="loading-spinner" width="32" height="32" viewBox="0 0 24 24" role="presentation">
 			<path d="M12 3a9 9 0 1 0 9 9" />
 		</svg>
 		<span class="loading-text">
-			Loading... <span id="dopple-progress-percent">0%</span>
+			${loadingScreenText || 'Loading...'} <span id="dopple-progress-percent">0%</span>
 		</span>
 		<progress id="dopple-progress-bar" value="0" max="100" aria-label="The 3D product is loading.">
 			0%
@@ -95,7 +112,7 @@ export const mainJsStart = (selectionObj = {}) => {
   }
   selection += `\n		`
 
-  return `<script is:inline type="module">
+  return `<script type="module">
 	// Import the Dopple SDK
 	import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";
 

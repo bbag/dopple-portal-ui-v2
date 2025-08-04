@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue'
+import { computed, ref, onMounted, watchEffect } from 'vue'
 import { computedAsync } from '@vueuse/core'
 import { codeToHtml, codeToTokens } from 'shiki'
 
@@ -12,6 +12,8 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -34,7 +36,11 @@ import {
   mainHtmlStart,
   mainJsLoad,
   mainJsEnd,
-  mainJsStart
+  mainJsStart,
+  miniUiStartHtml,
+  miniUiEndHtml,
+  miniUiGroupStartHtml,
+  miniUiGroupEndHtml
 } from '@/components/blocks/implementation-tab/implementation-code'
 
 import FullExample from '@/components/blocks/full-luggage-example/FullExample.vue'
@@ -83,6 +89,14 @@ const exampleMatrix = ref([
     selectedOption: 'default'
   }
 ])
+
+const defaultSelection = computed(() => {
+  const selection: Record<string, string> = {}
+  for (const item of exampleMatrix.value) {
+    selection[item.property] = item.selectedOption
+  }
+  return selection
+})
 
 // type UiComponentOption = {
 //   name: string
@@ -219,16 +233,18 @@ const isPreviewShown = ref(false)
 const activeOutputTab = ref('html')
 const shikiTheme = 'material-theme-palenight'
 
-async function htmlOutput(input: string, lang: 'html' | 'css' | 'js') {
-  const html = await codeToHtml(input, {
-    lang: lang || 'html',
-    theme: shikiTheme
-  })
-  const codeStart = html.indexOf('<code')
-  const codeTagEnd = html.indexOf('>', codeStart) + 1
-  const codeEnd = html.lastIndexOf('</code>')
+function highlightSyntax(val: string, lang: 'html' | 'css' | 'js') {
+  return computedAsync(async () => {
+    const html = await codeToHtml(val, {
+      lang: lang || 'html',
+      theme: shikiTheme
+    })
+    const codeStart = html.indexOf('<code')
+    const codeTagEnd = html.indexOf('>', codeStart) + 1
+    const codeEnd = html.lastIndexOf('</code>')
 
-  return html.slice(codeTagEnd, codeEnd)
+    return html.slice(codeTagEnd, codeEnd)
+  }, '')
 }
 
 // --------------------------------------------------------------------------------------------- //
@@ -236,27 +252,27 @@ async function htmlOutput(input: string, lang: 'html' | 'css' | 'js') {
 // --------------------------------------------------------------------------------------------- //
 
 // Code section: Main (content that's always included)
-const mainHtmlStartOutput = computedAsync(async () => await htmlOutput(mainHtmlStart(), 'html'), '')
-const mainHtmlEndOutput = computedAsync(async () => await htmlOutput(mainHtmlEnd(), 'html'), '')
+const mainHtmlStartOutput = highlightSyntax(mainHtmlStart(), 'html')
+const mainHtmlEndOutput = highlightSyntax(mainHtmlEnd(), 'html')
 
-const mainJsStartOutput = computedAsync(
-  async () => await htmlOutput(mainJsStart({ prop1: 'option1', prop2: 'option2' }), 'html'),
-  ''
-)
-const mainJsLoadOutput = computedAsync(async () => await htmlOutput(mainJsLoad(), 'js'), '')
-const mainJsEndOutput = computedAsync(async () => await htmlOutput(mainJsEnd(), 'html'), '')
+const mainJsStartOutput = highlightSyntax(mainJsStart(defaultSelection.value), 'html')
+const mainJsLoadOutput = highlightSyntax(mainJsLoad(), 'js')
+const mainJsEndOutput = highlightSyntax(mainJsEnd(), 'html')
 
-const mainCssStartOutput = computedAsync(async () => await htmlOutput(mainCssStart(), 'css'), '')
-const mainCssEndOutput = computedAsync(async () => await htmlOutput(mainCssEnd(), 'css'), '')
+const mainCssStartOutput = highlightSyntax(mainCssStart(), 'css')
+const mainCssEndOutput = highlightSyntax(mainCssEnd(), 'css')
 
 // Code section: Analytics
 const isAnalyticsActive = ref(false)
 
-// Code section: Custom ARIA Label
-const isAriaLabelActive = ref(false)
+// Code section: Auto-rotate on Initial Load
+const isAutoRotateOnLoadActive = ref(false)
 
-// Code section: Custom ARIA Description
-const isAriaDescriptionActive = ref(false)
+// Code section: Custom ARIA Attributes
+const isAriaAttributesActive = ref(false)
+
+// Code section: Custom Camera Control Behavior
+const isCustomCameraControlBehaviorActive = ref(false)
 
 // --------------------------------------------------------------------------------------------- //
 // UI Add-ons                                                                                    //
@@ -264,18 +280,10 @@ const isAriaDescriptionActive = ref(false)
 
 // Code section: Loading Screen
 const isLoadingScreenActive = ref(false)
-const loadingScreenHtmlOutput = computedAsync(
-  async () => await htmlOutput(loadingScreenHtml(), 'html'),
-  ''
-)
-const loadingScreenJsOutput = computedAsync(
-  async () => await htmlOutput(loadingScreenJs(), 'js'),
-  ''
-)
-const loadingScreenCssOutput = computedAsync(
-  async () => await htmlOutput(loadingScreenCss(), 'css'),
-  ''
-)
+const loadingScreenText = ref('Loading...')
+const loadingScreenHtmlOutput = highlightSyntax(loadingScreenHtml(loadingScreenText.value), 'html')
+const loadingScreenJsOutput = highlightSyntax(loadingScreenJs(), 'js')
+const loadingScreenCssOutput = highlightSyntax(loadingScreenCss(), 'css')
 
 // Code section: Config Menu
 const isConfigMenuActive = ref(false)
@@ -289,6 +297,13 @@ const isInteractivityIndicatorActive = ref(false)
 // --------------------------------------------------------------------------------------------- //
 // Mini UI                                                                                       //
 // --------------------------------------------------------------------------------------------- //
+
+// Code section: Mini UI
+const miniUiStartOutput = highlightSyntax(miniUiStartHtml(), 'html')
+const miniUiEndOutput = highlightSyntax(miniUiEndHtml(), 'html')
+const miniUiGroupLeftStartOutput = highlightSyntax(miniUiGroupStartHtml('left'), 'html')
+const miniUiGroupRightStartOutput = highlightSyntax(miniUiGroupStartHtml('right'), 'html')
+const miniUiGroupEndOutput = highlightSyntax(miniUiGroupEndHtml(), 'html')
 
 // Code section: Fullscreen
 const isFullScreenActive = ref(false)
@@ -308,52 +323,83 @@ const isAutoRotationActive = ref(false)
 // Code section: Share
 const isShareActive = ref(false)
 
+const isMiniUiLeftGroupActive = computed(() => {
+  return [
+    isArActive.value,
+    isSnapshotActive.value,
+    isGesturesActive.value,
+    isAutoRotationActive.value,
+    isShareActive.value
+  ].some((item) => item)
+})
+const isMiniUiRightGroupActive = computed(() => isFullScreenActive.value)
+
 // --------------------------------------------------------------------------------------------- //
 // Code snippet outputs                                                                          //
 // --------------------------------------------------------------------------------------------- //
 
 // HTML output
-const htmlSnippet = ref('')
+const html = ref('')
 watchEffect(async () => {
-  htmlSnippet.value = ''
+  html.value = ''
 
-  htmlSnippet.value += mainHtmlStartOutput.value
+  // Main wrapper div and dopple-container div
+  html.value += mainHtmlStartOutput.value
 
+  // Loading screen div
   if (isLoadingScreenActive.value) {
-    htmlSnippet.value += loadingScreenHtmlOutput.value
+    html.value += loadingScreenHtmlOutput.value
   }
 
-  htmlSnippet.value += mainHtmlEndOutput.value
+  // Mini UI (AR, Snapshot, Fullscreen, etc.)
+  if (isMiniUiLeftGroupActive.value || isMiniUiRightGroupActive.value) {
+    html.value += miniUiStartOutput.value
+
+    if (isMiniUiLeftGroupActive.value) {
+      html.value += miniUiGroupLeftStartOutput.value
+      html.value += miniUiGroupEndOutput.value
+    }
+
+    if (isMiniUiRightGroupActive.value) {
+      html.value += miniUiGroupRightStartOutput.value
+      html.value += miniUiGroupEndOutput.value
+    }
+
+    html.value += miniUiEndOutput.value
+  }
+
+  // Closing div
+  html.value += mainHtmlEndOutput.value
+})
+
+// CSS output
+const css = ref('')
+watchEffect(async () => {
+  css.value = ''
+
+  css.value += mainCssStartOutput.value
+
+  if (isLoadingScreenActive.value) {
+    css.value += loadingScreenCssOutput.value
+  }
+
+  css.value += mainCssEndOutput.value
 })
 
 // JS output
-const jsSnippet = ref('')
+const js = ref('')
 watchEffect(async () => {
-  jsSnippet.value = ''
+  js.value = ''
 
-  jsSnippet.value += mainJsStartOutput.value
+  js.value += mainJsStartOutput.value
 
   if (isLoadingScreenActive.value) {
-    jsSnippet.value += loadingScreenJsOutput.value
+    js.value += loadingScreenJsOutput.value
   }
 
-  jsSnippet.value += mainJsLoadOutput.value
+  js.value += mainJsLoadOutput.value
 
-  jsSnippet.value += mainJsEndOutput.value
-})
-
-// JS output
-const cssSnippet = ref('')
-watchEffect(async () => {
-  cssSnippet.value = ''
-
-  cssSnippet.value += mainCssStartOutput.value
-
-  if (isLoadingScreenActive.value) {
-    cssSnippet.value += loadingScreenCssOutput.value
-  }
-
-  cssSnippet.value += mainCssEndOutput.value
+  js.value += mainJsEndOutput.value
 })
 
 const shikiTokens = ref({
@@ -384,7 +430,7 @@ onMounted(async () => {
     fg,
     themeName
   }
-  // htmlOutputRef.value = await codeToHtml(htmlSnippet.value, {
+  // htmlOutputRef.value = await codeToHtml(html.value, {
   //   lang: 'html',
   //   theme: 'material-theme-palenight'
   // })
@@ -495,22 +541,45 @@ onMounted(async () => {
                     <AccordionContent>
                       <ul class="space-y-2">
                         <ImplementationItem title="Analytics" v-model="isAnalyticsActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Connect interaction and configuration events to your Google Analytics
+                            account.
+                          </template>
                           <template #settings>
                             <p>Settings for the logNamespace and sessionId will go here.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
-                          title="Custom ARIA Description"
-                          v-model="isAriaDescriptionActive"
+                          title="Auto-rotate on Initial Load"
+                          v-model="isAutoRotateOnLoadActive"
                         >
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Enable auto-rotation of the camera when the product first loads, and
+                            stop auto-rotating once the user interacts with the 3D scene.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
-                        <ImplementationItem title="Custom ARIA Label" v-model="isAriaLabelActive">
-                          <template #tooltip>Cool tooltip!</template>
+                        <ImplementationItem
+                          title="Custom ARIA Attributes"
+                          v-model="isAriaAttributesActive"
+                        >
+                          <template #tooltip>
+                            Set a custom ARIA label and description for your 3D product to be
+                            accessible to screen readers.
+                          </template>
+                          <template #settings>
+                            <p>Settings stuff will go here</p>
+                          </template>
+                        </ImplementationItem>
+                        <ImplementationItem
+                          title="Custom Camera Control Behavior"
+                          v-model="isCustomCameraControlBehaviorActive"
+                        >
+                          <template #tooltip>
+                            Enable or disable rotating, panning, and/or zooming of the camera.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
@@ -529,13 +598,19 @@ onMounted(async () => {
                     <AccordionContent>
                       <ul class="space-y-2">
                         <ImplementationItem title="Configuration Menu" v-model="isConfigMenuActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Generates a basic selection menu UI with your product’s configurable
+                            options.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Hotspots" v-model="isHotspotsActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds a hotspot container element (and placeholder content for any
+                            hotspots on your product) to the Dopple container.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
@@ -544,15 +619,28 @@ onMounted(async () => {
                           title="Interactivity Indicator"
                           v-model="isInteractivityIndicatorActive"
                         >
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Shows a small, animated hand icon at the bottom of the canvas hinting
+                            that the product is interactive.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
-                        <ImplementationItem title="Loading screen" v-model="isLoadingScreenActive">
-                          <template #tooltip>Cool tooltip!</template>
+                        <ImplementationItem title="Loading Screen" v-model="isLoadingScreenActive">
+                          <template #tooltip>
+                            Displays a basic loading screen along with a progress bar as the product
+                            loads in.
+                          </template>
                           <template #settings>
-                            <p>Settings stuff will go here</p>
+                            <div class="space-y-1">
+                              <Label>Loading text:</Label>
+                              <Input
+                                type="text"
+                                v-model="loadingScreenText"
+                                placeholder="Loading..."
+                              />
+                            </div>
                           </template>
                         </ImplementationItem>
                       </ul>
@@ -569,37 +657,53 @@ onMounted(async () => {
                     <AccordionContent>
                       <ul class="space-y-2">
                         <ImplementationItem title="Augmented Reality" v-model="isArActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button for launching AR if on mobile, or showing a QR code
+                            dialog if not.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Auto-rotation" v-model="isAutoRotationActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button to toggle auto-rotation of the product on or off.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Fullscreen Mode" v-model="isFullScreenActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button for entering into full screen mode.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Controls/Gestures" v-model="isGesturesActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button for showing a dialog with info on how to control and
+                            interact with the 3D scene.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Shareable URL" v-model="isShareActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button for showing a dialog with a shareable URL for the
+                            product’s current configuration.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Snapshot" v-model="isSnapshotActive">
-                          <template #tooltip>Cool tooltip!</template>
+                          <template #tooltip>
+                            Adds an icon button for showing a dialog to capture snapshots of the
+                            current canvas.
+                          </template>
                           <template #settings>
                             <p>Settings stuff will go here</p>
                           </template>
@@ -623,7 +727,7 @@ onMounted(async () => {
 										<TooltipProvider>
 											<ul class="space-y-2">
 												<ImplementationItem title="Loading screen" v-model="testCheckbox">
-													<template #tooltip>Cool tooltip!</template>
+													<template #tooltip></template>
 													<template #settings>
 														<p>Settings stuff will go here</p>
 													</template>
@@ -702,7 +806,7 @@ onMounted(async () => {
                         :class="['shiki', shikiTokens.themeName]"
                         :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
                         tabindex="0"
-                      ><code v-html="htmlSnippet"></code></pre>
+                      ><code v-html="html"></code></pre>
                     </div>
                   </TabsContent>
                   <TabsContent value="css">
@@ -711,7 +815,7 @@ onMounted(async () => {
                         :class="['shiki', shikiTokens.themeName]"
                         :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
                         tabindex="0"
-                      ><code v-html="cssSnippet"></code></pre>
+                      ><code v-html="css"></code></pre>
                     </div>
                   </TabsContent>
                   <TabsContent value="js">
@@ -720,7 +824,7 @@ onMounted(async () => {
                         :class="['shiki', shikiTokens.themeName]"
                         :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
                         tabindex="0"
-                      ><code v-html="jsSnippet"></code></pre>
+                      ><code v-html="js"></code></pre>
                     </div>
                   </TabsContent>
                 </Tabs>
