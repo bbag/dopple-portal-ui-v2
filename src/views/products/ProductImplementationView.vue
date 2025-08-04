@@ -36,12 +36,29 @@ import {
   mainHtmlStart,
   mainJsLoad,
   mainJsEnd,
-  mainJsStart,
-  miniUiStartHtml,
+  mainJsStart
+} from '@/components/blocks/implementation-tab/implementation-code'
+import {
+  arCss,
+  arHtml,
+  arJs,
+  fullScreenCss,
+  fullScreenHtml,
+  fullScreenJs,
+  gesturesHtml,
+  gesturesCss,
+  gesturesJs,
+  miniUiCss,
+  miniUiDialogCloseButtonsJs,
+  miniUiDialogCss,
   miniUiEndHtml,
   miniUiGroupStartHtml,
-  miniUiGroupEndHtml
-} from '@/components/blocks/implementation-tab/implementation-code'
+  miniUiGroupEndHtml,
+  miniUiStartHtml,
+  snapshotCss,
+  snapshotHtml,
+  snapshotJs
+} from '@/components/blocks/implementation-tab/snippets/mini-ui'
 
 import FullExample from '@/components/blocks/full-luggage-example/FullExample.vue'
 
@@ -98,137 +115,7 @@ const defaultSelection = computed(() => {
   return selection
 })
 
-// type UiComponentOption = {
-//   name: string
-//   slug: string
-//   isSelected: boolean
-//   tooltip?: string
-// }
-
-// type UiComponentCategory = {
-//   title: string
-//   slug: string
-//   options: UiComponentOption[]
-// }
-
-// const uiComponentCategories = ref({
-//   'general-ui': {
-//     title: 'General UI',
-//     options: {
-//       'loading-screen': {
-//         name: 'Loading screen',
-//         isSelected: false,
-//         settings: h('h1', { class: ['class1', 'class2'] }, [
-//           'Heading',
-//           h('span', {}, '-1'),
-//           h('span', { ':style': "{ backgroundColor: 'red' }" }, '-new')
-//         ])
-//       },
-//       'config-menu': {
-//         name: 'Side menu with config options',
-//         isSelected: false,
-//         tooltip: 'Generates a basic selection menu UI with your product’s configurable options.',
-//         settings: h('h1', {}, ['Hello', h('span', {}, 'World')])
-//       },
-//       'gesture-indicator': {
-//         name: 'Gesture indicator after load',
-//         isSelected: false,
-//         tooltip:
-//           'Shows a small, animated hand icon at the bottom of the canvas hinting that the product is interactive.'
-//       },
-//       hotspots: {
-//         name: 'Hotspots',
-//         isSelected: false,
-//         tooltip:
-//           'Adds a hotspot container element (and placeholder content for any hotspots on your product) to the Dopple container.'
-//       },
-//       darkmode: {
-//         name: 'Dark mode support',
-//         isSelected: false,
-//         tooltip: 'Adds the (prefers-color-scheme: dark) media query with color tokens to the CSS.'
-//       }
-//     }
-//   },
-//   'mini-ui': {
-//     title: 'Mini UI',
-//     options: {
-//       fullscreen: {
-//         name: 'Fullscreen',
-//         isSelected: false,
-//         tooltip: 'Adds an icon button for entering into full screen mode.'
-//       },
-//       ar: {
-//         name: 'Augmented Reality',
-//         isSelected: false,
-//         tooltip:
-//           'Adds an icon button for launching AR if on mobile, or showing a QR code dialog if not.'
-//       },
-//       snapshot: {
-//         name: 'Snapshot',
-//         isSelected: false,
-//         tooltip:
-//           'Adds an icon button for showing a dialog to capture snapshots of the current canvas.'
-//       },
-//       gestures: {
-//         name: 'Controls/Gestures',
-//         isSelected: false,
-//         tooltip:
-//           'Adds an icon button for showing a dialog with info on how to control and interact with the 3D scene.'
-//       },
-//       autorotation: {
-//         name: 'Auto-rotation',
-//         isSelected: false,
-//         tooltip: 'Adds an icon button to toggle auto-rotation of the product on or off.'
-//       },
-//       share: {
-//         name: 'Social Share',
-//         isSelected: false,
-//         tooltip:
-//           'Adds an icon button for showing a dialog with a shareable URL for the product’s current configuration.'
-//       }
-//     }
-//   },
-//   accessibility: {
-//     title: 'Accessibility',
-//     options: {
-//       'keyboard-camera-controls': {
-//         name: 'Keyboard camera control buttons',
-//         isSelected: false,
-//         tooltip:
-//           'Displays a small UI for controlling the camera using the keyboard when the canvas is focused.'
-//       },
-//       'aria-label': {
-//         name: 'Custom ARIA label for the canvas',
-//         isSelected: false
-//       },
-//       'aria-description': {
-//         name: 'Custom ARIA description for the canvas',
-//         isSelected: false
-//       },
-//       'live-region': {
-//         name: 'Announce to screen readers when the configuration changes',
-//         isSelected: false
-//       }
-//     }
-//   },
-//   analytics: {
-//     title: 'Analytics',
-//     options: {
-//       'enable-analytics': {
-//         name: 'Enable analytics',
-//         isSelected: false
-//       }
-//     }
-//   }
-// })
-
 const activeUiComponentCategories = ref<string[]>(['general-settings', 'ui-addons', 'mini-ui'])
-// for (const category of Object.keys(uiComponentCategories.value) as Array<
-//   keyof typeof uiComponentCategories.value
-// >) {
-//   activeUiComponentCategories.value.push(uiComponentCategories.value[category].title)
-// }
-
 const isPreviewShown = ref(false)
 const activeOutputTab = ref('html')
 const shikiTheme = 'material-theme-palenight'
@@ -299,23 +186,37 @@ const isInteractivityIndicatorActive = ref(false)
 // --------------------------------------------------------------------------------------------- //
 
 // Code section: Mini UI
-const miniUiStartOutput = highlightSyntax(miniUiStartHtml(), 'html')
-const miniUiEndOutput = highlightSyntax(miniUiEndHtml(), 'html')
+const miniUiStartOutput = highlightSyntax(miniUiStartHtml, 'html')
+const miniUiEndOutput = highlightSyntax(miniUiEndHtml, 'html')
 const miniUiGroupLeftStartOutput = highlightSyntax(miniUiGroupStartHtml('left'), 'html')
 const miniUiGroupRightStartOutput = highlightSyntax(miniUiGroupStartHtml('right'), 'html')
-const miniUiGroupEndOutput = highlightSyntax(miniUiGroupEndHtml(), 'html')
+const miniUiGroupEndOutput = highlightSyntax(miniUiGroupEndHtml, 'html')
+const miniUiCssOutput = highlightSyntax(miniUiCss, 'css')
+const miniUiDialogCssOutput = highlightSyntax(miniUiDialogCss, 'css')
 
 // Code section: Fullscreen
 const isFullScreenActive = ref(false)
+const fullScreenHtmlOutput = highlightSyntax(fullScreenHtml, 'html')
+const fullScreenCssOutput = highlightSyntax(fullScreenCss, 'css')
+const fullScreenJsOutput = highlightSyntax(fullScreenJs, 'js')
 
 // Code section: Augmented Reality
 const isArActive = ref(false)
+const arHtmlOutput = highlightSyntax(arHtml, 'html')
+const arCssOutput = highlightSyntax(arCss, 'css')
+const arJsOutput = highlightSyntax(arJs, 'js')
 
 // Code section: Snapshot
 const isSnapshotActive = ref(false)
+const snapshotHtmlOutput = highlightSyntax(snapshotHtml, 'html')
+const snapshotCssOutput = highlightSyntax(snapshotCss, 'css')
+const snapshotJsOutput = highlightSyntax(snapshotJs, 'js')
 
 // Code section: Controls/Gestures
 const isGesturesActive = ref(false)
+const gesturesHtmlOutput = highlightSyntax(gesturesHtml, 'html')
+const gesturesCssOutput = highlightSyntax(gesturesCss, 'css')
+const gesturesJsOutput = highlightSyntax(gesturesJs, 'js')
 
 // Code section: Auto-rotation
 const isAutoRotationActive = ref(false)
@@ -323,16 +224,23 @@ const isAutoRotationActive = ref(false)
 // Code section: Share
 const isShareActive = ref(false)
 
-const isMiniUiLeftGroupActive = computed(() => {
-  return [
+// Detect which components within the Mini UI are active
+const isMiniUiLeftGroupActive = computed(() =>
+  [
     isArActive.value,
-    isSnapshotActive.value,
-    isGesturesActive.value,
     isAutoRotationActive.value,
-    isShareActive.value
+    isGesturesActive.value,
+    isShareActive.value,
+    isSnapshotActive.value
   ].some((item) => item)
-})
+)
 const isMiniUiRightGroupActive = computed(() => isFullScreenActive.value)
+const isMiniUiDialogActive = computed(() =>
+  [isArActive.value, isGesturesActive.value, isSnapshotActive.value, isShareActive.value].some(
+    (item) => item
+  )
+)
+const miniUiDialogCloseButtonsJsOutput = highlightSyntax(miniUiDialogCloseButtonsJs, 'js')
 
 // --------------------------------------------------------------------------------------------- //
 // Code snippet outputs                                                                          //
@@ -347,9 +255,7 @@ watchEffect(async () => {
   html.value += mainHtmlStartOutput.value
 
   // Loading screen div
-  if (isLoadingScreenActive.value) {
-    html.value += loadingScreenHtmlOutput.value
-  }
+  html.value += isLoadingScreenActive.value ? loadingScreenHtmlOutput.value : ''
 
   // Mini UI (AR, Snapshot, Fullscreen, etc.)
   if (isMiniUiLeftGroupActive.value || isMiniUiRightGroupActive.value) {
@@ -357,11 +263,25 @@ watchEffect(async () => {
 
     if (isMiniUiLeftGroupActive.value) {
       html.value += miniUiGroupLeftStartOutput.value
+
+      // Controls & Gestures
+      html.value += isGesturesActive.value ? gesturesHtmlOutput.value : ''
+
+      // Snapshot
+      html.value += isSnapshotActive.value ? snapshotHtmlOutput.value : ''
+
+      // Augmented Reality
+      html.value += isArActive.value ? arHtmlOutput.value : ''
+
       html.value += miniUiGroupEndOutput.value
     }
 
     if (isMiniUiRightGroupActive.value) {
       html.value += miniUiGroupRightStartOutput.value
+
+      // Full Screen
+      html.value += isFullScreenActive.value ? fullScreenHtmlOutput.value : ''
+
       html.value += miniUiGroupEndOutput.value
     }
 
@@ -379,9 +299,28 @@ watchEffect(async () => {
 
   css.value += mainCssStartOutput.value
 
-  if (isLoadingScreenActive.value) {
-    css.value += loadingScreenCssOutput.value
+  // Loading screen styles
+  css.value += isLoadingScreenActive.value ? loadingScreenCssOutput.value : ''
+
+  // Mini UI general styles
+  if (isMiniUiLeftGroupActive.value || isMiniUiRightGroupActive.value) {
+    css.value += miniUiCssOutput.value
   }
+
+  // Mini UI styles for components with dialogs (AR, Controls/Gestures, Snapshot, and Share)
+  css.value += isMiniUiDialogActive.value ? miniUiDialogCssOutput.value : ''
+
+  // Mini UI: Controls & Gestures
+  css.value += isGesturesActive.value ? gesturesCssOutput.value : ''
+
+  // Mini UI: Snapshot
+  css.value += isSnapshotActive.value ? snapshotCssOutput.value : ''
+
+  // Mini UI: Augmented Reality
+  css.value += isArActive.value ? arCssOutput.value : ''
+
+  // Mini UI: Full Screen
+  css.value += isFullScreenActive.value ? fullScreenCssOutput.value : ''
 
   css.value += mainCssEndOutput.value
 })
@@ -391,13 +330,29 @@ const js = ref('')
 watchEffect(async () => {
   js.value = ''
 
+  // Import SDK and initialize new `dopple` instance
   js.value += mainJsStartOutput.value
 
-  if (isLoadingScreenActive.value) {
-    js.value += loadingScreenJsOutput.value
-  }
+  // Loading Screen
+  js.value += isLoadingScreenActive.value ? loadingScreenJsOutput.value : ''
 
+  // .load() and removing the `data-dopple-loading` attribute
   js.value += mainJsLoadOutput.value
+
+  // Controls & Gestures
+  js.value += isGesturesActive.value ? gesturesJsOutput.value : ''
+
+  // Snapshot
+  js.value += isSnapshotActive.value ? snapshotJsOutput.value : ''
+
+  // Augmented Reality
+  js.value += isArActive.value ? arJsOutput.value : ''
+
+  // Full Screen
+  js.value += isFullScreenActive.value ? fullScreenJsOutput.value : ''
+
+  // Close button click listeners for Mini UI components with dialogs (AR, Controls/Gestures, Snapshot, and Share)
+  js.value += isMiniUiDialogActive.value ? miniUiDialogCloseButtonsJsOutput.value : ''
 
   js.value += mainJsEndOutput.value
 })
@@ -409,14 +364,6 @@ const shikiTokens = ref({
 })
 
 onMounted(async () => {
-  // console.log('- 1 ------------------------------')
-  // console.log(
-  //   await codeToHtml(mainHtmlStart(), {
-  //     lang: 'html',
-  //     theme: shikiTheme
-  //   })
-  // )
-  // console.log('- 2 ------------------------------')
   const {
     bg = '#292D3E',
     fg = '#BABED8',
@@ -430,31 +377,6 @@ onMounted(async () => {
     fg,
     themeName
   }
-  // htmlOutputRef.value = await codeToHtml(html.value, {
-  //   lang: 'html',
-  //   theme: 'material-theme-palenight'
-  // })
-  // async function getData() {
-  //   console.log('getting data')
-  //   const owner = 'dopple'
-  //   const workspace = 'dev-docs'
-  //   const name = 'luggage'
-  //   const version = '1'
-  //   const res = await fetch(
-  //     `https://api.dopple.io/projects/owners/${owner}/workspaces/${workspace}/projects/${name}/versions/${version}/matrix`,
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   )
-  //   console.log('res')
-  //   console.log(res)
-  //   const data = await res.json()
-  //   console.log('data')
-  //   console.log(data)
-  // }
-  // getData()
 })
 </script>
 
@@ -713,61 +635,6 @@ onMounted(async () => {
                   </AccordionItem>
                 </Accordion>
               </TooltipProvider>
-              <!-- <AccordionItem
-									v-for="category in uiComponentCategories"
-									:key="category.title"
-									:value="category.title"
-								>
-									<AccordionTrigger
-										class="text-xs uppercase text-muted-foreground font-bold hover:text-foreground"
-									>
-										{{ category.title }}
-									</AccordionTrigger>
-									<AccordionContent>
-										<TooltipProvider>
-											<ul class="space-y-2">
-												<ImplementationItem title="Loading screen" v-model="testCheckbox">
-													<template #tooltip></template>
-													<template #settings>
-														<p>Settings stuff will go here</p>
-													</template>
-												</ImplementationItem>
-
-												<li v-for="option in category.options" :key="option.name">
-													<span class="flex gap-1.5 flex-wrap">
-														<label
-															class="inline-flex items-center gap-3 cursor-pointer select-none"
-														>
-															<Checkbox
-																v-model="option.isSelected"
-																class="size-5"
-																@update:model-value="
-																	(newValue) =>
-																		console.log('logChange(option.name, newValue as boolean)')
-																"
-															/>
-															{{ option.name }}
-														</label>
-														<Tooltip v-if="option.tooltip">
-															<TooltipTrigger>
-																<IconInfoCircle class="size-4 text-muted-foreground" />
-															</TooltipTrigger>
-															<TooltipContent class="max-w-64 text-sm">
-																{{ option.tooltip }}
-															</TooltipContent>
-														</Tooltip>
-													</span>
-													<div
-														class="ml-8 mt-2 mb-4 p-4 border rounded-md"
-														v-if="option.isSelected && option.settings"
-													>
-														<component :is="option.settings" />
-													</div>
-												</li>
-											</ul>
-										</TooltipProvider>
-									</AccordionContent>
-								</AccordionItem> -->
             </li>
             <li class="relative ml-4 pl-8 pt-1 pb-8 border-l">
               <span
@@ -801,31 +668,28 @@ onMounted(async () => {
                     <TabsTrigger value="js">JavaScript</TabsTrigger>
                   </TabsList>
                   <TabsContent value="html">
-                    <div class="overflow-x-auto">
-                      <pre
-                        :class="['shiki', shikiTokens.themeName]"
-                        :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                        tabindex="0"
-                      ><code v-html="html"></code></pre>
-                    </div>
+                    <pre
+                      class="overflow-x-auto"
+                      :class="['shiki', shikiTokens.themeName]"
+                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
+                      tabindex="0"
+                    ><code v-html="html"></code></pre>
                   </TabsContent>
                   <TabsContent value="css">
-                    <div class="overflow-x-auto">
-                      <pre
-                        :class="['shiki', shikiTokens.themeName]"
-                        :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                        tabindex="0"
-                      ><code v-html="css"></code></pre>
-                    </div>
+                    <pre
+                      class="overflow-x-auto"
+                      :class="['shiki', shikiTokens.themeName]"
+                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
+                      tabindex="0"
+                    ><code v-html="css"></code></pre>
                   </TabsContent>
                   <TabsContent value="js">
-                    <div class="overflow-x-auto">
-                      <pre
-                        :class="['shiki', shikiTokens.themeName]"
-                        :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                        tabindex="0"
-                      ><code v-html="js"></code></pre>
-                    </div>
+                    <pre
+                      class="overflow-x-auto"
+                      :class="['shiki', shikiTokens.themeName]"
+                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
+                      tabindex="0"
+                    ><code v-html="js"></code></pre>
                   </TabsContent>
                 </Tabs>
               </div>

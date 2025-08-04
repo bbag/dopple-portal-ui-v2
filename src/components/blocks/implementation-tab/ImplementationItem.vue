@@ -15,13 +15,7 @@ const checkedModelValue = defineModel<boolean>()
   <li>
     <span class="flex gap-1.5 flex-wrap">
       <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-        <Checkbox
-          v-model="checkedModelValue"
-          class="size-5"
-          @update:model-value="
-            (newValue) => console.log('logChange(option.name, newValue as boolean)')
-          "
-        />
+        <Checkbox v-model="checkedModelValue" class="size-5" />
         {{ title }}
       </label>
       <Tooltip v-if="$slots.tooltip">
