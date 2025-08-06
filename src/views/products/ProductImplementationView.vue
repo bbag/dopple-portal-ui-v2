@@ -13,6 +13,15 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  // DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -27,6 +36,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
+import { IconEye } from '@tabler/icons-vue'
+
+import {
+  configurationMenuCss,
+  configurationMenuHtml,
+  configurationMenuJs
+} from '@/components/blocks/implementation-tab/snippets/config-menu-snippets'
 import {
   mainCssStart,
   mainCssEnd,
@@ -44,10 +60,15 @@ import {
   minimalHtml
 } from '@/components/blocks/implementation-tab/snippets/general-snippets'
 import {
+  hotspotsCss,
+  hotspotsHtml,
+  hotspotsJs
+} from '@/components/blocks/implementation-tab/snippets/hotspots-snippets'
+import {
   loadingScreenCss,
   loadingScreenHtml,
   loadingScreenJs
-} from '@/components/blocks/implementation-tab/snippets/loading-screen'
+} from '@/components/blocks/implementation-tab/snippets/loading-screen-snippets'
 import {
   arCss,
   arHtml,
@@ -74,7 +95,7 @@ import {
   snapshotCss,
   snapshotHtml,
   snapshotJs
-} from '@/components/blocks/implementation-tab/snippets/mini-ui'
+} from '@/components/blocks/implementation-tab/snippets/mini-ui-snippets'
 
 import FullExample from '@/components/blocks/full-luggage-example/FullExample.vue'
 
@@ -123,17 +144,21 @@ const exampleMatrix = ref([
   }
 ])
 
+const exampleHotspots = ref({
+  'luggage-body': {},
+  'toiletry-bag': {},
+  charger: {}
+})
+
 const defaultSelection = computed(() => {
   const selection: Record<string, string> = {}
   for (const item of exampleMatrix.value) {
     selection[item.property] = item.selectedOption
   }
-  console.log('defaultSelection', selection)
   return selection
 })
 
 const activeUiComponentCategories = ref<string[]>(['general-settings', 'ui-addons', 'mini-ui'])
-const isPreviewShown = ref(false)
 const activeOutputTab = ref('html')
 const shikiTheme = 'material-theme-palenight'
 
@@ -210,9 +235,23 @@ const loadingScreenCssOutput = highlightSyntax(() => loadingScreenCss, 'css')
 
 // Code section: Config Menu
 const isConfigMenuActive = ref(false)
+const configMenuType = ref<'dropdowns' | 'radios'>('dropdowns')
+const configMenuHtmlOutput = highlightSyntax(
+  () => configurationMenuHtml(exampleMatrix.value, configMenuType.value),
+  'html'
+)
+const configMenuJsOutput = highlightSyntax(() => configurationMenuJs(configMenuType.value), 'js')
+const configMenuCssOutput = highlightSyntax(() => configurationMenuCss(configMenuType.value), 'js')
 
 // Code section: Hotspots
 const isHotspotsActive = ref(false)
+const hotspotsType = ref<'minimal' | 'stylized'>('minimal')
+const hotspotsHtmlOutput = highlightSyntax(
+  () => hotspotsHtml(exampleHotspots.value, hotspotsType.value),
+  'html'
+)
+const hotspotsJsOutput = highlightSyntax(() => hotspotsJs, 'js')
+const hotspotsCssOutput = highlightSyntax(() => hotspotsCss(hotspotsType.value), 'css')
 
 // Code section: Interactivity Indicator
 const isInteractivityIndicatorActive = ref(false)
@@ -313,8 +352,11 @@ watchEffect(async () => {
   // Main wrapper div and dopple-container div
   html.value += mainHtmlStartOutput.value
 
-  // Loading screen div
+  // Loading screen
   html.value += isLoadingScreenActive.value ? loadingScreenHtmlOutput.value : ''
+
+  // Hotspots
+  html.value += isHotspotsActive.value ? hotspotsHtmlOutput.value : ''
 
   // Mini UI (AR, Snapshot, Fullscreen, etc.)
   if (isMiniUiLeftGroupActive.value || isMiniUiRightGroupActive.value) {
@@ -355,6 +397,10 @@ watchEffect(async () => {
 
   // Closing div
   html.value += mainHtmlEndOutput.value
+
+  if (isConfigMenuActive.value) {
+    html.value += configMenuHtmlOutput.value
+  }
 })
 
 // CSS output
@@ -369,8 +415,14 @@ watchEffect(async () => {
 
   css.value += mainCssStartOutput.value
 
+  // Config menu styles
+  css.value += isConfigMenuActive.value ? configMenuCssOutput.value : ''
+
   // Loading screen styles
   css.value += isLoadingScreenActive.value ? loadingScreenCssOutput.value : ''
+
+  // Hotspot styles
+  css.value += isHotspotsActive.value ? hotspotsCssOutput.value : ''
 
   // Mini UI general styles
   if (isMiniUiLeftGroupActive.value || isMiniUiRightGroupActive.value) {
@@ -435,26 +487,32 @@ watchEffect(async () => {
   // Call dopple.run()
   js.value += mainJsDoppleRunOutput.value
 
-  // Share
+  // Mini UI: Hotspots
+  js.value += isHotspotsActive.value ? hotspotsJsOutput.value : ''
+
+  // Mini UI: Share
   js.value += isShareActive.value ? shareJsOutput.value : ''
 
-  // Controls & Gestures
+  // Mini UI: Controls & Gestures
   js.value += isGesturesActive.value ? gesturesJsOutput.value : ''
 
-  // Auto-rotation
+  // Mini UI: Auto-rotation
   js.value += isAutoRotationActive.value ? autoRotateJsOutput.value : ''
 
-  // Snapshot
+  // Mini UI: Snapshot
   js.value += isSnapshotActive.value ? snapshotJsOutput.value : ''
 
-  // Augmented Reality
+  // Mini UI: Augmented Reality
   js.value += isArActive.value ? arJsOutput.value : ''
 
-  // Full Screen
+  // Mini UI: Full Screen
   js.value += isFullScreenActive.value ? fullScreenJsOutput.value : ''
 
   // Close button click listeners for Mini UI components with dialogs (AR, Controls/Gestures, Snapshot, and Share)
   js.value += isMiniUiDialogActive.value ? miniUiDialogCloseButtonsJsOutput.value : ''
+
+  // Configuration Menu
+  js.value += isConfigMenuActive.value ? configMenuJsOutput.value : ''
 
   js.value += mainJsEndOutput.value
 })
@@ -646,11 +704,16 @@ onMounted(async () => {
                             options.
                           </template>
                           <template #settings>
-                            <p>
-                              TODO: code snippet not yet implemented (will have settings for
-                              outputting menu as list of select dropdowns or radio buttons within
-                              fieldsets).
-                            </p>
+                            <p>Menu Type:</p>
+                            <Select v-model="configMenuType">
+                              <SelectTrigger class="w-48">
+                                <SelectValue placeholder="Select..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="dropdowns">Dropdowns</SelectItem>
+                                <SelectItem value="radios">Radio Buttons</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Hotspots" v-model="isHotspotsActive">
@@ -659,7 +722,16 @@ onMounted(async () => {
                             hotspots on your product) to the Dopple container.
                           </template>
                           <template #settings>
-                            <p>TODO: code snippet not yet implemented.</p>
+                            <p>Hotspot Style:</p>
+                            <Select v-model="hotspotsType">
+                              <SelectTrigger class="w-48">
+                                <SelectValue placeholder="Select..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="minimal">Minimal</SelectItem>
+                                <SelectItem value="stylized">Stylized</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -795,13 +867,29 @@ onMounted(async () => {
               </p>
               <div class="py-4">
                 <Tabs v-model="activeOutputTab">
-                  <div class="flex justify-between">
+                  <div class="flex justify-between flex-wrap gap-2">
                     <TabsList>
                       <TabsTrigger value="html">HTML</TabsTrigger>
                       <TabsTrigger value="css">CSS</TabsTrigger>
                       <TabsTrigger value="js">JavaScript</TabsTrigger>
                     </TabsList>
-                    <Button variant="blue">Preview</Button>
+                    <Dialog>
+                      <DialogTrigger as-child>
+                        <Button variant="blue">
+                          <IconEye class="size-5 mr-2" />
+                          Preview
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent class="max-w-3xl">
+                        <DialogHeader>
+                          <DialogTitle>Preview Snippet</DialogTitle>
+                          <DialogDescription>
+                            This is just a rough preview of the UI selected above.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <FullExample />
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <TabsContent value="html">
                     <pre

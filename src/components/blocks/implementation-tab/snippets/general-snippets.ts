@@ -4,11 +4,10 @@
 
 export const minimalHtml = `<!-- Dopple canvas -->
 <div class="dopple-container"></div>`
-export const minimalCss = `.dopple-container {
-	position: relative;
-}`
-export const minimalJs = `.dopple-container {
-	position: relative;
+export const minimalCss = `@layer {
+	.dopple-container {
+		position: relative;
+	}
 }`
 
 // --------------------------------------------------------------------------------------------- //
@@ -16,6 +15,7 @@ export const minimalJs = `.dopple-container {
 // --------------------------------------------------------------------------------------------- //
 
 export const mainHtmlStart = `<div class="dopple" data-dopple-loading="true">
+
 	<!-- Dopple canvas -->
 	<div class="dopple-container"></div>`
 export const mainHtmlEnd = `\n</div>`
@@ -23,7 +23,7 @@ export const mainJsStart = `<script type="module">
 	// Import the Dopple SDK
 	import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";`
 export const mainJsDoppleWrapper = `\n\n	const doppleWrapper = document.querySelector(".dopple");`
-export const mainJsNewDoppleInstance = (selectionObj = {}) => {
+export const mainJsNewDoppleInstance = (selectionObj: Record<string, string> = {}) => {
   let selection = ``
   for (const key of Object.keys(selectionObj)) {
     selection += `\n			"${key}": "${selectionObj[key]}",`
@@ -50,8 +50,8 @@ export const mainJsDoppleRun = `\n\n	// Begin rendering the 3D scene
 
 export const mainJsEnd = `\n</script>`
 export const mainCssStart = `@layer dopple {
-	/* Dopple wrapper and container */
-	.dopple {
+	/* Customize colors and fonts as needed to match your branding */
+	:root {
 		--color-text: #252629;
 		--color-text-muted: #50535A;
 		--color-primary: #007BEE;
@@ -59,9 +59,11 @@ export const mainCssStart = `@layer dopple {
 		--color-bg: #FFF;
 		--color-bg-muted: #EFF0F2;
 		--color-border: #C7CAD2;
-		--font-family-body: inherit;
-		--font-family-heading: inherit;
-		aspect-ratio: 16 / 10;
+		--font-family-body: system-ui;
+		--font-family-heading: system-ui;
+	}
+	.dopple {
+		aspect-ratio: 16 / 10; /* Optional, adjust the size as needed */
 		display: grid;
 		font-family: var(--font-family-body);
 		position: relative;
