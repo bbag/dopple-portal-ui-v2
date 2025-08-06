@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,17 +28,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 import {
-  loadingScreenCss,
-  loadingScreenHtml,
-  loadingScreenJs,
   mainCssStart,
   mainCssEnd,
   mainHtmlEnd,
   mainHtmlStart,
-  mainJsLoad,
+  mainJsDoppleWrapper,
   mainJsEnd,
-  mainJsStart
-} from '@/components/blocks/implementation-tab/implementation-code'
+  mainJsDoppleLoad,
+  mainJsDoppleRun,
+  mainJsRemoveLoadingAttribute,
+  mainJsNewDoppleInstance,
+  mainJsStart,
+  mainJsWindowDopple,
+  minimalCss,
+  minimalHtml
+} from '@/components/blocks/implementation-tab/snippets/general-snippets'
+import {
+  loadingScreenCss,
+  loadingScreenHtml,
+  loadingScreenJs
+} from '@/components/blocks/implementation-tab/snippets/loading-screen'
 import {
   arCss,
   arHtml,
@@ -118,6 +128,7 @@ const defaultSelection = computed(() => {
   for (const item of exampleMatrix.value) {
     selection[item.property] = item.selectedOption
   }
+  console.log('defaultSelection', selection)
   return selection
 })
 
@@ -126,9 +137,9 @@ const isPreviewShown = ref(false)
 const activeOutputTab = ref('html')
 const shikiTheme = 'material-theme-palenight'
 
-function highlightSyntax(val: string, lang: 'html' | 'css' | 'js') {
+function highlightSyntax(val: () => string, lang: 'html' | 'css' | 'js') {
   return computedAsync(async () => {
-    const html = await codeToHtml(val, {
+    const html = await codeToHtml(val(), {
       lang: lang || 'html',
       theme: shikiTheme
     })
@@ -144,16 +155,32 @@ function highlightSyntax(val: string, lang: 'html' | 'css' | 'js') {
 // General Settings                                                                              //
 // --------------------------------------------------------------------------------------------- //
 
+const minimalHtmlOutput = highlightSyntax(() => minimalHtml, 'html')
+const minimalCssOutput = highlightSyntax(() => minimalCss, 'css')
+
 // Code section: Main (content that's always included)
-const mainHtmlStartOutput = highlightSyntax(mainHtmlStart(), 'html')
-const mainHtmlEndOutput = highlightSyntax(mainHtmlEnd(), 'html')
+const mainHtmlStartOutput = highlightSyntax(() => mainHtmlStart, 'html')
+const mainHtmlEndOutput = highlightSyntax(() => mainHtmlEnd, 'html')
 
-const mainJsStartOutput = highlightSyntax(mainJsStart(defaultSelection.value), 'html')
-const mainJsLoadOutput = highlightSyntax(mainJsLoad(), 'js')
-const mainJsEndOutput = highlightSyntax(mainJsEnd(), 'html')
+const mainJsStartOutput = highlightSyntax(() => mainJsStart, 'html')
+const mainJsDoppleLoadOutput = highlightSyntax(() => mainJsDoppleLoad, 'js')
+const mainJsRemoveLoadingAttributeOutput = highlightSyntax(() => mainJsRemoveLoadingAttribute, 'js')
+const mainJsDoppleRunOutput = highlightSyntax(() => mainJsDoppleRun, 'js')
 
-const mainCssStartOutput = highlightSyntax(mainCssStart(), 'css')
-const mainCssEndOutput = highlightSyntax(mainCssEnd(), 'css')
+const mainJsDoppleWrapperOutput = highlightSyntax(() => mainJsDoppleWrapper, 'js')
+const mainJsNewDoppleInstanceOutput = highlightSyntax(
+  () => mainJsNewDoppleInstance(defaultSelection.value),
+  'js'
+)
+
+const mainJsEndOutput = highlightSyntax(() => mainJsEnd, 'html')
+
+const mainCssStartOutput = highlightSyntax(() => mainCssStart, 'css')
+const mainCssEndOutput = highlightSyntax(() => mainCssEnd, 'css')
+
+// Code section: Add Dopple Instance to Window
+const isAddToWindowActive = ref(false)
+const mainJsWindowDoppleOutput = highlightSyntax(() => mainJsWindowDopple, 'js')
 
 // Code section: Analytics
 const isAnalyticsActive = ref(false)
@@ -174,9 +201,12 @@ const isCustomCameraControlBehaviorActive = ref(false)
 // Code section: Loading Screen
 const isLoadingScreenActive = ref(false)
 const loadingScreenText = ref('Loading...')
-const loadingScreenHtmlOutput = highlightSyntax(loadingScreenHtml(loadingScreenText.value), 'html')
-const loadingScreenJsOutput = highlightSyntax(loadingScreenJs(), 'js')
-const loadingScreenCssOutput = highlightSyntax(loadingScreenCss(), 'css')
+const loadingScreenHtmlOutput = highlightSyntax(
+  () => loadingScreenHtml(loadingScreenText.value),
+  'html'
+)
+const loadingScreenJsOutput = highlightSyntax(() => loadingScreenJs, 'js')
+const loadingScreenCssOutput = highlightSyntax(() => loadingScreenCss, 'css')
 
 // Code section: Config Menu
 const isConfigMenuActive = ref(false)
@@ -192,49 +222,49 @@ const isInteractivityIndicatorActive = ref(false)
 // --------------------------------------------------------------------------------------------- //
 
 // Code section: Mini UI
-const miniUiStartOutput = highlightSyntax(miniUiStartHtml, 'html')
-const miniUiEndOutput = highlightSyntax(miniUiEndHtml, 'html')
-const miniUiGroupLeftStartOutput = highlightSyntax(miniUiGroupStartHtml('left'), 'html')
-const miniUiGroupRightStartOutput = highlightSyntax(miniUiGroupStartHtml('right'), 'html')
-const miniUiGroupEndOutput = highlightSyntax(miniUiGroupEndHtml, 'html')
-const miniUiCssOutput = highlightSyntax(miniUiCss, 'css')
-const miniUiDialogCssOutput = highlightSyntax(miniUiDialogCss, 'css')
+const miniUiStartOutput = highlightSyntax(() => miniUiStartHtml, 'html')
+const miniUiEndOutput = highlightSyntax(() => miniUiEndHtml, 'html')
+const miniUiGroupLeftStartOutput = highlightSyntax(() => miniUiGroupStartHtml('left'), 'html')
+const miniUiGroupRightStartOutput = highlightSyntax(() => miniUiGroupStartHtml('right'), 'html')
+const miniUiGroupEndOutput = highlightSyntax(() => miniUiGroupEndHtml, 'html')
+const miniUiCssOutput = highlightSyntax(() => miniUiCss, 'css')
+const miniUiDialogCssOutput = highlightSyntax(() => miniUiDialogCss, 'css')
 
 // Code section: Fullscreen
 const isFullScreenActive = ref(false)
-const fullScreenHtmlOutput = highlightSyntax(fullScreenHtml, 'html')
-const fullScreenCssOutput = highlightSyntax(fullScreenCss, 'css')
-const fullScreenJsOutput = highlightSyntax(fullScreenJs, 'js')
+const fullScreenHtmlOutput = highlightSyntax(() => fullScreenHtml, 'html')
+const fullScreenCssOutput = highlightSyntax(() => fullScreenCss, 'css')
+const fullScreenJsOutput = highlightSyntax(() => fullScreenJs, 'js')
 
 // Code section: Augmented Reality
 const isArActive = ref(false)
-const arHtmlOutput = highlightSyntax(arHtml, 'html')
-const arCssOutput = highlightSyntax(arCss, 'css')
-const arJsOutput = highlightSyntax(arJs, 'js')
+const arHtmlOutput = highlightSyntax(() => arHtml, 'html')
+const arCssOutput = highlightSyntax(() => arCss, 'css')
+const arJsOutput = highlightSyntax(() => arJs, 'js')
 
 // Code section: Snapshot
 const isSnapshotActive = ref(false)
-const snapshotHtmlOutput = highlightSyntax(snapshotHtml, 'html')
-const snapshotCssOutput = highlightSyntax(snapshotCss, 'css')
-const snapshotJsOutput = highlightSyntax(snapshotJs, 'js')
+const snapshotHtmlOutput = highlightSyntax(() => snapshotHtml, 'html')
+const snapshotCssOutput = highlightSyntax(() => snapshotCss, 'css')
+const snapshotJsOutput = highlightSyntax(() => snapshotJs, 'js')
 
 // Code section: Controls/Gestures
 const isGesturesActive = ref(false)
-const gesturesHtmlOutput = highlightSyntax(gesturesHtml, 'html')
-const gesturesCssOutput = highlightSyntax(gesturesCss, 'css')
-const gesturesJsOutput = highlightSyntax(gesturesJs, 'js')
+const gesturesHtmlOutput = highlightSyntax(() => gesturesHtml, 'html')
+const gesturesCssOutput = highlightSyntax(() => gesturesCss, 'css')
+const gesturesJsOutput = highlightSyntax(() => gesturesJs, 'js')
 
 // Code section: Auto-rotation
 const isAutoRotationActive = ref(false)
-const autoRotateHtmlOutput = highlightSyntax(autoRotateHtml, 'html')
-const autoRotateCssOutput = highlightSyntax(autoRotateCss, 'css')
-const autoRotateJsOutput = highlightSyntax(autoRotateJs, 'js')
+const autoRotateHtmlOutput = highlightSyntax(() => autoRotateHtml, 'html')
+const autoRotateCssOutput = highlightSyntax(() => autoRotateCss, 'css')
+const autoRotateJsOutput = highlightSyntax(() => autoRotateJs, 'js')
 
 // Code section: Share
 const isShareActive = ref(false)
-const shareHtmlOutput = highlightSyntax(shareHtml, 'html')
-const shareCssOutput = highlightSyntax(shareCss, 'css')
-const shareJsOutput = highlightSyntax(shareJs, 'js')
+const shareHtmlOutput = highlightSyntax(() => shareHtml, 'html')
+const shareCssOutput = highlightSyntax(() => shareCss, 'css')
+const shareJsOutput = highlightSyntax(() => shareJs, 'js')
 
 // Detect which components within the Mini UI are active
 const isMiniUiLeftGroupActive = computed(() =>
@@ -252,7 +282,19 @@ const isMiniUiDialogActive = computed(() =>
     (item) => item
   )
 )
-const miniUiDialogCloseButtonsJsOutput = highlightSyntax(miniUiDialogCloseButtonsJs, 'js')
+const miniUiDialogCloseButtonsJsOutput = highlightSyntax(() => miniUiDialogCloseButtonsJs, 'js')
+
+/** Returns true if the resulting HTML markup for the selected options is minimal (i.e. no elements besides the required container div) */
+const isMinimalMarkup = computed(() => {
+  return !(
+    isConfigMenuActive.value ||
+    isHotspotsActive.value ||
+    isInteractivityIndicatorActive.value ||
+    isLoadingScreenActive.value ||
+    isMiniUiLeftGroupActive.value ||
+    isMiniUiRightGroupActive.value
+  )
+})
 
 // --------------------------------------------------------------------------------------------- //
 // Code snippet outputs                                                                          //
@@ -262,6 +304,11 @@ const miniUiDialogCloseButtonsJsOutput = highlightSyntax(miniUiDialogCloseButton
 const html = ref('')
 watchEffect(async () => {
   html.value = ''
+
+  if (isMinimalMarkup.value) {
+    html.value += minimalHtmlOutput.value
+    return
+  }
 
   // Main wrapper div and dopple-container div
   html.value += mainHtmlStartOutput.value
@@ -315,6 +362,11 @@ const css = ref('')
 watchEffect(async () => {
   css.value = ''
 
+  if (isMinimalMarkup.value) {
+    css.value += minimalCssOutput.value
+    return
+  }
+
   css.value += mainCssStartOutput.value
 
   // Loading screen styles
@@ -354,14 +406,34 @@ const js = ref('')
 watchEffect(async () => {
   js.value = ''
 
-  // Import SDK and initialize new `dopple` instance
+  // Open script tag and import SDK
   js.value += mainJsStartOutput.value
+
+  // Define the doppleWrapper div
+  if (!isMinimalMarkup.value) {
+    js.value += mainJsDoppleWrapperOutput.value
+  }
+
+  // Initialize a new Dopple product instance
+  js.value += mainJsNewDoppleInstanceOutput.value
 
   // Loading Screen
   js.value += isLoadingScreenActive.value ? loadingScreenJsOutput.value : ''
 
-  // .load() and removing the `data-dopple-loading` attribute
-  js.value += mainJsLoadOutput.value
+  // Call dopple.load()
+  js.value += mainJsDoppleLoadOutput.value
+
+  // Remove loading attribute on wrapper element if it exists
+  if (!isMinimalMarkup.value) {
+    js.value += mainJsRemoveLoadingAttributeOutput.value
+  }
+
+  if (isAddToWindowActive.value) {
+    js.value += mainJsWindowDoppleOutput.value
+  }
+
+  // Call dopple.run()
+  js.value += mainJsDoppleRunOutput.value
 
   // Share
   js.value += isShareActive.value ? shareJsOutput.value : ''
@@ -483,7 +555,7 @@ onMounted(async () => {
                   collapsible
                   v-model="activeUiComponentCategories"
                 >
-                  <!-- General UI -->
+                  <!-- General Settings -->
                   <AccordionItem value="general-settings">
                     <AccordionTrigger
                       class="text-xs uppercase text-muted-foreground font-bold hover:text-foreground"
@@ -492,6 +564,16 @@ onMounted(async () => {
                     </AccordionTrigger>
                     <AccordionContent>
                       <ul class="space-y-2">
+                        <ImplementationItem
+                          title="Add Dopple Instance to Window"
+                          v-model="isAddToWindowActive"
+                        >
+                          <template #tooltip>
+                            Adds the <code>dopple</code> product instance to the page’s
+                            <code>window</code> for easier access in the browser console (useful for
+                            debugging).
+                          </template>
+                        </ImplementationItem>
                         <ImplementationItem title="Analytics" v-model="isAnalyticsActive">
                           <template #tooltip>
                             Connect interaction and configuration events to your Google Analytics
@@ -687,7 +769,7 @@ onMounted(async () => {
                 </Accordion>
               </TooltipProvider>
             </li>
-            <li class="relative ml-4 pl-8 pt-1 pb-8 border-l">
+            <!-- <li class="relative ml-4 pl-8 pt-1 pb-8 border-l">
               <span
                 class="absolute -left-4 top-0 w-8 h-8 flex items-center justify-center bg-accent rounded-full text-sm font-bold"
               >
@@ -700,12 +782,12 @@ onMounted(async () => {
                 </button>
                 <FullExample class="border" :style="isPreviewShown ? null : 'display: none'" />
               </div>
-            </li>
+            </li> -->
             <li class="relative ml-4 pl-8 pt-1 pb-8 border-l border-transparent">
               <span
                 class="absolute -left-4 top-0 w-8 h-8 flex items-center justify-center bg-accent rounded-full text-sm font-bold"
               >
-                4
+                3
               </span>
               <h4 class="mb-4 font-bold">Copy the outputted code</h4>
               <p class="text-sm text-muted-foreground">
@@ -713,11 +795,14 @@ onMounted(async () => {
               </p>
               <div class="py-4">
                 <Tabs v-model="activeOutputTab">
-                  <TabsList>
-                    <TabsTrigger value="html">HTML</TabsTrigger>
-                    <TabsTrigger value="css">CSS</TabsTrigger>
-                    <TabsTrigger value="js">JavaScript</TabsTrigger>
-                  </TabsList>
+                  <div class="flex justify-between">
+                    <TabsList>
+                      <TabsTrigger value="html">HTML</TabsTrigger>
+                      <TabsTrigger value="css">CSS</TabsTrigger>
+                      <TabsTrigger value="js">JavaScript</TabsTrigger>
+                    </TabsList>
+                    <Button variant="blue">Preview</Button>
+                  </div>
                   <TabsContent value="html">
                     <pre
                       class="overflow-x-auto"

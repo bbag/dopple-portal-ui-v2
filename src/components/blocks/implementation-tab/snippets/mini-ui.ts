@@ -185,6 +185,7 @@ export const arHtml = `\n\n			<!-- Augmented Reality -->
 export const arCss = `\n\n	/* Augmented Reality (Mini UI)*/
 	#dopple-ar-qr-code {
 		margin: 0 auto;
+		max-width: 100%;
 	}
 	[data-mini-ui-dialog="ar"] {
 		width: 24rem;
@@ -297,29 +298,29 @@ export const gesturesHtml = `\n\n			<!-- Controls & Gestures -->
 				</p>
 				<div data-mini-ui-controls="touch">
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate">
+						<img src="https://www.yoursite.com/path/to/icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate">
 						Rotate
 					</div>
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan">
+						<img src="https://www.yoursite.com/path/to/icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan">
 						Pan
 					</div>
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom">
+						<img src="https://www.yoursite.com/path/to/icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom">
 						Zoom
 					</div>
 				</div>
 				<div data-mini-ui-controls="mouse">
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate">
+						<img src="https://www.yoursite.com/path/to/icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate">
 						Rotate
 					</div>
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-mouse-pan.svg" alt="Pan" title="Right-click to pan">
+						<img src="https://www.yoursite.com/path/to/icon-mouse-pan.svg" alt="Pan" title="Right-click to pan">
 						Pan
 					</div>
 					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.dopple.io/hubfs/demos/icons/icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom">
+						<img src="https://www.yoursite.com/path/to/icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom">
 						Zoom
 					</div>
 				</div>
@@ -389,6 +390,10 @@ export const gesturesCss = `\n\n	/* Controls & Gestures (Mini UI) */
 		gap: 0.5rem;
 		margin: 0 auto;
 		text-align: center;
+	}
+	.dopple-mini-ui-control-keyboard-item,
+	.dopple-mini-ui-control-icon img {
+		max-width: 100%;
 	}
 	.dopple-controls-divider {
 		display: none;

@@ -14,7 +14,7 @@ export const loadingScreenHtml = (loadingScreenText: string) => `\n\n	<!-- Loadi
 			0%
 		</progress>
 	</div>`
-export const loadingScreenJs = () => `\n\n	// Loading screen
+export const loadingScreenJs = `\n\n	// Loading screen
 	const progressPercentText = document.getElementById("dopple-progress-percent");
 	const progressBar = document.getElementById("dopple-progress-bar");
 
@@ -24,7 +24,7 @@ export const loadingScreenJs = () => `\n\n	// Loading screen
 		progressBar.value = percentLoaded;
 		progressBar.textContent = \`\${percentLoaded}%\`;
 	};`
-export const loadingScreenCss = () => `\n\n	/* Loading screen */
+export const loadingScreenCss = `\n\n	/* Loading screen */
 	.loading-screen {
 		display: none;
 	}
@@ -79,76 +79,3 @@ export const loadingScreenCss = () => `\n\n	/* Loading screen */
 		border-radius: var(--progress-radius);
 		transition: var(--progress-transition);
 	}`
-
-// --------------------------------------------------------------------------------------------- //
-// Code section: Main (content that's always included)                                           //
-// --------------------------------------------------------------------------------------------- //
-
-export const mainHtmlStart = () => `<div class="dopple" data-dopple-loading="true">
-	<!-- Dopple canvas -->
-	<div class="dopple-container"></div>`
-export const mainHtmlEnd = () => `\n</div>`
-export const mainJsStart = (selectionObj = {}) => {
-  let selection = ``
-  for (const key of Object.keys(selectionObj)) {
-    selection += `\n			"${key}": "${selectionObj[key]}",`
-  }
-  selection += `\n		`
-
-  return `<script type="module">
-	// Import the Dopple SDK
-	import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";
-
-	const doppleWrapper = document.querySelector(".dopple");
-
-	// Initialize a new 3D product
-	const dopple = new DoppleXR({
-		container: doppleWrapper.querySelector(".dopple-container"),
-		owner: "dopple",
-		workspace: "dev-docs",
-		projectName: "luggage",
-		productVersion: "1",
-		selection: {${selection}}
-	});
-
-	// Optional: add \`dopple\` to the window for easy debugging
-	window.dopple = dopple;`
-}
-export const mainJsLoad = () => `\n\n	// Load the 3D product's assets
-	await dopple.load();
-	doppleWrapper.removeAttribute("data-dopple-loading");
-
-	// Begin rendering the 3D scene
-	dopple.run();`
-export const mainJsEnd = () => `\n</script>`
-export const mainCssStart = () => `@layer dopple {
-	/* Dopple wrapper and container */
-	.dopple {
-		--color-text: #252629;
-		--color-text-muted: #50535A;
-		--color-primary: #007BEE;
-		--color-primary-accent: #FFF;
-		--color-bg: #FFF;
-		--color-bg-muted: #EFF0F2;
-		--color-border: #C7CAD2;
-		--font-family-body: inherit;
-		--font-family-heading: inherit;
-		aspect-ratio: 16 / 10;
-		display: grid;
-		font-family: var(--font-family-body);
-		position: relative;
-	}
-	.dopple * {
-		box-sizing: border-box;
-		margin: 0;
-	}
-	.dopple > * {
-		grid-area: 1 / 1;
-	}
-	.dopple-container {
-		position: relative;
-	}
-	.dopple img {
-		max-width: 100%;
-	}`
-export const mainCssEnd = () => `\n}`
