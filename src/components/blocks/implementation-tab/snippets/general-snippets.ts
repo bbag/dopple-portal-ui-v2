@@ -23,7 +23,11 @@ export const mainJsStart = `<script type="module">
 	// Import the Dopple SDK
 	import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";`
 export const mainJsDoppleWrapper = `\n\n	const doppleWrapper = document.querySelector(".dopple");`
-export const mainJsNewDoppleInstance = (selectionObj: Record<string, string> = {}) => {
+export const mainJsNewDoppleInstance = (
+  selectionObj: Record<string, string> = {},
+  isAnalyticsActive: boolean,
+  analyticsLogNamespace: string = 'sdk'
+) => {
   let selection = ``
   for (const key of Object.keys(selectionObj)) {
     selection += `\n			"${key}": "${selectionObj[key]}",`
@@ -37,7 +41,7 @@ export const mainJsNewDoppleInstance = (selectionObj: Record<string, string> = {
 		workspace: "dev-docs",
 		projectName: "luggage",
 		productVersion: "1",
-		selection: {${selection}}
+		selection: {${selection}}${isAnalyticsActive ? `,\n		logNamespace: "${analyticsLogNamespace}",\n		sessionId: window.crypto.randomUUID()` : ''}
 	});`
 }
 export const mainJsWindowDopple = `\n\n	// Optional: add \`dopple\` to the window for easy access from the console

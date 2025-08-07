@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   // DialogClose,
@@ -38,6 +39,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 import { IconEye } from '@tabler/icons-vue'
 
+import { analyticsJs } from '@/components/blocks/implementation-tab/snippets/analytics-snippets'
 import {
   configurationMenuCss,
   configurationMenuHtml,
@@ -194,7 +196,12 @@ const mainJsDoppleRunOutput = highlightSyntax(() => mainJsDoppleRun, 'js')
 
 const mainJsDoppleWrapperOutput = highlightSyntax(() => mainJsDoppleWrapper, 'js')
 const mainJsNewDoppleInstanceOutput = highlightSyntax(
-  () => mainJsNewDoppleInstance(defaultSelection.value),
+  () =>
+    mainJsNewDoppleInstance(
+      defaultSelection.value,
+      isAnalyticsActive.value,
+      analyticsLogNamespace.value
+    ),
   'js'
 )
 
@@ -209,6 +216,19 @@ const mainJsWindowDoppleOutput = highlightSyntax(() => mainJsWindowDopple, 'js')
 
 // Code section: Analytics
 const isAnalyticsActive = ref(false)
+const analyticsLogNamespace = ref('sdk')
+const analyticsMeasurementId = ref('G-ABCDE12345')
+const analyticsIsAddToCart = ref(true)
+const analyticsAddToCartQuerySelector = ref('#add-to-cart')
+const analyticsJsOutput = highlightSyntax(
+  () =>
+    analyticsJs(
+      analyticsMeasurementId.value,
+      analyticsIsAddToCart.value,
+      analyticsAddToCartQuerySelector.value
+    ),
+  'js'
+)
 
 // Code section: Auto-rotate on Initial Load
 const isAutoRotateOnLoadActive = ref(false)
@@ -514,6 +534,9 @@ watchEffect(async () => {
   // Configuration Menu
   js.value += isConfigMenuActive.value ? configMenuJsOutput.value : ''
 
+  // Analytics
+  js.value += isAnalyticsActive.value ? analyticsJsOutput.value : ''
+
   js.value += mainJsEndOutput.value
 })
 
@@ -638,10 +661,33 @@ onMounted(async () => {
                             account.
                           </template>
                           <template #settings>
-                            <p>
-                              TODO: code snippet not yet implemented (will have settings for the
-                              logNamespace and sessionId here).
+                            <p>Log Namespace:</p>
+                            <Input
+                              type="text"
+                              v-model="analyticsLogNamespace"
+                              placeholder="Enter a logNamespace value..."
+                            />
+                            <p>Google Analytics Measurement ID:</p>
+                            <Input
+                              type="text"
+                              v-model="analyticsMeasurementId"
+                              placeholder="Enter your Measurement ID..."
+                            />
+                            <label
+                              class="inline-flex items-center gap-3 cursor-pointer select-none"
+                            >
+                              <Checkbox v-model="analyticsIsAddToCart" />
+                              <p>Include "Add To Cart" Custom Event?</p>
+                            </label>
+                            <p v-if="analyticsIsAddToCart">
+                              Query Selector for "Add To Cart" Button:
                             </p>
+                            <Input
+                              v-if="analyticsIsAddToCart"
+                              type="text"
+                              v-model="analyticsAddToCartQuerySelector"
+                              placeholder="Enter your Add To Cart button's query selector..."
+                            />
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
