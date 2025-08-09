@@ -275,71 +275,79 @@ export const autoRotateJs = `\n\n	// Mini UI button: Auto-rotate
 // Controls & Gestures                                                                           //
 // --------------------------------------------------------------------------------------------- //
 
-export const gesturesHtml = `\n\n			<!-- Controls & Gestures -->
-			<button data-mini-ui-button="controls" title="Controls & Gestures">
-				<svg width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-controls" class="dopple-mini-ui-shadow" />
-					<g id="dopple-icon-controls">
-						<path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47M14 10.5a1.5 1.5 0 0 1 3 0v1.5M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5" />
-					</g>
-				</svg>
-			</button>
-			<dialog data-mini-ui-dialog="controls" aria-labelledby="dopple-dialog-heading-controls" aria-describedby="dopple-dialog-description-controls" closedby="any">
-				<button data-mini-ui-action="close" title="Close" aria-label="Close dialog">
-					<svg width="20" height="20" viewBox="0 0 20 20">
-						<path d="M14 6l-8 8M6 6l8 8" />
+export const gesturesHtml = (basePath: string) => {
+  let path = basePath
+
+  if (!path.endsWith('/')) {
+    path += '/'
+  }
+
+  return `\n\n			<!-- Controls & Gestures -->
+				<button data-mini-ui-button="controls" title="Controls & Gestures">
+					<svg width="24" height="24" viewBox="0 0 24 24">
+						<use xlink:href="#dopple-icon-controls" class="dopple-mini-ui-shadow" />
+						<g id="dopple-icon-controls">
+							<path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47M14 10.5a1.5 1.5 0 0 1 3 0v1.5M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5" />
+						</g>
 					</svg>
 				</button>
-				<h2 id="dopple-dialog-heading-controls" class="dopple-dialog-heading">
-					Controls & Gestures
-				</h2>
-				<p id="dopple-dialog-description-controls" class="dopple-dialog-description">
-					Use your mouse, keyboard, or touch gestures to view the product from different angles.
-				</p>
-				<div data-mini-ui-controls="touch">
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate">
-						Rotate
+				<dialog data-mini-ui-dialog="controls" aria-labelledby="dopple-dialog-heading-controls" aria-describedby="dopple-dialog-description-controls" closedby="any">
+					<button data-mini-ui-action="close" title="Close" aria-label="Close dialog">
+						<svg width="20" height="20" viewBox="0 0 20 20">
+							<path d="M14 6l-8 8M6 6l8 8" />
+						</svg>
+					</button>
+					<h2 id="dopple-dialog-heading-controls" class="dopple-dialog-heading">
+						Controls & Gestures
+					</h2>
+					<p id="dopple-dialog-description-controls" class="dopple-dialog-description">
+						Use your mouse, keyboard, or touch gestures to view the product from different angles.
+					</p>
+					<div data-mini-ui-controls="touch">
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate">
+							Rotate
+						</div>
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan">
+							Pan
+						</div>
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom">
+							Zoom
+						</div>
 					</div>
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan">
-						Pan
+					<div data-mini-ui-controls="mouse">
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate">
+							Rotate
+						</div>
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-mouse-pan.svg" alt="Pan" title="Right-click to pan">
+							Pan
+						</div>
+						<div class="dopple-mini-ui-control-icon">
+							<img src="${path}icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom">
+							Zoom
+						</div>
 					</div>
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom">
-						Zoom
+					<hr class="dopple-controls-divider">
+					<div data-mini-ui-controls="keyboard">
+						<div class="dopple-mini-ui-control-keyboard-item">
+							<img src="${path}arrow-keys.svg" alt="Use the arrow keys to rotate" />
+							Rotate
+						</div>
+						<div class="dopple-mini-ui-control-keyboard-item">
+							<img src="${path}arrow-keys-ctrl.svg" alt="Hold Ctrl and use the arrow keys to pan" />
+							Pan
+						</div>
+						<div class="dopple-mini-ui-control-keyboard-item">
+							<img src="${path}arrow-keys-alt.svg" alt="Hold Alt and use the up/down arrow keys to zoom" />
+							Zoom
+						</div>
 					</div>
-				</div>
-				<div data-mini-ui-controls="mouse">
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate">
-						Rotate
-					</div>
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-mouse-pan.svg" alt="Pan" title="Right-click to pan">
-						Pan
-					</div>
-					<div class="dopple-mini-ui-control-icon">
-						<img src="https://www.yoursite.com/path/to/icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom">
-						Zoom
-					</div>
-				</div>
-				<hr class="dopple-controls-divider">
-				<div data-mini-ui-controls="keyboard">
-					<div class="dopple-mini-ui-control-keyboard-item">
-						<img src="https://www.dopple.io/hubfs/demos/icons/arrow-keys.svg" alt="Use the arrow keys to rotate" />
-						Rotate
-					</div>
-					<div class="dopple-mini-ui-control-keyboard-item">
-						<img src="https://www.dopple.io/hubfs/demos/icons/arrow-keys-ctrl.svg" alt="Hold Ctrl and use the arrow keys to pan" />
-						Pan
-					</div>
-					<div class="dopple-mini-ui-control-keyboard-item">
-						<img src="https://www.dopple.io/hubfs/demos/icons/arrow-keys-alt.svg" alt="Hold Alt and use the up/down arrow keys to zoom" />
-						Zoom
-					</div>
-				</div>
-			</dialog>`
+				</dialog>`
+}
 export const gesturesCss = `\n\n	/* Controls & Gestures (Mini UI) */
 	[data-mini-ui-dialog="controls"] {
 		width: 32rem;
@@ -551,7 +559,7 @@ export const shareJs = `\n\n	// Mini UI button: Share
 // Snapshot                                                                                      //
 // --------------------------------------------------------------------------------------------- //
 
-export const snapshotHtml = `\n\n			<!-- Snapshot -->
+export const snapshotHtml = (width: number, height: number) => `\n\n			<!-- Snapshot -->
 			<button data-mini-ui-button="snapshot" title="Take Snapshot">
 				<svg width="24" height="24" viewBox="0 0 24 24">
 					<use xlink:href="#dopple-icon-snapshot" class="dopple-mini-ui-shadow" />
@@ -576,14 +584,14 @@ export const snapshotHtml = `\n\n			<!-- Snapshot -->
 					<div class="dopple-snapshot-option">
 						<label for="dopple-snapshot-width">Width</label>
 						<div class="dopple-snapshot-input-wrapper">
-							<input id="dopple-snapshot-width" class="dopple-snapshot-input" type="number" value="1280" min="1" max="4096" />
+							<input id="dopple-snapshot-width" class="dopple-snapshot-input" type="number" value="${width}" min="1" max="4096" />
 							<span class="dopple-snapshot-input-postfix">px</span>
 						</div>
 					</div>
 					<div class="dopple-snapshot-option">
 						<label for="dopple-snapshot-height">Height</label>
 						<div class="dopple-snapshot-input-wrapper">
-							<input id="dopple-snapshot-height" class="dopple-snapshot-input" type="number" value="720" min="1" max="4096" />
+							<input id="dopple-snapshot-height" class="dopple-snapshot-input" type="number" value="${height}" min="1" max="4096" />
 							<span class="dopple-snapshot-input-postfix">px</span>
 						</div>
 					</div>
@@ -646,7 +654,7 @@ export const snapshotCss = `\n\n	/* Snapshot (Mini UI) */
 		display: flex;
 		padding: 0 0.625rem;
 	}`
-export const snapshotJs = `\n\n	// Mini UI button: Snapshot
+export const snapshotJs = (width: number, height: number) => `\n\n	// Mini UI button: Snapshot
 	const snapshotButton = doppleWrapper.querySelector("[data-mini-ui-button='snapshot']");
 	snapshotButton?.addEventListener("click", () => {
 		try {
@@ -665,8 +673,8 @@ export const snapshotJs = `\n\n	// Mini UI button: Snapshot
 			fileName: dopple.projectName || "snapshot",
 			mimeType: "image/png",
 			size: {
-				width: snapshotWidth.value || 1280, // pixels
-				height: snapshotHeight.value || 720, // pixels
+				width: snapshotWidth.value || ${width}, // pixels
+				height: snapshotHeight.value || ${height} // pixels
 			}
 		});
 	});`

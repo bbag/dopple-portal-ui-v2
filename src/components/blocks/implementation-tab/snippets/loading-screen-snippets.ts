@@ -2,13 +2,13 @@
 // Code section: Loading screen                                                                  //
 // --------------------------------------------------------------------------------------------- //
 
-export const loadingScreenHtml = (loadingScreenText: string) => `\n\n	<!-- Loading screen -->
+export const loadingScreenHtml = `\n\n	<!-- Loading screen -->
 	<div class="loading-screen">
 		<svg class="loading-spinner" width="32" height="32" viewBox="0 0 24 24" role="presentation">
 			<path d="M12 3a9 9 0 1 0 9 9" />
 		</svg>
 		<span class="loading-text">
-			${loadingScreenText || 'Loading...'} <span id="dopple-progress-percent">0%</span>
+			Loading... <span id="dopple-progress-percent">0%</span>
 		</span>
 		<progress id="dopple-progress-bar" value="0" max="100" aria-label="The 3D product is loading.">
 			0%

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 42">
+	<style>
+		.keybacks,
+		.keys {
+			fill: hsl(224, 7%, 86%);
+			stroke: hsl(224, 7%, 60%);
+		}
+		.keys {
+			fill: #fff;
+		}
+		.arrows {
+			fill: none;
+			stroke: hsl(224, 7%, 22%);
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			stroke-width: 1.5;
+		}
+	</style>
+	<g class="keybacks">
+		<path d="M81.5 41.5h-13a2 2 0 0 1-2-2v-13c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2z" />
+		<path d="M81.5 19.5h-13a2 2 0 0 1-2-2v-13c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2z" />
+		<path d="M38.5 33.5h-36a2 2 0 0 1-2-2v-19c0-1.1.9-2 2-2h36a2 2 0 0 1 2 2v19a2 2 0 0 1-2 2z" />
+	</g>
+	<g class="keys">
+		<path d="M81.5 39.5h-13a2 2 0 0 1-2-2v-13c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2z" />
+		<path d="M81.5 17.5h-13a2 2 0 0 1-2-2v-13c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2z" />
+		<path d="M38.5 31.5h-36a2 2 0 0 1-2-2v-19c0-1.1.9-2 2-2h36a2 2 0 0 1 2 2v19a2 2 0 0 1-2 2z" />
+	</g>
+	<g class="arrows">
+		<path d="M73,8l2-2l2,2M75,6v6"/>
+		<path d="M77,32l-2,2l-2-2M75,34v-6"/>
+		<path d="M11 24v-6c0-1.1.9-2 2-2h0a2 2 0 0 1 2 2v6M11 20h4M19 16v8h4M26 16h4M28 16v8"/>
+		<path d="M54 16v8M50 20h8" stroke="hsl(224, 7%, 40%)"/>
+	</g>
+</svg>

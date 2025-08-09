@@ -20,8 +20,8 @@ export const analyticsJs = (
 	function gtag(...args) {
 		window.dataLayer.push(args);
 	}
+	
 	window.gtag = gtag;
-
 	gtag("js", new Date());
 	gtag("config", "${measurementId}");
 
@@ -107,7 +107,7 @@ export const analyticsJs = (
 		return false;
 	}
 
-	dopple.addLogWriter(writeGAEvent)`
+	dopple.addLogWriter(writeGAEvent);`
 
   if (isAddToCartActive) {
     scripts += `\n\n	// Send the custom \`ADD_TO_CART\` event when the Add To Cart button is clicked
