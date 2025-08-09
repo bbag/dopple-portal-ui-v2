@@ -212,8 +212,8 @@ export const arJs = `\n\n	// Mini UI button: Augmented Reality
 // Auto-rotation                                                                                 //
 // --------------------------------------------------------------------------------------------- //
 
-export const autoRotateHtml = `\n\n			<!-- Auto-rotate -->
-			<button data-mini-ui-button="autorotate" title="Auto-rotate: Off" data-autorotate-state="inactive">
+export const autoRotateHtml = (isActiveOnLoad: boolean = false) => `\n\n			<!-- Auto-rotate -->
+			<button data-mini-ui-button="autorotate" title="${isActiveOnLoad ? 'Auto-rotate: On' : 'Auto-rotate: Off'}" data-autorotate-state="${isActiveOnLoad ? 'active' : 'inactive'}">
 				<svg data-autorotate-icon="active" width="24" height="24" viewBox="0 0 24 24">
 					<use xlink:href="#dopple-icon-autorotate-on" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-autorotate-on">
@@ -243,33 +243,7 @@ export const autoRotateJs = `\n\n	// Mini UI button: Auto-rotate
 			autorotateButton.dataset.autorotateState = "inactive";
 			autorotateButton.title = "Auto-rotate: Off";
 		}
-	});
-
-	const autoRotationSpeed = 30; // Degrees per second
-	let enableAutoRotation = false;
-	let autoRotationStartTime = performance.now();
-	let autoRotationOldTime = autoRotationStartTime;
-	let autoRotationElapsedTime = 0;
-	let autoRotationIsRunning = false;
-
-	(function autoRotate() {
-		let delta = 0;
-		if (!autoRotationIsRunning) {
-			autoRotationStartTime = performance.now();
-			autoRotationOldTime = autoRotationStartTime;
-			autoRotationElapsedTime = 0;
-			autoRotationIsRunning = true;
-		} else {
-			const newTime = performance.now();
-			delta = (newTime - autoRotationOldTime) / 1000;
-			autoRotationOldTime = newTime;
-			autoRotationElapsedTime += delta;
-		}
-		if (enableAutoRotation) {
-			dopple.controls.azimuthAngle -= delta * (Math.PI / 180) * autoRotationSpeed;
-		}
-		requestAnimationFrame(autoRotate);
-	})();`
+	});`
 
 // --------------------------------------------------------------------------------------------- //
 // Controls & Gestures                                                                           //

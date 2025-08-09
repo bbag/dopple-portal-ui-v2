@@ -4,8 +4,9 @@
 
 /**
  * @param {string} measurementId - The user's Measurement ID from Google Analytics (e.g. "G-ABCDE12345").
+ * @param {boolean} isAddToCartActive - Whether or not to include capturing "Add To Cart" button click events
+ * @param {string} addToCartQuerySelector - A CSS selector targeting the "Add To Cart" button
  */
-
 export const analyticsJs = (
   measurementId: string = 'G-ABCDE12345',
   isAddToCartActive: boolean = false,

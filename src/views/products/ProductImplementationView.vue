@@ -43,7 +43,8 @@ import Admonition from '@/components/ui/admonition/Admonition.vue'
 import { IconDownload, IconEye } from '@tabler/icons-vue'
 
 import { analyticsJs } from '@/components/blocks/implementation-tab/snippets/analytics-snippets'
-import { cameraControlsJs } from '@/components/blocks/implementation-tab/snippets/camera-controls'
+import { autoRotateSettingsJs } from '@/components/blocks/implementation-tab/snippets/auto-rotation-snippets'
+import { cameraControlsJs } from '@/components/blocks/implementation-tab/snippets/camera-controls-snippets'
 import {
   configurationMenuCss,
   configurationMenuHtml,
@@ -210,8 +211,19 @@ const analyticsJsOutput = highlightSyntax(
   'js'
 )
 
-// Code section: Auto-rotate on Initial Load
+// Code section: Auto-rotate on Initial Load (note: settings are shared with Mini UI's Auto-Rotate)
 const isAutoRotateOnLoadActive = ref(false)
+const autoRotateSpeed = ref(30)
+const autoRotateDirection = ref<'clockwise' | 'counter-clockwise'>('clockwise')
+const autoRotateSettingsJsOutput = highlightSyntax(
+  () =>
+    autoRotateSettingsJs(
+      isAutoRotateOnLoadActive.value,
+      autoRotateSpeed.value,
+      autoRotateDirection.value
+    ),
+  'js'
+)
 
 // Code section: Custom Camera Control Behavior
 const isCustomCameraControlBehaviorActive = ref(false)
@@ -334,7 +346,10 @@ const gesturesJsOutput = highlightSyntax(() => gesturesJs, 'js')
 
 // Code section: Auto-rotation
 const isAutoRotationActive = ref(false)
-const autoRotateHtmlOutput = highlightSyntax(() => autoRotateHtml, 'html')
+const autoRotateHtmlOutput = highlightSyntax(
+  () => autoRotateHtml(isAutoRotateOnLoadActive.value),
+  'html'
+)
 const autoRotateCssOutput = highlightSyntax(() => autoRotateCss, 'css')
 const autoRotateJsOutput = highlightSyntax(() => autoRotateJs, 'js')
 
@@ -550,6 +565,11 @@ watchEffect(async () => {
   // Mini UI: Full screen
   js.value += isFullScreenActive.value ? fullScreenJsOutput.value : ''
 
+  // Auto-rotate Settings
+  if (isAutoRotateOnLoadActive.value || isAutoRotationActive.value) {
+    js.value += autoRotateSettingsJsOutput.value
+  }
+
   // Close button click listeners for Mini UI components with dialogs (AR, Controls/Gestures, Snapshot, and Share)
   js.value += isMiniUiDialogActive.value ? miniUiDialogCloseButtonsJsOutput.value : ''
 
@@ -678,7 +698,7 @@ onMounted(async () => {
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
-                          title="[ ] Auto-rotate on Initial Load"
+                          title="Auto-rotate on Initial Load"
                           v-model="isAutoRotateOnLoadActive"
                         >
                           <template #tooltip>
@@ -686,10 +706,41 @@ onMounted(async () => {
                             stop auto-rotating once the user interacts with the 3D scene.
                           </template>
                           <template #settings>
-                            <p>
-                              TODO: code snippet not yet implemented (will have settings for
-                              auto-rotation speed and direction).
-                            </p>
+                            <table>
+                              <tbody class="[&_td]:p-1">
+                                <tr>
+                                  <td><Label>Speed:</Label></td>
+                                  <td>
+                                    <Input
+                                      type="number"
+                                      v-model.number="autoRotateSpeed"
+                                      min="0"
+                                      max="360"
+                                      step="5"
+                                    />
+                                  </td>
+                                  <td class="text-sm text-muted-foreground">
+                                    (degrees per second)
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td><Label>Direction:</Label></td>
+                                  <td>
+                                    <Select v-model="autoRotateDirection">
+                                      <SelectTrigger class="w-full min-w-48">
+                                        <SelectValue placeholder="Select an option" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="clockwise"> Clockwise </SelectItem>
+                                        <SelectItem value="counter-clockwise">
+                                          Counterclockwise
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
@@ -931,7 +982,41 @@ onMounted(async () => {
                             Adds an icon button to toggle auto-rotation of the product on or off.
                           </template>
                           <template #settings>
-                            <p>TODO: will have settings for auto-rotation speed and direction</p>
+                            <table>
+                              <tbody class="[&_td]:p-1">
+                                <tr>
+                                  <td><Label>Speed:</Label></td>
+                                  <td>
+                                    <Input
+                                      type="number"
+                                      v-model.number="autoRotateSpeed"
+                                      min="0"
+                                      max="360"
+                                      step="5"
+                                    />
+                                  </td>
+                                  <td class="text-sm text-muted-foreground">
+                                    (degrees per second)
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td><Label>Direction:</Label></td>
+                                  <td>
+                                    <Select v-model="autoRotateDirection">
+                                      <SelectTrigger class="w-full min-w-48">
+                                        <SelectValue placeholder="Select an option" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="clockwise"> Clockwise </SelectItem>
+                                        <SelectItem value="counter-clockwise">
+                                          Counterclockwise
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Fullscreen Mode" v-model="isFullScreenActive">
