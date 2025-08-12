@@ -162,7 +162,7 @@ export const miniUiDialogCloseButtonsJs = `\n\n	// Mini UI dialog close buttons
 export const arHtml = `\n\n			<!-- Augmented Reality -->
 			<button data-mini-ui-button="ar" title="View in Augmented Reality">
 				<svg width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-ar" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-ar" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-ar">
 						<path d="M3 6v-1a2 2 0 0 1 2-2h1M3 18v1a2 2 0 0 0 2 2h1M18 3h1a2 2 0 0 1 2 2v1M18 21h1a2 2 0 0 0 2-2v-1M12 7 17 9.5 17 14.5 12 17 7 14.5 7 9.5 12 7M7 9.5 12 12M17 9.5 12 12M12 17 12 12" />
 					</g>
@@ -215,13 +215,13 @@ export const arJs = `\n\n	// Mini UI button: Augmented Reality
 export const autoRotateHtml = (isActiveOnLoad: boolean = false) => `\n\n			<!-- Auto-rotate -->
 			<button data-mini-ui-button="autorotate" title="${isActiveOnLoad ? 'Auto-rotate: On' : 'Auto-rotate: Off'}" data-autorotate-state="${isActiveOnLoad ? 'active' : 'inactive'}">
 				<svg data-autorotate-icon="active" width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-autorotate-on" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-autorotate-on" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-autorotate-on">
 						<path d="M17 15.328c2.414 -.718 4 -1.94 4 -3.328c0 -2.21 -4.03 -4 -9 -4s-9 1.79 -9 4s4.03 4 9 4M9 13l3 3l-3 3" />
 					</g>
 				</svg>
 				<svg data-autorotate-icon="inactive" width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-autorotate-off" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-autorotate-off" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-autorotate-off">
 						<path d="M8.3,8.3C5.2,9,3,10.4,3,12c0,2.2,4,4,9,4M18.6,14.7C20.1,14,21,13,21,12c0-2.2-4-4-9-4M9,13l3,3l-3,3M4,4L20,20" />
 					</g>
@@ -259,7 +259,7 @@ export const gesturesHtml = (basePath: string) => {
   return `\n\n			<!-- Controls & Gestures -->
 				<button data-mini-ui-button="controls" title="Controls & Gestures">
 					<svg width="24" height="24" viewBox="0 0 24 24">
-						<use xlink:href="#dopple-icon-controls" class="dopple-mini-ui-shadow" />
+						<use href="#dopple-icon-controls" class="dopple-mini-ui-shadow" />
 						<g id="dopple-icon-controls">
 							<path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47M14 10.5a1.5 1.5 0 0 1 3 0v1.5M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5" />
 						</g>
@@ -279,29 +279,29 @@ export const gesturesHtml = (basePath: string) => {
 					</p>
 					<div data-mini-ui-controls="touch">
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate">
+							<img src="${path}icon-hand-rotate.svg" alt="Rotate" title="Touch and drag to rotate" />
 							Rotate
 						</div>
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan">
+							<img src="${path}icon-hand-pan.svg" alt="Pan" title="Drag with two fingers to pan" />
 							Pan
 						</div>
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom">
+							<img src="${path}icon-hand-zoom.svg" alt="Zoom" title="Pinch to zoom" />
 							Zoom
 						</div>
 					</div>
 					<div data-mini-ui-controls="mouse">
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate">
+							<img src="${path}icon-mouse-rotate.svg" alt="Rotate" title="Click and drag to rotate" />
 							Rotate
 						</div>
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-mouse-pan.svg" alt="Pan" title="Right-click to pan">
+							<img src="${path}icon-mouse-pan.svg" alt="Pan" title="Right-click to pan" />
 							Pan
 						</div>
 						<div class="dopple-mini-ui-control-icon">
-							<img src="${path}icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom">
+							<img src="${path}icon-mouse-zoom.svg" alt="Zoom" title="Scroll to zoom" />
 							Zoom
 						</div>
 					</div>
@@ -417,13 +417,13 @@ export const gesturesJs = `\n\n	// Mini UI button: Controls & Gestures
 export const fullScreenHtml = `\n\n			<!-- Full Screen -->
 			<button data-mini-ui-button="fullscreen" title="Enter Full Screen" data-fullscreen-state="inactive">
 				<svg data-fullscreen-icon="inactive" width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-fullscreen" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-fullscreen" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-fullscreen">
 						<path d="M4 8v-2a2 2 0 0 1 2 -2h2M4 16v2a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v2M16 20h2a2 2 0 0 0 2 -2v-2" />
 					</g>
 				</svg>
 				<svg data-fullscreen-icon="active" width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-fullscreen-close" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-fullscreen-close" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-fullscreen-close">
 						<path d="M16 20v-2a2 2 0 0 1 2 -2h2M16 4v2a2 2 0 0 0 2 2h2M4 16h2a2 2 0 0 1 2 2v2M4 8h2a2 2 0 0 0 2 -2v-2" />
 					</g>
@@ -457,7 +457,7 @@ export const fullScreenJs = `\n\n	// Mini UI button: Full Screen
 export const shareHtml = `\n\n			<!-- Share -->
 			<button data-mini-ui-button="share" title="Share">
 				<svg width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-share" class="dopple-mini-ui-shadow"></use>
+					<use href="#dopple-icon-share" class="dopple-mini-ui-shadow"></use>
 					<g id="dopple-icon-share">
 						<path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M8.7 10.7l6.6 -3.4M8.7 13.3l6.6 3.4" />
 					</g>
@@ -536,7 +536,7 @@ export const shareJs = `\n\n	// Mini UI button: Share
 export const snapshotHtml = (width: number, height: number) => `\n\n			<!-- Snapshot -->
 			<button data-mini-ui-button="snapshot" title="Take Snapshot">
 				<svg width="24" height="24" viewBox="0 0 24 24">
-					<use xlink:href="#dopple-icon-snapshot" class="dopple-mini-ui-shadow" />
+					<use href="#dopple-icon-snapshot" class="dopple-mini-ui-shadow" />
 					<g id="dopple-icon-snapshot">
 						<path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2M12 10.75A2.25 2.25 0 1 0 12 15.25 2.25 2.25 0 1 0 12 10.75z" />
 					</g>

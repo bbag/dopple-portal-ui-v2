@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 68" width="128" height="68">
+	<style>
+		#dot {
+			animation: dot-blip 2.75s infinite normal;
+			animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
+			fill: #007BEE;
+			transform-box: fill-box;
+			transform-origin: center;
+		}
+		@keyframes dot-blip {
+			0%, 14% { opacity: 0; transform: translate(-5px, -1px) scale(0); }
+			15% { opacity: 1; transform: translate(-5px, -1px) scale(0); }
+			40%, to { opacity: 0; transform: translate(-5px, -1px); }
+		}
+		#arrows-outline, #arrows, #hand {
+			fill: none;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+		#arrows-outline {
+			opacity: 0.75;
+			stroke: #FFF;
+			stroke-width: 4;
+		}
+		#arrows, #hand {
+			stroke: #35383D;
+			stroke-width: 2;
+		}
+		#hand > path {
+			fill: #fff;
+		}
+		#hand {
+			animation: swipe 2.75s infinite normal;
+			animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
+			transform-box: fill-box;
+			transform-origin: center;
+		}
+		@keyframes swipe {
+			0% { opacity: 0; transform: translate(4px, 2px) rotate(0deg); }
+			10% { opacity: 1; transform: translate(2px, -2px) rotate(2deg); }
+			24% { opacity: 1; transform: translate(-2px, -2px) rotate(-6deg); }
+			60% { opacity: 1; transform: translate(28px, -4px) rotate(10deg); }
+			80%, to { opacity: 0; transform: translate(24px) rotate(4deg); }
+		}
+	</style>
+	<g id="arrows-outline">
+		<line x1="2" y1="38" x2="21" y2="38"></line>
+		<polyline points="9,45 2,38 9,31"></polyline>
+		<line x1="126" y1="38" x2="107" y2="38"></line>
+		<polyline points="119,45 126,38 119,31"></polyline>
+	</g>
+	<g id="arrows">
+		<line x1="2" y1="38" x2="21" y2="38"></line>
+		<polyline points="9,45 2,38 9,31"></polyline>
+		<line x1="126" y1="38" x2="107" y2="38"></line>
+		<polyline points="119,45 126,38 119,31"></polyline>
+	</g>
+	<circle id="dot" cx="45" cy="20" r="18"></circle>
+	<g id="hand">
+		<path d="M41,35V20c0-2.2,1.8-4,4-4h0c2.2,0,4,1.8,4,4v11l13.6,3.8c2.6,0.7,4.4,3.1,4.4,5.8v6.2c0,2.1-0.7,4.1-1.9,5.8L62,57v6H42v-7l-5.3-4.2C35.6,50.8,35,49.5,35,48v-7.5c0-1.5,0.9-2.9,2.2-3.6L41,35z"></path>
+		<line x1="41" y1="43" x2="41" y2="35"></line>
+	</g>
+</svg>

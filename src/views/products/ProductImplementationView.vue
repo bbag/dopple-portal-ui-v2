@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watchEffect } from 'vue'
 import { computedAsync } from '@vueuse/core'
-import { codeToHtml, codeToTokens } from 'shiki'
+import { codeToHtml } from 'shiki'
 
 import ControlsGesturesIcons from '@/components/blocks/implementation-tab/ControlsGesturesIcons.vue'
+import ImplementationCodeBlock from '@/components/blocks/implementation-tab/ImplementationCodeBlock.vue'
 import ImplementationItem from '@/components/blocks/implementation-tab/ImplementationItem.vue'
+import InteractivityHint from '@/components/blocks/implementation-tab/assets/interactivity-hint.svg'
 
 import {
   Accordion,
@@ -43,6 +45,10 @@ import Admonition from '@/components/ui/admonition/Admonition.vue'
 import { IconDownload, IconEye } from '@tabler/icons-vue'
 
 import { analyticsJs } from '@/components/blocks/implementation-tab/snippets/analytics-snippets'
+import {
+  interactivityHintCss,
+  interactivityHintHtml
+} from '@/components/blocks/implementation-tab/snippets/interactivity-hint'
 import { autoRotateSettingsJs } from '@/components/blocks/implementation-tab/snippets/auto-rotation-snippets'
 import { cameraControlsJs } from '@/components/blocks/implementation-tab/snippets/camera-controls-snippets'
 import {
@@ -105,7 +111,6 @@ import {
 } from '@/components/blocks/implementation-tab/snippets/mini-ui-snippets'
 
 import FullExample from '@/components/blocks/full-luggage-example/FullExample.vue'
-import { TooltipArrow } from 'radix-vue'
 
 const exampleMatrix = ref([
   {
@@ -211,8 +216,9 @@ const analyticsJsOutput = highlightSyntax(
   'js'
 )
 
-// Code section: Auto-rotate on Initial Load (note: settings are shared with Mini UI's Auto-Rotate)
+// Code section: Auto-rotate on Initial Load + Mini UI's Auto-rotate
 const isAutoRotateOnLoadActive = ref(false)
+const isAutoRotationActive = ref(false)
 const autoRotateSpeed = ref(30)
 const autoRotateDirection = ref<'clockwise' | 'counter-clockwise'>('clockwise')
 const autoRotateSettingsJsOutput = highlightSyntax(
@@ -220,10 +226,17 @@ const autoRotateSettingsJsOutput = highlightSyntax(
     autoRotateSettingsJs(
       isAutoRotateOnLoadActive.value,
       autoRotateSpeed.value,
-      autoRotateDirection.value
+      autoRotateDirection.value,
+      isAutoRotationActive.value
     ),
   'js'
 )
+const autoRotateHtmlOutput = highlightSyntax(
+  () => autoRotateHtml(isAutoRotateOnLoadActive.value),
+  'html'
+)
+const autoRotateCssOutput = highlightSyntax(() => autoRotateCss, 'css')
+const autoRotateJsOutput = highlightSyntax(() => autoRotateJs, 'js')
 
 // Code section: Custom Camera Control Behavior
 const isCustomCameraControlBehaviorActive = ref(false)
@@ -295,8 +308,14 @@ const hotspotsHtmlOutput = highlightSyntax(
 const hotspotsJsOutput = highlightSyntax(() => hotspotsJs, 'js')
 const hotspotsCssOutput = highlightSyntax(() => hotspotsCss(hotspotsType.value), 'css')
 
-// Code section: Interactivity Indicator
-const isInteractivityIndicatorActive = ref(false)
+// Code section: Interactivity Hint
+const isInteractivityHintActive = ref(false)
+const interactivityHintBasePath = ref('https://www.yoursite.com/path/to/icon/')
+const interactivityHintHtmlOutput = highlightSyntax(
+  () => interactivityHintHtml(interactivityHintBasePath.value),
+  'html'
+)
+const interactivityHintCssOutput = highlightSyntax(() => interactivityHintCss, 'css')
 
 // --------------------------------------------------------------------------------------------- //
 // Mini UI                                                                                       //
@@ -311,17 +330,30 @@ const miniUiGroupEndOutput = highlightSyntax(() => miniUiGroupEndHtml, 'html')
 const miniUiCssOutput = highlightSyntax(() => miniUiCss, 'css')
 const miniUiDialogCssOutput = highlightSyntax(() => miniUiDialogCss, 'css')
 
+// Code section: Augmented Reality
+const isArActive = ref(false)
+const arHtmlOutput = highlightSyntax(() => arHtml, 'html')
+const arCssOutput = highlightSyntax(() => arCss, 'css')
+const arJsOutput = highlightSyntax(() => arJs, 'js')
+
+// Code section: Controls/Gestures
+const isGesturesActive = ref(false)
+const gesturesBasePath = ref('https://www.yoursite.com/path/to/icons/')
+const gesturesHtmlOutput = highlightSyntax(() => gesturesHtml(gesturesBasePath.value), 'html')
+const gesturesCssOutput = highlightSyntax(() => gesturesCss, 'css')
+const gesturesJsOutput = highlightSyntax(() => gesturesJs, 'js')
+
 // Code section: Fullscreen
 const isFullScreenActive = ref(false)
 const fullScreenHtmlOutput = highlightSyntax(() => fullScreenHtml, 'html')
 const fullScreenCssOutput = highlightSyntax(() => fullScreenCss, 'css')
 const fullScreenJsOutput = highlightSyntax(() => fullScreenJs, 'js')
 
-// Code section: Augmented Reality
-const isArActive = ref(false)
-const arHtmlOutput = highlightSyntax(() => arHtml, 'html')
-const arCssOutput = highlightSyntax(() => arCss, 'css')
-const arJsOutput = highlightSyntax(() => arJs, 'js')
+// Code section: Share
+const isShareActive = ref(false)
+const shareHtmlOutput = highlightSyntax(() => shareHtml, 'html')
+const shareCssOutput = highlightSyntax(() => shareCss, 'css')
+const shareJsOutput = highlightSyntax(() => shareJs, 'js')
 
 // Code section: Snapshot
 const isSnapshotActive = ref(false)
@@ -336,28 +368,6 @@ const snapshotJsOutput = highlightSyntax(
   () => snapshotJs(snapshotDefaultWidth.value, snapshotDefaultHeight.value),
   'js'
 )
-
-// Code section: Controls/Gestures
-const isGesturesActive = ref(false)
-const gesturesBasePath = ref('https://www.yoursite.com/path/to/icons')
-const gesturesHtmlOutput = highlightSyntax(() => gesturesHtml(gesturesBasePath.value), 'html')
-const gesturesCssOutput = highlightSyntax(() => gesturesCss, 'css')
-const gesturesJsOutput = highlightSyntax(() => gesturesJs, 'js')
-
-// Code section: Auto-rotation
-const isAutoRotationActive = ref(false)
-const autoRotateHtmlOutput = highlightSyntax(
-  () => autoRotateHtml(isAutoRotateOnLoadActive.value),
-  'html'
-)
-const autoRotateCssOutput = highlightSyntax(() => autoRotateCss, 'css')
-const autoRotateJsOutput = highlightSyntax(() => autoRotateJs, 'js')
-
-// Code section: Share
-const isShareActive = ref(false)
-const shareHtmlOutput = highlightSyntax(() => shareHtml, 'html')
-const shareCssOutput = highlightSyntax(() => shareCss, 'css')
-const shareJsOutput = highlightSyntax(() => shareJs, 'js')
 
 // Detect which components within the Mini UI are active
 const isMiniUiLeftGroupActive = computed(() =>
@@ -382,7 +392,7 @@ const isMinimalMarkup = computed(() => {
   return !(
     isConfigMenuActive.value ||
     isHotspotsActive.value ||
-    isInteractivityIndicatorActive.value ||
+    isInteractivityHintActive.value ||
     isLoadingScreenActive.value ||
     isMiniUiLeftGroupActive.value ||
     isMiniUiRightGroupActive.value
@@ -405,6 +415,9 @@ watchEffect(async () => {
 
   // Main wrapper div and dopple-container div
   html.value += mainHtmlStartOutput.value
+
+  // Interactivity hint
+  html.value += isInteractivityHintActive.value ? interactivityHintHtmlOutput.value : ''
 
   // Loading screen
   html.value += isLoadingScreenActive.value ? loadingScreenHtmlOutput.value : ''
@@ -472,6 +485,9 @@ watchEffect(async () => {
   // Config menu styles
   css.value += isConfigMenuActive.value ? configMenuCssOutput.value : ''
 
+  // Interactivity hint
+  css.value += isInteractivityHintActive.value ? interactivityHintCssOutput.value : ''
+
   // Loading screen styles
   css.value += isLoadingScreenActive.value ? loadingScreenCssOutput.value : ''
 
@@ -489,7 +505,7 @@ watchEffect(async () => {
   // Mini UI: Share
   css.value += isShareActive.value ? shareCssOutput.value : ''
 
-  // Mini UI: Controls & Gestures
+  // Mini UI: Controls & gestures
   css.value += isGesturesActive.value ? gesturesCssOutput.value : ''
 
   // Mini UI: Auto-rotation
@@ -498,10 +514,10 @@ watchEffect(async () => {
   // Mini UI: Snapshot
   css.value += isSnapshotActive.value ? snapshotCssOutput.value : ''
 
-  // Mini UI: Augmented Reality
+  // Mini UI: Augmented reality
   css.value += isArActive.value ? arCssOutput.value : ''
 
-  // Mini UI: Full Screen
+  // Mini UI: Full screen
   css.value += isFullScreenActive.value ? fullScreenCssOutput.value : ''
 
   css.value += mainCssEndOutput.value
@@ -580,28 +596,6 @@ watchEffect(async () => {
   js.value += isAnalyticsActive.value ? analyticsJsOutput.value : ''
 
   js.value += mainJsEndOutput.value
-})
-
-const shikiTokens = ref({
-  bg: '#292D3E',
-  fg: '#BABED8',
-  themeName: shikiTheme
-})
-
-onMounted(async () => {
-  const {
-    bg = '#292D3E',
-    fg = '#BABED8',
-    themeName = shikiTheme
-  } = await codeToTokens('', {
-    lang: 'html',
-    theme: shikiTheme
-  })
-  shikiTokens.value = {
-    bg,
-    fg,
-    themeName
-  }
 })
 </script>
 
@@ -937,19 +931,49 @@ onMounted(async () => {
                           </template>
                         </ImplementationItem>
                         <ImplementationItem
-                          title="[ ] Interactivity Indicator"
-                          v-model="isInteractivityIndicatorActive"
+                          title="Interactivity Hint"
+                          v-model="isInteractivityHintActive"
                         >
                           <template #tooltip>
                             Shows a small, animated hand icon at the bottom of the canvas hinting
                             that the product is interactive.
                           </template>
                           <template #settings>
-                            <p>
-                              TODO: code snippet not yet implemented (will have callout to save the
-                              image yourself, since Dopple isn't responsible for hosting it for
-                              you).
-                            </p>
+                            <p>The "interactivity hint" image will look like the following:</p>
+                            <InteractivityHint class="mb-4" />
+                            <Admonition class="space-y-4" type="info" title="Heads up!">
+                              <p>
+                                The generated code snippet below uses a dummy URL as the base path
+                                for the icon. You will need to download and host this icon yourself,
+                                then update the path for the image in the code.
+                              </p>
+                              <div>
+                                <a
+                                  :class="buttonVariants({ variant: 'outline' })"
+                                  href="/interactivity-hint.svg"
+                                  download
+                                >
+                                  <IconDownload class="size-5 mr-2" />
+                                  Download Icon
+                                </a>
+                              </div>
+                              <p>
+                                If you know the base path ahead of time, you can enter it here to
+                                update the generated code below:
+                              </p>
+                              <div class="space-y-2">
+                                <Input
+                                  type="text"
+                                  placeholder="https://www.yoursite.com/path/to/icon/"
+                                  v-model="interactivityHintBasePath"
+                                />
+                                <p class="text-muted-foreground italic">
+                                  The filename for the image (example:
+                                  <code>interactivity-hint.svg</code>) will be automatically
+                                  appended to this path.
+                                </p>
+                              </div>
+                            </Admonition>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Loading Screen" v-model="isLoadingScreenActive">
@@ -1030,7 +1054,8 @@ onMounted(async () => {
                             interact with the 3D scene.
                           </template>
                           <template #settings>
-                            <Admonition class="space-y-4 mb-4" type="info" title="Heads up!">
+                            <ControlsGesturesIcons class="mb-4" />
+                            <Admonition class="space-y-4" type="info" title="Heads up!">
                               <p>
                                 The generated code snippet below uses a dummy URL as the base path
                                 for the icons. You will need to download and host the icons
@@ -1063,16 +1088,12 @@ onMounted(async () => {
                                 </p>
                               </div>
                             </Admonition>
-                            <ControlsGesturesIcons />
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Shareable URL" v-model="isShareActive">
                           <template #tooltip>
                             Adds an icon button for showing a dialog with a shareable URL for the
                             product’s current configuration.
-                          </template>
-                          <template #settings>
-                            <p>TODO: will have settings for setting the base URL.</p>
                           </template>
                         </ImplementationItem>
                         <ImplementationItem title="Snapshot" v-model="isSnapshotActive">
@@ -1145,56 +1166,44 @@ onMounted(async () => {
                 Include the code below on your web page to embed your Dopple experience.
               </p>
               <div class="py-4">
-                <Tabs v-model="activeOutputTab">
-                  <div class="flex justify-between flex-wrap gap-2">
-                    <TabsList>
-                      <TabsTrigger value="html">HTML</TabsTrigger>
-                      <TabsTrigger value="css">CSS</TabsTrigger>
-                      <TabsTrigger value="js">JavaScript</TabsTrigger>
-                    </TabsList>
-                    <Dialog>
-                      <DialogTrigger as-child>
-                        <Button variant="blue">
-                          <IconEye class="size-5 mr-2" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent class="max-w-3xl">
-                        <DialogHeader>
-                          <DialogTitle>Preview Snippet</DialogTitle>
-                          <DialogDescription>
-                            This is just a rough preview of the UI selected above.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <FullExample />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <TabsContent value="html">
-                    <pre
-                      class="overflow-x-auto"
-                      :class="['shiki', shikiTokens.themeName]"
-                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                      tabindex="0"
-                    ><code v-html="html"></code></pre>
-                  </TabsContent>
-                  <TabsContent value="css">
-                    <pre
-                      class="overflow-x-auto"
-                      :class="['shiki', shikiTokens.themeName]"
-                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                      tabindex="0"
-                    ><code v-html="css"></code></pre>
-                  </TabsContent>
-                  <TabsContent value="js">
-                    <pre
-                      class="overflow-x-auto"
-                      :class="['shiki', shikiTokens.themeName]"
-                      :style="{ backgroundColor: shikiTokens.bg, color: shikiTokens.fg }"
-                      tabindex="0"
-                    ><code v-html="js"></code></pre>
-                  </TabsContent>
-                </Tabs>
+                <!-- [ ] TODO: remove the tooltip provider (it's global in the prod app) -->
+                <TooltipProvider>
+                  <Tabs v-model="activeOutputTab">
+                    <div class="flex justify-between flex-wrap gap-2">
+                      <TabsList>
+                        <TabsTrigger value="html">HTML</TabsTrigger>
+                        <TabsTrigger value="css">CSS</TabsTrigger>
+                        <TabsTrigger value="js">JavaScript</TabsTrigger>
+                      </TabsList>
+                      <Dialog>
+                        <DialogTrigger as-child>
+                          <Button variant="blue">
+                            <IconEye class="size-5 mr-2" />
+                            Preview
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent class="max-w-3xl">
+                          <DialogHeader>
+                            <DialogTitle>Preview Snippet</DialogTitle>
+                            <DialogDescription>
+                              This is just a rough preview of the UI selected above.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <FullExample />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <TabsContent value="html">
+                      <ImplementationCodeBlock :shiki-theme="shikiTheme" :code-html="html" />
+                    </TabsContent>
+                    <TabsContent value="css">
+                      <ImplementationCodeBlock :shiki-theme="shikiTheme" :code-html="css" />
+                    </TabsContent>
+                    <TabsContent value="js">
+                      <ImplementationCodeBlock :shiki-theme="shikiTheme" :code-html="js" />
+                    </TabsContent>
+                  </Tabs>
+                </TooltipProvider>
               </div>
             </li>
           </ol>
