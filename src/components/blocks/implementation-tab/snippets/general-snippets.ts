@@ -36,7 +36,7 @@ export const mainJsNewDoppleInstance = (
 
   return `\n\n	// Initialize a new 3D product
 	const dopple = new DoppleXR({
-		container: doppleWrapper.querySelector(".dopple-container"),
+		container: document.querySelector(".dopple-container"),
 		owner: "dopple",
 		workspace: "dev-docs",
 		projectName: "luggage",
