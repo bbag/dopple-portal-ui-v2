@@ -1209,19 +1209,6 @@ watchEffect(async () => {
           </ol>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Example Code</CardTitle>
-          <CardDescription> ... </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <!-- <pre>{{
-            mainJsNewDoppleInstance(defaultSelection, isAnalyticsActive, analyticsLogNamespace)
-          }}</pre> -->
-          <!-- <Label>JavaScript:</Label> -->
-          <!-- <div v-html="snippetHtmlRef"></div> -->
-        </CardContent>
-      </Card>
     </div>
   </div>
 </template>
