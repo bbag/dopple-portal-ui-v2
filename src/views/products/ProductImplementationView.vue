@@ -542,6 +542,9 @@ watchEffect(async () => {
   // Loading Screen
   js.value += isLoadingScreenActive.value ? loadingScreenJsOutput.value : ''
 
+  // Analytics
+  js.value += isAnalyticsActive.value ? analyticsJsOutput.value : ''
+
   // Call dopple.load()
   js.value += mainJsDoppleLoadOutput.value
 
@@ -591,9 +594,6 @@ watchEffect(async () => {
 
   // Configuration menu
   js.value += isConfigMenuActive.value ? configMenuJsOutput.value : ''
-
-  // Analytics
-  js.value += isAnalyticsActive.value ? analyticsJsOutput.value : ''
 
   js.value += mainJsEndOutput.value
 })
