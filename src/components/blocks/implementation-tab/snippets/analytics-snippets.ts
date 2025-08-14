@@ -55,17 +55,17 @@ export const analyticsJs = (
 	 *   time: number
 	 * }
 	 */
-	function writeGAEvent(message) {
-		const msgObject = JSON.parse(message);
+	function writeGAEvent(data) {
+		const dataObject = JSON.parse(data);
 
-		if (!window.gtag || !msgObject?.context?.event) {
+		if (!window.gtag || !dataObject?.context?.event) {
 			return false;
 		}
 
-		const ctx = msgObject.context;
+		const ctx = dataObject.context;
 		const eventData = {
 			dopple_session_id: ctx.sessionId,
-			timestamp: msgObject.time,
+			timestamp: dataObject.time
 		};
 
 		if (!(ctx.event in EVENT_NAMES)) {
@@ -82,7 +82,7 @@ export const analyticsJs = (
 					window.gtag("event", eventName, {
 						...eventData,
 						property_name: key,
-						selected_option: newSel[key],
+						selected_option: newSel[key]
 					});
 					break;
 				}
@@ -94,7 +94,7 @@ export const analyticsJs = (
 			case "CAMERA_UPDATE":
 				Object.assign(eventData, {
 					target: ctx.target,
-					position: ctx.position,
+					position: ctx.position
 				});
 				break;
 			case "SNAPSHOT_TAKEN":
@@ -118,11 +118,8 @@ export const analyticsJs = (
  	}
 	addToCartBtn?.addEventListener("click", () => {
 		dopple.logger.info(
-			{
-				analyticsEvent: true,
-				event: "ADD_TO_CART",
-			},
-			"User added the product to the cart",
+			{ event: "ADD_TO_CART" },
+			"User added the product to the cart"
 		);
 	});`
   }
